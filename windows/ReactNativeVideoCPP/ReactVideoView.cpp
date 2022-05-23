@@ -62,6 +62,13 @@ ReactVideoView::ReactVideoView(winrt::Microsoft::ReactNative::IReactContext cons
         }
     });
 
+    m_playbackStateChangedToken =
+        m_player.PlaybackSession().PlaybackStateChanged(winrt::auto_revoke, [ref = get_weak()](auto const& sender, auto const& args) {
+        if (auto self = ref.get()) {
+            self->OnPlaybackStateChanged(sender, args);
+        }
+    });
+
     m_timer = Windows::UI::Xaml::DispatcherTimer();
     m_timer.Interval(std::chrono::milliseconds{ 250 });
     m_timer.Start();
@@ -70,14 +77,16 @@ ReactVideoView::ReactVideoView(winrt::Microsoft::ReactNative::IReactContext cons
             if (auto mediaPlayer = self->m_player) {
                 if (mediaPlayer.PlaybackSession().PlaybackState() ==
                     winrt::Windows::Media::Playback::MediaPlaybackState::Playing) {
-                    auto currentTimeInSeconds = mediaPlayer.PlaybackSession().Position().count() / 10000000;
+                    auto currentTimeInSeconds = mediaPlayer.PlaybackSession().Position().count() / 10000000.0;
+                    auto durationInSeconds = mediaPlayer.PlaybackSession().NaturalDuration().count() / 10000000.0;
                     self->m_reactContext.DispatchEvent(
                         *self,
-                        L"topProgress",
+                        L"topVideoProgress",
                         [&](winrt::Microsoft::ReactNative::IJSValueWriter const& eventDataWriter) noexcept {
                         eventDataWriter.WriteObjectBegin();
                         {
                             WriteProperty(eventDataWriter, L"currentTime", currentTimeInSeconds);
+                            WriteProperty(eventDataWriter, L"seekableDuration", durationInSeconds);
                             WriteProperty(eventDataWriter, L"playableDuration", 0.0);
                         }
                         eventDataWriter.WriteObjectEnd();
@@ -95,12 +104,12 @@ void ReactVideoView::OnMediaOpened(IInspectable const&, IInspectable const&) {
                 auto width = mediaPlayer.PlaybackSession().NaturalVideoWidth();
                 auto height = mediaPlayer.PlaybackSession().NaturalVideoHeight();
                 auto orientation = (width > height) ? L"landscape" : L"portrait";
-                auto durationInSeconds = mediaPlayer.PlaybackSession().NaturalDuration().count() / 10000000;
-                auto currentTimeInSeconds = mediaPlayer.PlaybackSession().Position().count() / 10000000;
+                auto durationInSeconds = mediaPlayer.PlaybackSession().NaturalDuration().count() / 10000000.0;
+                auto currentTimeInSeconds = mediaPlayer.PlaybackSession().Position().count() / 10000000.0;
 
                 strong_this->m_reactContext.DispatchEvent(
                     *strong_this,
-                    L"topLoad",
+                    L"topVideoLoad",
                     [&](winrt::Microsoft::ReactNative::IJSValueWriter const& eventDataWriter) noexcept {
                     eventDataWriter.WriteObjectBegin();
                     {
@@ -148,6 +157,14 @@ void ReactVideoView::OnSeekCompleted(IInspectable const&, IInspectable const&) {
     runOnQueue([weak_this{ get_weak() }]() {
         if (auto strong_this{ weak_this.get() }) {
             strong_this->m_reactContext.DispatchEvent(*strong_this, L"topSeek", nullptr);
+        }
+    });
+}
+
+void ReactVideoView::OnPlaybackStateChanged(IInspectable const&, IInspectable const&) {
+    runOnQueue([weak_this{ get_weak() }]() {
+        if (auto strong_this{ weak_this.get() }) {
+            strong_this->m_reactContext.DispatchEvent(*strong_this, L"topPlaybackRateChange", nullptr);
         }
     });
 }
