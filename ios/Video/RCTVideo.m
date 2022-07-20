@@ -40,6 +40,9 @@ static int const RCTVideoUnset = -1;
   /* DRM */
   NSDictionary *_drm;
   AVAssetResourceLoadingRequest *_loadingRequest;
+
+  /* Workaround for Dolby Atmos on OS 15.2 and beyond */
+  id _remoteCommandHandlerForSpatialAudio;
    
   /* Required to publish events */
   RCTEventDispatcher *_eventDispatcher;
@@ -218,8 +221,33 @@ static int const RCTVideoUnset = -1;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self removePlayerLayer];
   [self removePlayerItemObservers];
+  [self removeSpatialAudioRemoteCommandHandler];
   [_player removeObserver:self forKeyPath:playbackRate context:nil];
   [_player removeObserver:self forKeyPath:externalPlaybackActive context: nil];
+}
+
+#pragma mark - Spatial Audio / Dolby Atmos Workaround
+
+/* These functions are a temporarily workaround to enable the rendering of Dolby Atmos on
+ * iOS 15 and above.
+ */
+- (void)addSpatialAudioRemoteCommandHandler
+{
+  MPRemoteCommand *remoteCommand = [MPRemoteCommandCenter sharedCommandCenter].playCommand;
+
+  _remoteCommandHandlerForSpatialAudio = [remoteCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+      return MPRemoteCommandHandlerStatusSuccess;
+  }];
+}
+
+- (void)removeSpatialAudioRemoteCommandHandler
+{
+  MPRemoteCommand *remoteCommand = [MPRemoteCommandCenter sharedCommandCenter].playCommand;
+
+  if (_remoteCommandHandlerForSpatialAudio != nil) {
+      [remoteCommand removeTarget:_remoteCommandHandlerForSpatialAudio];
+      _remoteCommandHandlerForSpatialAudio = nil;
+  }
 }
 
 #pragma mark - App lifecycle handlers
@@ -361,6 +389,7 @@ static int const RCTVideoUnset = -1;
   [self removePlayerLayer];
   [self removePlayerTimeObserver];
   [self removePlayerItemObservers];
+  [self removeSpatialAudioRemoteCommandHandler];
 
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) 0), dispatch_get_main_queue(), ^{
     
@@ -370,6 +399,7 @@ static int const RCTVideoUnset = -1;
       _playerItem = playerItem;
       [self setPreferredForwardBufferDuration:_preferredForwardBufferDuration];
       [self addPlayerItemObservers];
+      [self addSpatialAudioRemoteCommandHandler];
 
       [self setFilter:self->_filterName];
       [self setMaxBitRate:self->_maxBitRate];
