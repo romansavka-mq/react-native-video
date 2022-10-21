@@ -3,6 +3,8 @@ package com.brentvatne.exoplayer;
 import android.content.Context;
 import android.os.Handler;
 
+import androidx.annotation.IntDef;
+
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.Renderer;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
@@ -11,6 +13,9 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import com.google.android.exoplayer2.util.Log;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
@@ -18,8 +23,61 @@ public class DolbyRendersFactory extends DefaultRenderersFactory {
 
     private static final String TAG = "DolbyRendersFactory";
 
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            DOLBY_EXTENSION_RENDERER_MODE_AUTO,
+            DOLBY_EXTENSION_RENDERER_MODE_OFF,
+            DOLBY_EXTENSION_RENDERER_MODE_ON,
+            DOLBY_EXTENSION_RENDERER_MODE_PREFER})
+    public @interface DolbyExtensionRendererMode {
+    }
+
+    public static final int DOLBY_EXTENSION_RENDERER_MODE_AUTO = -1;
+
+    public static final int DOLBY_EXTENSION_RENDERER_MODE_OFF = 0;
+
+    public static final int DOLBY_EXTENSION_RENDERER_MODE_ON = 1;
+
+    public static final int DOLBY_EXTENSION_RENDERER_MODE_PREFER = 2;
+
+    @ExtensionRendererMode
+    private int audioExtensionRendererMode;
+    @ExtensionRendererMode
+    private int videoExtensionRendererMode;
+
     public DolbyRendersFactory(Context context) {
         super(context);
+        audioExtensionRendererMode = EXTENSION_RENDERER_MODE_OFF;
+        videoExtensionRendererMode = EXTENSION_RENDERER_MODE_OFF;
+    }
+
+    @Override
+    public DolbyRendersFactory setExtensionRendererMode(int extensionRendererMode) {
+        super.setExtensionRendererMode(extensionRendererMode);
+        audioExtensionRendererMode = extensionRendererMode;
+        videoExtensionRendererMode = extensionRendererMode;
+        return this;
+    }
+
+    public DolbyRendersFactory setDolbyExtensionRendererMode(@DolbyExtensionRendererMode int dolbyExtensionRendererMode) {
+        switch (dolbyExtensionRendererMode) {
+            case DOLBY_EXTENSION_RENDERER_MODE_ON:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON);
+                break;
+            case DOLBY_EXTENSION_RENDERER_MODE_PREFER:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER);
+                break;
+            case DOLBY_EXTENSION_RENDERER_MODE_OFF:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF);
+                break;
+            case DOLBY_EXTENSION_RENDERER_MODE_AUTO:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF);
+                audioExtensionRendererMode = DolbyDefaultExtensionMode.getAudioDefaultMode();
+                videoExtensionRendererMode = DolbyDefaultExtensionMode.getVideoDefaultMode();
+                break;
+        }
+        return this;
     }
 
     @Override
@@ -35,11 +93,11 @@ public class DolbyRendersFactory extends DefaultRenderersFactory {
         super.buildAudioRenderers(context, extensionRendererMode, mediaCodecSelector,
                 enableDecoderFallback, audioSink, eventHandler, eventListener, out);
 
-        if (extensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {
+        if (audioExtensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {
             return;
         }
         int extensionRendererIndex = out.size();
-        if (extensionRendererMode == EXTENSION_RENDERER_MODE_PREFER) {
+        if (audioExtensionRendererMode == EXTENSION_RENDERER_MODE_PREFER) {
             extensionRendererIndex--;
         }
 
@@ -80,11 +138,11 @@ public class DolbyRendersFactory extends DefaultRenderersFactory {
         super.buildVideoRenderers(context, extensionRendererMode, mediaCodecSelector,
                 enableDecoderFallback, eventHandler, eventListener, allowedVideoJoiningTimeMs, out);
 
-        if (extensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {
+        if (videoExtensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {
             return;
         }
         int extensionRendererIndex = out.size();
-        if (extensionRendererMode == EXTENSION_RENDERER_MODE_PREFER) {
+        if (videoExtensionRendererMode == EXTENSION_RENDERER_MODE_PREFER) {
             extensionRendererIndex--;
         }
 

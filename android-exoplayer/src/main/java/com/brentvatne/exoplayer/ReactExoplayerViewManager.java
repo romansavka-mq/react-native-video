@@ -1,6 +1,6 @@
 package com.brentvatne.exoplayer;
 
-import static com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+import static com.brentvatne.exoplayer.DolbyRendersFactory.DOLBY_EXTENSION_RENDERER_MODE_AUTO;
 import static com.google.android.exoplayer2.ui.CaptionStyleCompat.EDGE_TYPE_NONE;
 
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.brentvatne.exoplayer.DolbyRendersFactory.DolbyExtensionRendererMode;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -366,12 +367,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     }
 
     /**
-     * Accepted value is one of ExtensionRendererMode or -1 for default selection
-     * @see com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
+     * Accepted value is one of {@link DolbyExtensionRendererMode}
      */
-    @ReactProp(name= PROP_EXTENSION_RENDER_MODE, defaultInt = EXTENSION_RENDERER_MODE_OFF)
+    @ReactProp(name = PROP_EXTENSION_RENDER_MODE, defaultInt = DOLBY_EXTENSION_RENDERER_MODE_AUTO)
     public void setExtensionRendererMode(final ReactExoplayerView videoView, final int mode) {
-        videoView.setExtensionRenderMode(mode);
+        videoView.setExtensionRendererMode(mode);
     }
 
     private boolean startsWithValidScheme(String uriString) {

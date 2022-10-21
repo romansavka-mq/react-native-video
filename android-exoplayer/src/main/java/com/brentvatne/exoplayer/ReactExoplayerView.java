@@ -1,6 +1,6 @@
 package com.brentvatne.exoplayer;
 
-import static com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+import static com.brentvatne.exoplayer.DolbyRendersFactory.DOLBY_EXTENSION_RENDERER_MODE_AUTO;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.brentvatne.exoplayer.DolbyRendersFactory.DolbyExtensionRendererMode;
 import com.brentvatne.react.R;
 import com.brentvatne.receiver.AudioBecomingNoisyReceiver;
 import com.brentvatne.receiver.BecomingNoisyListener;
@@ -30,7 +31,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
@@ -157,8 +157,8 @@ class ReactExoplayerView extends FrameLayout implements
     private String drmLicenseUrl = null;
     private String[] drmLicenseHeader = null;
     private boolean controls;
-    @ExtensionRendererMode
-    private int extensionRenderMode = EXTENSION_RENDERER_MODE_OFF;
+    @DolbyExtensionRendererMode
+    private int extensionRendererMode = DOLBY_EXTENSION_RENDERER_MODE_AUTO;
     // \ End props
 
     // React
@@ -415,7 +415,7 @@ class ReactExoplayerView extends FrameLayout implements
                     defaultLoadControlBuilder.setPrioritizeTimeOverSizeThresholds(true);
                     DefaultLoadControl defaultLoadControl = defaultLoadControlBuilder.build();
                     RenderersFactory renderersFactory = new DolbyRendersFactory(getContext())
-                                    .setExtensionRendererMode(extensionRenderMode);
+                                    .setDolbyExtensionRendererMode(extensionRendererMode);
                     player = new SimpleExoPlayer.Builder(getContext(), renderersFactory)
                                 .setTrackSelector(trackSelector)
                                 .setBandwidthMeter(bandwidthMeter)
@@ -1263,8 +1263,8 @@ class ReactExoplayerView extends FrameLayout implements
         }
     }
 
-    public void setExtensionRenderMode(int mode) {
-        extensionRenderMode = mode < 0 ? DolbyDefaultExtensionMode.getDefaultMode() : mode;
+    public void setExtensionRendererMode(@DolbyExtensionRendererMode int mode) {
+        extensionRendererMode = mode;
         if (player != null) {
             Log.d("ExtensionMode", "set extension mode after player initialized doesn't have effect");
         }
