@@ -58,6 +58,7 @@ class VideoEventEmitter {
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
     private static final String EVENT_PLAYED_TRACKS_CHANGE = "onPlayedTracksChange";
+    private static final String EVENT_COMMAND_RESULT = "onCommandResult";
 
     static final String[] Events = {
             EVENT_LOAD_START,
@@ -81,6 +82,7 @@ class VideoEventEmitter {
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_PLAYED_TRACKS_CHANGE,
             EVENT_BANDWIDTH,
+            EVENT_COMMAND_RESULT
     };
 
     @Retention(RetentionPolicy.SOURCE)
@@ -106,6 +108,7 @@ class VideoEventEmitter {
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_PLAYED_TRACKS_CHANGE,
             EVENT_BANDWIDTH,
+            EVENT_COMMAND_RESULT
     })
     @interface VideoEvents {
     }
@@ -145,6 +148,9 @@ class VideoEventEmitter {
     private static final String EVENT_PROP_TIMED_METADATA = "metadata";
 
     private static final String EVENT_PROP_BITRATE = "bitrate";
+
+    private static final String EVENT_PROP_REQUEST_ID = "requestId";
+    private static final String EVENT_PROP_RESULT = "result";
 
 
     void setViewId(int viewId) {
@@ -340,6 +346,13 @@ class VideoEventEmitter {
 
     void audioBecomingNoisy() {
         receiveEvent(EVENT_AUDIO_BECOMING_NOISY, null);
+    }
+
+    void dispatchCurrentTimeResult(int requestId, double currentPosition) {
+        WritableMap map = Arguments.createMap();
+        map.putDouble(EVENT_PROP_REQUEST_ID, requestId);
+        map.putDouble(EVENT_PROP_RESULT, currentPosition / 1000D);
+        receiveEvent(EVENT_COMMAND_RESULT, map);
     }
 
     private void receiveEvent(@VideoEvents String type, WritableMap event) {

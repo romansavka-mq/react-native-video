@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.brentvatne.exoplayer.DolbyRendersFactory.DolbyExtensionRendererMode;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
@@ -80,6 +82,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
 
     private static final String PROP_VIDEO_EXTENSION_RENDER_MODE = "videoExtensionRenderMode";
     private static final String PROP_CAPTION_CONFIG = "captionConfig";
+    private static final String COMMAND_GET_CURRENT_TIME = "getCurrentTime";
+    private static final int COMMAND_ID_GET_CURRENT_TIME = 1;
 
     private ReactExoplayerConfig config;
 
@@ -97,13 +101,38 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
         return new ReactExoplayerView(themedReactContext, config);
     }
 
+    @Nullable
+    @Override
+    public Map<String, Integer> getCommandsMap() {
+        return MapBuilder.of(COMMAND_GET_CURRENT_TIME, COMMAND_ID_GET_CURRENT_TIME);
+    }
+
+    @Override
+    public void receiveCommand(@NonNull ReactExoplayerView root, int commandId, @Nullable ReadableArray args) {
+        receiveCommand(root, String.valueOf(commandId), args);
+    }
+
+    @Override
+    public void receiveCommand(@NonNull ReactExoplayerView root, String commandId, @Nullable ReadableArray args) {
+        int requestId = args != null ? args.getInt(0) : -1;
+        switch (Integer.parseInt(commandId)) {
+            case COMMAND_ID_GET_CURRENT_TIME:
+                root.requestCurrentTime(requestId);
+                break;
+            default:
+                super.receiveCommand(root, commandId, args);
+                break;
+        }
+    }
+
     @Override
     public void onDropViewInstance(ReactExoplayerView view) {
         view.cleanUpResources();
     }
 
     @Override
-    public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    public @Nullable
+    Map<String, Object> getExportedCustomDirectEventTypeConstants() {
         MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
         for (String event : VideoEventEmitter.Events) {
             builder.put(event, MapBuilder.of("registrationName", event));
