@@ -15,6 +15,9 @@ static NSString *const playbackRate = @"rate";
 static NSString *const timedMetadata = @"timedMetadata";
 static NSString *const externalPlaybackActive = @"externalPlaybackActive";
 
+static NSString *const commandRequestIdKey = @"requestId";
+static NSString *const commandResultKey = @"result";
+
 static int const RCTVideoUnset = -1;
 
 #ifdef DEBUG
@@ -2057,5 +2060,18 @@ didCancelLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
   _restoreUserInterfaceForPIPStopCompletionHandler = completionHandler;
 }
 #endif
+
+#pragma mark - Commands
+
+- (void)requestedCurrentTime:(nonnull NSNumber *) requestId {
+  if (!self.onCommandResult) {
+    return;
+  }
+  NSDictionary <NSString *, NSNumber *> *result = @{
+    commandRequestIdKey: requestId,
+    commandResultKey: @([self getCurrentTime])
+  };
+  self.onCommandResult(result);
+}
 
 @end
