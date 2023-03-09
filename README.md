@@ -280,7 +280,8 @@ var styles = StyleSheet.create({
 * [controls](#controls)
 * [currentPlaybackTime](#currentPlaybackTime)
 * [disableFocus](#disableFocus)
-* [extensionRenderMode](#extensionRenderMode)  
+* [audioExtensionRenderMode](#audioextensionRenderMode)  
+* [videoExtensionRenderMode](#videoextensionRenderMode)  
 * [filter](#filter)
 * [filterEnabled](#filterEnabled)
 * [fullscreen](#fullscreen)
@@ -440,13 +441,24 @@ Determines whether video audio should override background music/audio in Android
 
 Platforms: Android Exoplayer
 
-#### extensionRenderMode
-Sets the extension renderer mode, which determines if and how available extension renderers are used. Note that extensions must be included in the application build for them to be considered available.
+#### audioExtensionRenderMode
+Sets the audio extension renderer mode, which determines if and how available audio extension renderers are used. Note that extensions must be included in the application build for them to be considered available.
 * **0 (default)** EXTENSION_RENDERER_MODE_OFF Do not allow use of extension renderers.
 * **1** EXTENSION_RENDERER_MODE_ON Allow use of extension renderers. Extension renderers are indexed *after* core renderers of the same type
 * **2** EXTENSION_RENDERER_MODE_PREFER Allow use of extension renderers. Extension renderers are indexed *before* core renderers of the same type.
 * **-1** Select one of above modes depending on device supported media codecs.
   * audio/ac4 is supported then EXTENSION_RENDERER_MODE_OFF is selected
+  * otherwise EXTENSION_RENDERER_MODE_PREFER is selected
+
+Platforms: Android ExoPlayer
+
+#### videoExtensionRenderMode
+Sets the video extension renderer mode, which determines if and how available video extension renderers are used. Note that extensions must be included in the application build for them to be considered available.
+* **0 (default)** EXTENSION_RENDERER_MODE_OFF Do not allow use of extension renderers.
+* **1** EXTENSION_RENDERER_MODE_ON Allow use of extension renderers. Extension renderers are indexed *after* core renderers of the same type
+* **2** EXTENSION_RENDERER_MODE_PREFER Allow use of extension renderers. Extension renderers are indexed *before* core renderers of the same type.
+* **-1** Select one of above modes depending on device supported media codecs.
+  * video/dolby-vision is supported then EXTENSION_RENDERER_MODE_OFF is selected
   * otherwise EXTENSION_RENDERER_MODE_PREFER is selected
 
 Platforms: Android ExoPlayer

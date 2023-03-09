@@ -158,7 +158,9 @@ class ReactExoplayerView extends FrameLayout implements
     private String[] drmLicenseHeader = null;
     private boolean controls;
     @DolbyExtensionRendererMode
-    private int extensionRendererMode = DOLBY_EXTENSION_RENDERER_MODE_AUTO;
+    private int audioExtensionRendererMode = DOLBY_EXTENSION_RENDERER_MODE_AUTO;
+    @DolbyExtensionRendererMode
+    private int videExtensionRendererMode = DOLBY_EXTENSION_RENDERER_MODE_AUTO;
     // \ End props
 
     // React
@@ -415,7 +417,8 @@ class ReactExoplayerView extends FrameLayout implements
                     defaultLoadControlBuilder.setPrioritizeTimeOverSizeThresholds(true);
                     DefaultLoadControl defaultLoadControl = defaultLoadControlBuilder.build();
                     RenderersFactory renderersFactory = new DolbyRendersFactory(getContext())
-                                    .setDolbyExtensionRendererMode(extensionRendererMode);
+                                    .setAudioExtensionRendererMode(audioExtensionRendererMode)
+                                    .setVideoExtensionRendererMode(videExtensionRendererMode);
                     player = new SimpleExoPlayer.Builder(getContext(), renderersFactory)
                                 .setTrackSelector(trackSelector)
                                 .setBandwidthMeter(bandwidthMeter)
@@ -1263,10 +1266,17 @@ class ReactExoplayerView extends FrameLayout implements
         }
     }
 
-    public void setExtensionRendererMode(@DolbyExtensionRendererMode int mode) {
-        extensionRendererMode = mode;
+    public void setAudioExtensionRendererMode(@DolbyExtensionRendererMode int mode) {
+        audioExtensionRendererMode = mode;
         if (player != null) {
-            Log.d("ExtensionMode", "set extension mode after player initialized doesn't have effect");
+            Log.w("ExtensionMode", "set audio extension mode after player initialized doesn't have effect");
+        }
+    }
+
+    public void setVideoExtensionRendererMode(@DolbyExtensionRendererMode int mode) {
+        videExtensionRendererMode = mode;
+        if (player != null) {
+            Log.w("ExtensionMode", "set video extension mode after player initialized doesn't have effect");
         }
     }
 
