@@ -75,7 +75,10 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_SELECTED_VIDEO_TRACK_VALUE = "value";
     private static final String PROP_HIDE_SHUTTER_VIEW = "hideShutterView";
     private static final String PROP_CONTROLS = "controls";
-    private static final String PROP_EXTENSION_RENDER_MODE = "extensionRenderMode";
+
+    private static final String PROP_AUDIO_EXTENSION_RENDER_MODE = "audioExtensionRenderMode";
+
+    private static final String PROP_VIDEO_EXTENSION_RENDER_MODE = "videoExtensionRenderMode";
     private static final String PROP_CAPTION_CONFIG = "captionConfig";
 
     private ReactExoplayerConfig config;
@@ -369,9 +372,17 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     /**
      * Accepted value is one of {@link DolbyExtensionRendererMode}
      */
-    @ReactProp(name = PROP_EXTENSION_RENDER_MODE, defaultInt = DOLBY_EXTENSION_RENDERER_MODE_AUTO)
-    public void setExtensionRendererMode(final ReactExoplayerView videoView, final int mode) {
-        videoView.setExtensionRendererMode(mode);
+    @ReactProp(name = PROP_AUDIO_EXTENSION_RENDER_MODE, defaultInt = DOLBY_EXTENSION_RENDERER_MODE_AUTO)
+    public void setAudioExtensionRendererMode(final ReactExoplayerView videoView, final int mode) {
+        videoView.setAudioExtensionRendererMode(mode);
+    }
+
+    /**
+     * Accepted value is one of {@link DolbyExtensionRendererMode}
+     */
+    @ReactProp(name = PROP_VIDEO_EXTENSION_RENDER_MODE, defaultInt = DOLBY_EXTENSION_RENDERER_MODE_AUTO)
+    public void setVideoExtensionRendererMode(final ReactExoplayerView videoView, final int mode) {
+        videoView.setVideoExtensionRendererMode(mode);
     }
 
     private boolean startsWithValidScheme(String uriString) {
