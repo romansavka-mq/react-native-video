@@ -158,9 +158,7 @@ class ReactExoplayerView extends FrameLayout implements
     private String[] drmLicenseHeader = null;
     private boolean controls;
     @DolbyExtensionRendererMode
-    private int audioExtensionRendererMode = DOLBY_EXTENSION_RENDERER_MODE_AUTO;
-    @DolbyExtensionRendererMode
-    private int videExtensionRendererMode = DOLBY_EXTENSION_RENDERER_MODE_AUTO;
+    private int extensionRendererMode = DOLBY_EXTENSION_RENDERER_MODE_AUTO;
     // \ End props
 
     // React
@@ -407,9 +405,7 @@ class ReactExoplayerView extends FrameLayout implements
                     ExoTrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
                     trackSelector = new DefaultTrackSelector(getContext(), videoTrackSelectionFactory);
                     trackSelector.setParameters(trackSelector.buildUponParameters()
-                            .setMaxVideoBitrate(maxBitRate == 0 ? Integer.MAX_VALUE : maxBitRate)
-                            .setPreferredAudioMimeTypes(TracksUtil.PREFERRED_AUDIO_MIME_TYPE)
-                    );
+                            .setMaxVideoBitrate(maxBitRate == 0 ? Integer.MAX_VALUE : maxBitRate));
 
                     DefaultAllocator allocator = new DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE);
                     DefaultLoadControl.Builder defaultLoadControlBuilder = new DefaultLoadControl.Builder();
@@ -419,8 +415,7 @@ class ReactExoplayerView extends FrameLayout implements
                     defaultLoadControlBuilder.setPrioritizeTimeOverSizeThresholds(true);
                     DefaultLoadControl defaultLoadControl = defaultLoadControlBuilder.build();
                     RenderersFactory renderersFactory = new DolbyRendersFactory(getContext())
-                                    .setAudioExtensionRendererMode(audioExtensionRendererMode)
-                                    .setVideoExtensionRendererMode(videExtensionRendererMode);
+                                    .setDolbyExtensionRendererMode(extensionRendererMode);
                     player = new SimpleExoPlayer.Builder(getContext(), renderersFactory)
                                 .setTrackSelector(trackSelector)
                                 .setBandwidthMeter(bandwidthMeter)
@@ -1268,17 +1263,10 @@ class ReactExoplayerView extends FrameLayout implements
         }
     }
 
-    public void setAudioExtensionRendererMode(@DolbyExtensionRendererMode int mode) {
-        audioExtensionRendererMode = mode;
+    public void setExtensionRendererMode(@DolbyExtensionRendererMode int mode) {
+        extensionRendererMode = mode;
         if (player != null) {
-            Log.w("ExtensionMode", "set audio extension mode after player initialized doesn't have effect");
-        }
-    }
-
-    public void setVideoExtensionRendererMode(@DolbyExtensionRendererMode int mode) {
-        videExtensionRendererMode = mode;
-        if (player != null) {
-            Log.w("ExtensionMode", "set video extension mode after player initialized doesn't have effect");
+            Log.d("ExtensionMode", "set extension mode after player initialized doesn't have effect");
         }
     }
 
