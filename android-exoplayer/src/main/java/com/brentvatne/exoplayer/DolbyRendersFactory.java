@@ -60,20 +60,22 @@ public class DolbyRendersFactory extends DefaultRenderersFactory {
         return this;
     }
 
-    public DolbyRendersFactory setAudioExtensionRendererMode(@DolbyExtensionRendererMode int dolbyExtensionRendererMode) {
-        if (dolbyExtensionRendererMode == DOLBY_EXTENSION_RENDERER_MODE_AUTO) {
-            audioExtensionRendererMode = DolbyDefaultExtensionMode.getAudioDefaultMode();
-        } else {
-            audioExtensionRendererMode = dolbyExtensionRendererMode;
-        }
-        return this;
-    }
-
-    public DolbyRendersFactory setVideoExtensionRendererMode(@DolbyExtensionRendererMode int dolbyExtensionRendererMode) {
-        if (dolbyExtensionRendererMode == DOLBY_EXTENSION_RENDERER_MODE_AUTO) {
-            videoExtensionRendererMode = DolbyDefaultExtensionMode.getVideoDefaultMode();
-        } else {
-            videoExtensionRendererMode = dolbyExtensionRendererMode;
+    public DolbyRendersFactory setDolbyExtensionRendererMode(@DolbyExtensionRendererMode int dolbyExtensionRendererMode) {
+        switch (dolbyExtensionRendererMode) {
+            case DOLBY_EXTENSION_RENDERER_MODE_ON:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON);
+                break;
+            case DOLBY_EXTENSION_RENDERER_MODE_PREFER:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER);
+                break;
+            case DOLBY_EXTENSION_RENDERER_MODE_OFF:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF);
+                break;
+            case DOLBY_EXTENSION_RENDERER_MODE_AUTO:
+                setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF);
+                audioExtensionRendererMode = DolbyDefaultExtensionMode.getAudioDefaultMode();
+                videoExtensionRendererMode = DolbyDefaultExtensionMode.getVideoDefaultMode();
+                break;
         }
         return this;
     }
@@ -88,7 +90,7 @@ public class DolbyRendersFactory extends DefaultRenderersFactory {
             Handler eventHandler,
             AudioRendererEventListener eventListener,
             ArrayList<Renderer> out) {
-        super.buildAudioRenderers(context, audioExtensionRendererMode, mediaCodecSelector,
+        super.buildAudioRenderers(context, extensionRendererMode, mediaCodecSelector,
                 enableDecoderFallback, audioSink, eventHandler, eventListener, out);
 
         if (audioExtensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {
@@ -133,7 +135,7 @@ public class DolbyRendersFactory extends DefaultRenderersFactory {
             VideoRendererEventListener eventListener,
             long allowedVideoJoiningTimeMs,
             ArrayList<Renderer> out) {
-        super.buildVideoRenderers(context, videoExtensionRendererMode, mediaCodecSelector,
+        super.buildVideoRenderers(context, extensionRendererMode, mediaCodecSelector,
                 enableDecoderFallback, eventHandler, eventListener, allowedVideoJoiningTimeMs, out);
 
         if (videoExtensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {

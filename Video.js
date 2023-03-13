@@ -468,8 +468,6 @@ Video.propTypes = {
     bufferForPlaybackMs: PropTypes.number,
     bufferForPlaybackAfterRebufferMs: PropTypes.number,
   }),
-  audioExtensionRenderMode: PropTypes.number,
-  videoExtensionRenderMode: PropTypes.number,
   captionConfig: PropTypes.shape({
     style: PropTypes.shape({
       foregroundColor: PropTypes.string,
