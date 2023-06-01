@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedT
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.util.Consumer;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.common.base.Predicate;
 
 import java.util.ArrayList;
@@ -33,6 +34,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class TracksUtil {
+
+    final static String[] PREFERRED_AUDIO_MIME_TYPE = new String[]{
+            MimeTypes.AUDIO_AC4,
+            MimeTypes.AUDIO_E_AC3_JOC,
+            MimeTypes.AUDIO_E_AC3,
+            MimeTypes.AUDIO_AC3
+    };
 
     private TracksUtil() {
     }

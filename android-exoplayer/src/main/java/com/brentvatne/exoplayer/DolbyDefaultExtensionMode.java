@@ -39,8 +39,8 @@ public class DolbyDefaultExtensionMode {
     @ExtensionRendererMode
     public static int getVideoDefaultMode() {
         // check the DV decoder on the device
-        boolean dlbAC4Device = hasDecoderFor(MimeTypes.VIDEO_DOLBY_VISION);
-        if (dlbAC4Device) {
+        boolean dlbDVDevice = hasDecoderFor(MimeTypes.VIDEO_DOLBY_VISION);
+        if (dlbDVDevice) {
             Log.i(TAG, "This is a Dolby licensed device with DV decoder.");
             Log.i(TAG, "Player will bypass Dolby Video library and use the existing decoders on the device.");
             return EXTENSION_RENDERER_MODE_OFF;
