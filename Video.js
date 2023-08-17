@@ -17,6 +17,9 @@ export { TextTrackType, FilterType, DRMType };
 
 export default class Video extends Component {
 
+  static _dispatchId = 1;
+  static _dispatchMap = new Map();
+
   constructor(props) {
     super(props);
 
@@ -28,6 +31,15 @@ export default class Video extends Component {
   setNativeProps(nativeProps) {
     this._root.setNativeProps(nativeProps);
   }
+
+  getCurrentTime = async () => {
+    return await this._dispatchCommand(
+      Platform.select({
+        android: NativeModules.UIManager.RCTVideo.Commands.getCurrentTime.toString(),
+        ios: NativeModules.UIManager.RCTVideo.Commands.getCurrentTime
+      })
+    )
+  };
 
   toTypeString(x) {
     switch (typeof x) {
@@ -259,6 +271,40 @@ export default class Video extends Component {
       }
     }
   }
+
+  _onCommandResultEvent = ({ nativeEvent }) => {
+    if (!nativeEvent) return;
+
+    const { requestId, error } = nativeEvent;
+    const promise = Video._dispatchMap.get(requestId);
+    Video._dispatchMap.delete(requestId);
+
+    if (!promise) return;
+
+    if (error) {
+      promise.reject(error);
+    } else {
+      promise.resolve(nativeEvent.result);
+    }
+  };
+
+  _dispatchCommand = async (command, params = []) => {
+    const dispatchId = Video._dispatchId++;
+
+    NativeModules.UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this._root),
+      command,
+      [
+        dispatchId,
+        ...params
+      ],
+    );
+
+    return await new Promise((resolve, reject) => {
+      Video._dispatchMap.set(dispatchId, { resolve, reject });
+    });
+  };
+
   getViewManagerConfig = viewManagerName => {
     if (!UIManager.getViewManagerConfig) {
       return UIManager[viewManagerName];
@@ -335,6 +381,7 @@ export default class Video extends Component {
       onGetLicense: nativeProps.drm && nativeProps.drm.getLicense && this._onGetLicense,
       onPictureInPictureStatusChanged: this._onPictureInPictureStatusChanged,
       onRestoreUserInterfaceForPictureInPictureStop: this._onRestoreUserInterfaceForPictureInPictureStop,
+      onCommandResult: this._onCommandResultEvent
     });
 
     const posterStyle = {

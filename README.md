@@ -345,6 +345,7 @@ var styles = StyleSheet.create({
 * [save](#save)
 * [restoreUserInterfaceForPictureInPictureStop](#restoreuserinterfaceforpictureinpicturestop)
 * [seek](#seek)
+* [getCurrentTime](#getcurrenttime)
 
 ### Configurable props
 
@@ -1321,6 +1322,19 @@ this.player.seek(200); // Seek to 3 minutes, 20 seconds
 ```
 
 Platforms: all
+
+#### getCurrentTime()
+
+Get player current time in seconds where the played media is. Returns `Promise<Number>`.
+
+`getCurrentTime()` can only be called after the `onLoad` event has fired.
+
+Example:
+```
+await this.player.getCurrentTime()
+```
+
+Platforms: Android ExoPlayer
 
 ##### Exact seek
 

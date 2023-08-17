@@ -1289,4 +1289,9 @@ class ReactExoplayerView extends FrameLayout implements
     public void setCaptionLinesRespected(boolean respected) {
         exoPlayerView.setCaptionLinesRespected(respected);
     }
+
+    public void requestCurrentTime(int requestId) {
+        long currentPosition = player.getCurrentPosition();
+        eventEmitter.dispatchCurrentTimeResult(requestId, currentPosition);
+    }
 }
