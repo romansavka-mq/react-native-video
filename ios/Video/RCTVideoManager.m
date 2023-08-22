@@ -115,6 +115,16 @@ RCT_REMAP_METHOD(setLicenseResultError,
 RCT_EXPORT_VIEW_PROPERTY(onPictureInPictureStatusChanged, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onRestoreUserInterfaceForPictureInPictureStop, RCTDirectEventBlock);
 
+RCT_EXPORT_VIEW_PROPERTY(onCommandResult, RCTBubblingEventBlock);
+RCT_EXPORT_METHOD(getCurrentTime:(nonnull NSNumber*) reactTag commandId:(nonnull NSNumber *) commandId) {
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        RCTVideo *view = viewRegistry[reactTag];
+        if ([view isKindOfClass:[RCTVideo class]]) {
+            [(RCTVideo*)view requestedCurrentTime:commandId];
+        }
+    }];
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{
