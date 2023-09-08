@@ -6,6 +6,7 @@
 #include <MediaAccessibility/MediaAccessibility.h>
 #include <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import "CurrentVideos.h"
 
 static NSString *const statusKeyPath = @"status";
 static NSString *const playbackLikelyToKeepUpKeyPath = @"playbackLikelyToKeepUp";
@@ -98,6 +99,10 @@ static int const RCTVideoUnset = -1;
   void (^__strong _Nonnull _restoreUserInterfaceForPIPStopCompletionHandler)(BOOL);
   AVPictureInPictureController *_pipController;
 #endif
+	NSNumber *_masterVideo;
+	NSNumber *_slaveVideo;
+	VideoState _videoState;
+	BOOL _masterPendingPlayRequest;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -127,6 +132,7 @@ static int const RCTVideoUnset = -1;
     _pictureInPicture = false;
     _ignoreSilentSwitch = @"inherit"; // inherit, ignore, obey
     _mixWithOthers = @"inherit"; // inherit, mix, duck
+	_videoState = VideoStateUnknown;
 #if TARGET_OS_IOS
     _restoreUserInterfaceForPIPStopCompletionHandler = NULL;
 #endif
@@ -447,6 +453,7 @@ static int const RCTVideoUnset = -1;
     }];
   });
   _videoLoadStarted = YES;
+	[[CurrentVideos shared] add:self forTag:self.reactTag];
 }
 
 - (void)setDrm:(NSDictionary *)drm {
@@ -646,6 +653,7 @@ static int const RCTVideoUnset = -1;
 {
 
   if([keyPath isEqualToString:readyForDisplayKeyPath] && [change objectForKey:NSKeyValueChangeNewKey] && self.onReadyForDisplay) {
+		[self updateState:VideoStateReady];
     self.onReadyForDisplay(@{@"target": self.reactTag});
     return;
   }
@@ -712,6 +720,8 @@ static int const RCTVideoUnset = -1;
         }
         
         if (self.onVideoLoad && _videoLoadStarted) {
+					[self updateState:VideoStateLoaded];
+
           self.onVideoLoad(@{@"duration": [NSNumber numberWithFloat:duration],
                              @"currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(_playerItem.currentTime)],
                              @"canPlayReverse": [NSNumber numberWithBool:_playerItem.canPlayReverse],
@@ -745,12 +755,20 @@ static int const RCTVideoUnset = -1;
       _playerBufferEmpty = YES;
       self.onVideoBuffer(@{@"isBuffering": @(YES), @"target": self.reactTag});
     } else if ([keyPath isEqualToString:playbackLikelyToKeepUpKeyPath]) {
-      // Continue playing (or not if paused) after being paused due to hitting an unbuffered zone.
-      if ((!(_controls || _fullscreenPlayerPresented) || _playerBufferEmpty) && _playerItem.playbackLikelyToKeepUp) {
-        [self setPaused:_paused];
-      }
-      _playerBufferEmpty = NO;
-      self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag});
+			if ([self isManaged]) {
+				if ([self isSlave]) {
+					[self onSlaveVideoStatusChange];
+				} else {
+					_masterPendingPlayRequest = YES;
+				}
+			} else {
+				// Continue playing (or not if paused) after being paused due to hitting an unbuffered zone.
+				if ((!(_controls || _fullscreenPlayerPresented) || _playerBufferEmpty) && _playerItem.playbackLikelyToKeepUp) {
+					[self setPaused:_paused];
+				}
+				_playerBufferEmpty = NO;
+				self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag});
+			}
     }
   } else if (object == _player) {
     if([keyPath isEqualToString:playbackRate]) {
@@ -963,6 +981,10 @@ static int const RCTVideoUnset = -1;
 
 - (void)setPaused:(BOOL)paused
 {
+	if ([self isManaged]) {
+		[self setManagedPaused:paused];
+		return;
+	}
   if (paused) {
     [_player pause];
     [_player setRate:0.0];
@@ -998,6 +1020,15 @@ static int const RCTVideoUnset = -1;
 
 - (void)setSeek:(NSDictionary *)info
 {
+	if ([self isManaged]) {
+		if ([self isSlave]) {
+			return;
+		}
+		RCTVideo *slave = [self slave];
+		[self setSeekManaged:info];
+		[slave setSeekManaged:info];
+		return;
+	}
   NSNumber *seekTime = info[@"time"];
   NSNumber *seekTolerance = info[@"tolerance"];
   
@@ -2074,4 +2105,175 @@ didCancelLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
   self.onCommandResult(result);
 }
 
+
+- (void)setMasterVideo:(NSNumber*)tag {
+	_masterVideo = tag;
+}
+
+- (void)setSlaveVideo:(NSNumber*)tag {
+	_slaveVideo = tag;
+}
+
+- (BOOL)isMaster {
+	return _slaveVideo != nil;
+}
+
+- (BOOL)isSlave {
+	return _masterVideo != nil;
+}
+
+- (nullable RCTVideo*)slave {
+	if (_slaveVideo == nil) {
+		return nil;
+	}
+
+	return [[CurrentVideos shared] videoForTag:_slaveVideo];
+}
+
+- (nullable RCTVideo*)master {
+	if (_masterVideo == nil) {
+		return nil;
+	}
+
+	return [[CurrentVideos shared] videoForTag:_masterVideo];
+}
+
+
+- (BOOL)isManaged {
+	return [self isSlave] || [self isMaster];
+}
+
+- (void)setManagedPaused: (BOOL)paused {
+	if ([self isSlave]) {
+		return;
+	}
+	RCTVideo *slave = [self slave];
+	AVPlayer *slavePlayer = [slave player];
+	if (paused) {
+		[_player pause];
+		[slavePlayer pause];
+		[_player setRate:0.0];
+		[slavePlayer setRate:0.0];
+	} else {
+		if (![self isVideoReady] || ![slave isVideoReady]) {
+			_masterPendingPlayRequest = YES;
+			return;
+		}
+		[self configureAudio];
+		[slave configureAudio];
+
+		if (@available(iOS 10.0, *) && !_automaticallyWaitsToMinimizeStalling) {
+			[_player playImmediatelyAtRate:_rate];
+			[slavePlayer playImmediatelyAtRate:_rate];
+		} else {
+			[_player play];
+			[slavePlayer play];
+		}
+		[_player setRate:_rate];
+		[slavePlayer setRate:_rate];
+	}
+	_paused = paused;
+	[slave setRawPaused:paused];
+}
+
+- (AVPlayer*)player {
+	return _player;
+}
+
+- (void)setRawPaused: (BOOL) paused {
+	_paused = paused;
+}
+
+- (BOOL)isVideoReady {
+	return (_videoState & VideoStateLoaded) && (_videoState & VideoStateReady);
+}
+
+- (void)setSeekManaged:(NSDictionary*) info {
+	if (![self isMaster]) {
+		return;
+	}
+	RCTVideo *slave = [self slave];
+	NSNumber *seekTime = info[@"time"];
+	NSNumber *seekTolerance = info[@"tolerance"];
+
+	int timeScale = 1000;
+
+	AVPlayerItem *item = _player.currentItem;
+	AVPlayer *slavePlayer = [slave player];
+	AVPlayerItem *slaveItem = [slavePlayer currentItem];
+	if (item && item.status == AVPlayerItemStatusReadyToPlay && slaveItem && slaveItem.status == AVPlayerItemStatusReadyToPlay) {
+		// TODO check loadedTimeRanges
+
+		CMTime cmSeekTime = CMTimeMakeWithSeconds([seekTime floatValue], timeScale);
+		CMTime current = item.currentTime;
+		// TODO figure out a good tolerance level
+		CMTime tolerance = CMTimeMake([seekTolerance floatValue], timeScale);
+
+		if (CMTimeCompare(current, cmSeekTime) != 0) {
+			[_player pause];
+			[slavePlayer pause];
+
+			dispatch_group_t seekGroup = dispatch_group_create();
+
+			dispatch_group_enter(seekGroup);
+			[_player seekToTime:cmSeekTime toleranceBefore:tolerance toleranceAfter:tolerance completionHandler:^(BOOL finished) {
+				dispatch_group_leave(seekGroup);
+			}];
+			dispatch_group_enter(seekGroup);
+			[slavePlayer seekToTime:cmSeekTime toleranceBefore:tolerance toleranceAfter:tolerance completionHandler:^(BOOL finished) {
+				dispatch_group_leave(seekGroup);
+			}];
+
+			dispatch_group_notify(seekGroup, dispatch_get_main_queue(), ^{
+				[self seekCompletedForSeekTime:seekTime];
+				[slave seekCompletedForSeekTime:seekTime];
+				dispatch_after(DISPATCH_TIME_NOW + 1 * NSEC_PER_SEC, dispatch_get_main_queue(), ^{
+					[self setManagedPaused:NO];
+				});
+			});
+			_pendingSeek = false;
+		}
+
+	} else {
+		_pendingSeek = true;
+		_pendingSeekTime = [seekTime floatValue];
+	}
+}
+
+- (void)seekCompletedForSeekTime:(NSNumber*)seekTime {
+	AVPlayer *item = _player.currentItem;
+	if (!_timeObserver) {
+		[self addPlayerTimeObserver];
+	}
+
+	if(self.onVideoSeek) {
+		self.onVideoSeek(@{@"currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(item.currentTime)],
+											 @"seekTime": seekTime,
+											 @"target": self.reactTag});
+	}
+
+}
+
+- (void)updateState:(VideoState) newState {
+	if (![self isManaged]) {
+		return;
+	}
+	_videoState |= newState;
+	if ([self isSlave]) {
+		RCTVideo *master = [self master];
+		[master onSlaveVideoStatusChange];
+	}
+}
+
+- (void)onSlaveVideoStatusChange {
+	RCTVideo *slave = [self slave];
+	if (!slave) {
+		return;
+	}
+
+	if ([slave isVideoReady] && _masterPendingPlayRequest) {
+		[self setPaused:NO];
+		_masterPendingPlayRequest = NO;
+	}
+}
 @end

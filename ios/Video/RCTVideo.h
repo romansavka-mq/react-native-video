@@ -57,6 +57,12 @@ typedef NS_ENUM(NSInteger, RCTVideoError) {
     RCTVideoErrorNoDRMData
 };
 
+typedef enum {
+	VideoStateUnknown = 0,
+	VideoStateLoaded = 1 << 0,
+	VideoStateReady = 1 << 1
+} VideoState;
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 - (AVPlayerViewController*)createPlayerViewController:(AVPlayer*)player withPlayerItem:(AVPlayerItem*)playerItem;
@@ -65,5 +71,5 @@ typedef NS_ENUM(NSInteger, RCTVideoError) {
 - (void)setLicenseResult:(NSString * )license;
 - (BOOL)setLicenseResultError:(NSString * )error;
 - (void)requestedCurrentTime:(nonnull NSNumber *)requestId;
-
+- (void)onSlaveVideoStatusChange;
 @end
