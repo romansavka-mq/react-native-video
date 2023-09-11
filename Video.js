@@ -41,6 +41,18 @@ export default class Video extends Component {
     )
   };
 
+  setMasterVideoId = (masterId) => {
+    this.setNativeProps({
+      masterVideo: masterId
+    })
+  }
+
+  setSlaveVideoId = (slaveId) => {
+    this.setNativeProps({
+      slaveVideo: slaveId
+    })
+  }
+
   toTypeString(x) {
     switch (typeof x) {
       case 'object':
