@@ -2210,6 +2210,7 @@ didCancelLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
 		CMTime tolerance = CMTimeMake([seekTolerance floatValue], timeScale);
 
 		if (CMTimeCompare(current, cmSeekTime) != 0) {
+			BOOL wasPaused = _paused;
 			[_player pause];
 			[slavePlayer pause];
 
@@ -2228,7 +2229,7 @@ didCancelLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
 				[self seekCompletedForSeekTime:seekTime];
 				[slave seekCompletedForSeekTime:seekTime];
 				dispatch_after(DISPATCH_TIME_NOW + 1 * NSEC_PER_SEC, dispatch_get_main_queue(), ^{
-					[self setManagedPaused:NO];
+					[self setManagedPaused:wasPaused];
 				});
 			});
 			_pendingSeek = false;
@@ -2262,6 +2263,9 @@ didCancelLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
 	if ([self isSlave]) {
 		RCTVideo *master = [self master];
 		[master onSlaveVideoStatusChange];
+	} else if ([self isVideoReady] && [[self slave] isVideoReady]) {
+		[self setPaused:NO];
+		_masterPendingPlayRequest = NO;
 	}
 }
 
