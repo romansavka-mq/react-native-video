@@ -39,6 +39,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onPlaybackStalled;
 @property (nonatomic, copy) RCTDirectEventBlock onPlaybackResume;
 @property (nonatomic, copy) RCTDirectEventBlock onPlaybackRateChange;
+@property (nonatomic, copy) RCTDirectEventBlock onPlayedTracksChange;
 @property (nonatomic, copy) RCTDirectEventBlock onVideoExternalPlaybackChange;
 @property (nonatomic, copy) RCTDirectEventBlock onPictureInPictureStatusChanged;
 @property (nonatomic, copy) RCTDirectEventBlock onRestoreUserInterfaceForPictureInPictureStop;
