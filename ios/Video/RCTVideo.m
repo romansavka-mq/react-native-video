@@ -777,6 +777,9 @@ static int const RCTVideoUnset = -1;
     if (_onPlayedTracksChange) {
         AVURLAsset *urlAsset = [_player.currentItem asset];
         NSURL *url = [urlAsset URL];
+        NSArray *tracks = [_player.currentItem tracks];
+        AVAssetTrack *videoAsset = tracks.firstObject;
+        AVAssetTrack *audioAsset = tracks.lastObject;
 
         // TODO: HERE!
         if (!_videoLoadStarted) {
