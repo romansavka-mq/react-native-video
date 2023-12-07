@@ -1,13 +1,9 @@
 package com.brentvatne.exoplayer;
 
-import static com.brentvatne.exoplayer.LocaleUtils.getLanguageDisplayName;
-
 import android.net.Uri;
 import android.view.View;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
@@ -25,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
+
+import static com.brentvatne.exoplayer.LocaleUtils.getLanguageDisplayName;
 
 class VideoEventEmitter {
 
@@ -186,7 +184,7 @@ class VideoEventEmitter {
         event.putString(EVENT_PROP_TRACK_ID, trackId);
         WritableArray videoTrackArray = Arguments.createArray();
         for (TrackInfo track : videoTracks) {
-            videoTrackArray.pushMap(createVideoTrackInfo(track));
+            videoTrackArray.pushMap(createVideoTrackInfo(track, null));
         }
         event.putArray(EVENT_PROP_VIDEO_TRACKS, videoTrackArray);
         WritableArray audioTrackArray = Arguments.createArray();
@@ -215,7 +213,7 @@ class VideoEventEmitter {
     void tracksChange(Object manifest, TrackInfo audioTrack, TrackInfo textTrack, TrackInfo videoTrack) {
         WritableMap event = Arguments.createMap();
         event.putMap(EVENT_PROP_AUDIO_TRACK, createAudioTrackInfo(audioTrack, manifest));
-        event.putMap(EVENT_PROP_VIDEO_TRACK, createVideoTrackInfo(videoTrack));
+        event.putMap(EVENT_PROP_VIDEO_TRACK, createVideoTrackInfo(videoTrack, manifest));
         event.putMap(EVENT_PROP_TEXT_TRACK, createTextTrackInfo(textTrack));
 
         receiveEvent(EVENT_PLAYED_TRACKS_CHANGE, event);
@@ -384,7 +382,7 @@ class VideoEventEmitter {
     }
 
     @Nullable
-    private static WritableMap createVideoTrackInfo(TrackInfo track) {
+    private static WritableMap createVideoTrackInfo(TrackInfo track, Object manifest) {
         if (track == null) return null;
         long complexIndex = track.complexIndex;
         Format format = track.format;
@@ -395,6 +393,14 @@ class VideoEventEmitter {
         videoTrack.putInt("height", format.height == Format.NO_VALUE ? 0 : format.height);
         videoTrack.putInt("bitrate", format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
         videoTrack.putString("codecs", format.codecs != null ? format.codecs : "");
+        if (manifest != null) {
+            Representation representation = ManifestUtils.getRepresentationOf(manifest, track);
+            if (representation != null && representation.baseUrls.size() > 0) {
+                BaseUrl baseUrl = representation.baseUrls.get(0);
+                String file = Uri.parse(baseUrl.url).getLastPathSegment();
+                videoTrack.putString("file", file);
+            }
+        }
         return videoTrack;
     }
 
