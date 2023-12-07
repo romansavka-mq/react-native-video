@@ -744,8 +744,33 @@ static int const RCTVideoUnset = -1;
         }
         _videoLoadStarted = NO;
 
+        if (_onPlayedTracksChange) {
+            NSString *urlString = [[[_player currentItem] accessLog] events].lastObject.URI;
+            NSURL *url = [NSURL URLWithString:urlString];
+            if (url != nil) {
+                [url m3u_loadAsyncCompletion:^(M3U8PlaylistModel *model, NSError *error) {
+                    NSError *err = nil;
+                    AVURLAsset *urlAsset = [_player.currentItem asset];
+                    NSURL *masterURL = [urlAsset URL];
+                    M3U8PlaylistModel *masterModel = [[M3U8PlaylistModel alloc]
+                                                      initWithURL: masterURL
+                                                      error:&err];
+
+                    if (model != nil && masterModel != nil) {
+                        self.onPlayedTracksChange(@{
+                        @"audioTrack": [self getAudioTrackInfo: model masterModel:masterModel],
+                        @"textTrack": [self getTextTrackInfo],
+                        @"videoTrack": [self getVideoTrackInfo: model]
+                        });
+                    }
+                }];
+            }
+          }
+
         [self attachListeners];
         [self applyModifiers];
+
+
       } else if (_playerItem.status == AVPlayerItemStatusFailed && self.onVideoError) {
         self.onVideoError(@{@"error": @{@"code": [NSNumber numberWithInteger: _playerItem.error.code],
                                         @"localizedDescription": [_playerItem.error localizedDescription] == nil ? @"" : [_playerItem.error localizedDescription],
@@ -774,26 +799,6 @@ static int const RCTVideoUnset = -1;
             }
     }
   } else if (object == _player) {
-    if (_onPlayedTracksChange) {
-        AVURLAsset *urlAsset = [_player.currentItem asset];
-        NSURL *url = [urlAsset URL];
-        NSArray *tracks = [_player.currentItem tracks];
-        AVAssetTrack *videoAsset = tracks.firstObject;
-        AVAssetTrack *audioAsset = tracks.lastObject;
-
-        // TODO: HERE!
-        if (!_videoLoadStarted) {
-            [url m3u_loadAsyncCompletion:^(M3U8PlaylistModel *model, NSError *error) {
-                if (model != nil) {
-                    self.onPlayedTracksChange(@{
-                        @"audioTrack": [self getAudioTrackInfo: model],
-                        @"textTrack": [self getTextTrackInfo],
-                    });
-                }
-            }];
-        }
-    }
-
     if([keyPath isEqualToString:playbackRate]) {
       if(self.onPlaybackRateChange) {
         self.onPlaybackRateChange(@{@"playbackRate": [NSNumber numberWithFloat:_player.rate],
@@ -1402,34 +1407,77 @@ static int const RCTVideoUnset = -1;
 }
 
 - (NSDictionary *)getAudioTrackInfo: (M3U8PlaylistModel *) model
+                        masterModel: (M3U8PlaylistModel *) masterModel
 {
     NSMutableDictionary *audioTrackDict = [[NSMutableArray alloc] init];
-    AVMediaSelectionGroup *group = [_player.currentItem.asset
-                                    mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicAudible];
 
-    if (group.options.count > 0) {
-        AVMediaSelectionOption *currentOption = [group.options objectAtIndex: 0];
-        NSString *title = @"";
-        NSArray *values = [[currentOption commonMetadata] valueForKey:@"value"];
-
-        if (values.count > 0) {
-            title = [values objectAtIndex:0];
+    NSMutableArray<M3U8ExtXStreamInf *> *streamList = [[NSMutableArray alloc] init];
+        for (int i = 0; i < masterModel.masterPlaylist.xStreamList.count; i++)
+        {
+            M3U8ExtXStreamInf *inf = [masterModel.masterPlaylist.xStreamList xStreamInfAtIndex:i];
+            if (inf != nil) {
+                [streamList addObject:inf];
+            }
         }
-        NSString *language = [currentOption extendedLanguageTag] ? [currentOption extendedLanguageTag] : @"";
 
-        NSString *file = [model.originalURL lastPathComponent];
+        AVPlayerItemAccessLogEvent *currentEvent = [[[_player currentItem] accessLog] events].lastObject;
+        NSPredicate *bPredicate =
+            [NSPredicate predicateWithFormat:@"%K == %f", @"bandwidth", currentEvent.indicatedBitrate];
 
+        NSArray *filteredArray = [streamList filteredArrayUsingPredicate:bPredicate];
+        M3U8ExtXStreamInf *current = filteredArray.lastObject;
+
+        if (current != nil) {
+            NSMutableArray<M3U8ExtXMediaList *> *mediaList = [[NSMutableArray alloc] init];
+            for (int i = 0; i < masterModel.masterPlaylist.xMediaList.audioList.count; i++)
+            {
+                M3U8ExtXMedia *inf = [masterModel.masterPlaylist.xMediaList.audioList xMediaAtIndex:i];
+                if (inf != nil) {
+                    [mediaList addObject:inf];
+                }
+            }
+
+            NSPredicate *audioPredicate =
+                [NSPredicate predicateWithFormat:@"SELF.groupId == %@", current.audio];
+            M3U8ExtXMedia *currentAudio = [mediaList filteredArrayUsingPredicate:audioPredicate].lastObject;
+
+            NSError *err = nil;
+            AVURLAsset *url = [currentAudio m3u8URL];
+            M3U8PlaylistModel *audioModel = [[M3U8PlaylistModel alloc]
+                                              initWithURL: url
+                                              error:&err];
+            if (audioModel != nil) {
+                M3U8SegmentInfo *audioInfo = [audioModel.mainMediaPl.segmentList segmentInfoAtIndex: 0];
+
+                audioTrackDict = @{
+                    @"title": currentAudio.name,
+                    @"language": currentAudio.language,
+                    @"codecs": [currentAudio groupId],
+                    @"file": audioInfo.URI,
+                };
+            }
+
+        }
+
+    return audioTrackDict;
+}
+
+- (NSDictionary *)getVideoTrackInfo: (M3U8PlaylistModel *) model
+{
+    NSMutableDictionary *audioTrackDict = [[NSMutableArray alloc] init];
+    if (model.mainMediaPl.segmentList.count > 0) {
+        NSString* uri = [model.mainMediaPl.segmentList segmentInfoAtIndex: 0].URI;
         audioTrackDict = @{
-            @"index": [NSNumber numberWithInt: 0],
-            @"title": title,
-            @"language": language,
-            @"file": file
+            @"file": uri
         };
     }
 
     return audioTrackDict;
 }
 
+- (M3U8ExtXStreamInf *) getCurrentMediaData: (M3U8PlaylistModel *) model {
+
+}
 
 - (NSArray *)getTextTrackInfo
 {
