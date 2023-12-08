@@ -1453,7 +1453,7 @@ static int const RCTVideoUnset = -1;
                     @"title": currentAudio.name,
                     @"language": currentAudio.language,
                     @"codecs": [currentAudio groupId],
-                    @"file": audioInfo.URI,
+                    @"file": [audioInfo.URI absoluteString],
                 };
             }
 
@@ -1466,9 +1466,10 @@ static int const RCTVideoUnset = -1;
 {
     NSMutableDictionary *audioTrackDict = [[NSMutableArray alloc] init];
     if (model.mainMediaPl.segmentList.count > 0) {
-        NSString* uri = [model.mainMediaPl.segmentList segmentInfoAtIndex: 0].URI;
+        NSURL* uri = [model.mainMediaPl.segmentList segmentInfoAtIndex: 0].URI;
+        NSString *stringURL = uri.absoluteString;
         audioTrackDict = @{
-            @"file": uri
+            @"file": stringURL
         };
     }
 
