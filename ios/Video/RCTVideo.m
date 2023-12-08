@@ -1475,10 +1475,6 @@ static int const RCTVideoUnset = -1;
     return audioTrackDict;
 }
 
-- (M3U8ExtXStreamInf *) getCurrentMediaData: (M3U8PlaylistModel *) model {
-
-}
-
 - (NSArray *)getTextTrackInfo
 {
   // if sideloaded, textTracks will already be set
