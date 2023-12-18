@@ -16,9 +16,8 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "9.0"
 
   s.subspec "Video" do |ss|
-    ss.source_files  = "ios/Video/*.{h,m}"
+    ss.source_files  = "ios/Video/**/*.{h,m}"
     s.static_framework = true
-    ss.dependency "M3U8Kit"
   end
 
   s.subspec "VideoCaching" do |ss|
