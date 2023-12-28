@@ -754,21 +754,20 @@ static int const RCTVideoUnset = -1;
                     NSError *err = nil;
                     AVURLAsset *urlAsset = [_player.currentItem asset];
                     NSURL *masterURL = [urlAsset URL];
-                    M3U8PlaylistModel *masterModel = [[M3U8PlaylistModel alloc]
-                                                      initWithURL: masterURL
-                                                      error:&err];
 
-                    if (url != nil) {
-                        [url m3u_loadAsyncCompletion:^(M3U8PlaylistModel *model, NSError *error) {
-                            if (model != nil && masterModel != nil) {
-                                self.onPlayedTracksChange(@{
-                                    @"audioTrack": [self getAudioTrackInfo: model masterModel:masterModel],
-                                    @"textTrack": [self getTextTrackInfo],
-                                    @"videoTrack": [self getVideoTrackInfo: model masterModel:masterModel]
-                                });
-                            }
-                        }];
-                    }
+                    [masterURL m3u_loadAsyncCompletion:^(M3U8PlaylistModel *masterModel, NSError *err) {
+                        if (url != nil) {
+                            [url m3u_loadAsyncCompletion:^(M3U8PlaylistModel *model, NSError *error) {
+                                if (model != nil && masterModel != nil) {
+                                    self.onPlayedTracksChange(@{
+                                        @"audioTrack": [self getAudioTrackInfo: model masterModel:masterModel],
+                                        @"textTrack": [self getTextTrackInfo],
+                                        @"videoTrack": [self getVideoTrackInfo: model masterModel:masterModel]
+                                    });
+                                }
+                            }];
+                        }
+                    }];
                 }
 
                 [self attachListeners];
@@ -1459,6 +1458,7 @@ static int const RCTVideoUnset = -1;
                     if (audioInfo != nil) {
                         file = [audioInfo.URI absoluteString];
                     }
+
 
                     audioTrackDict = @{
                         @"title": currentAudio.name,
