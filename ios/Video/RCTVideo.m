@@ -748,9 +748,6 @@ static int const RCTVideoUnset = -1;
                     NSString *urlString = [[[_player currentItem] accessLog] events].lastObject.URI;
                     NSURL *url = [NSURL URLWithString:urlString];
                     AVAsset *asset = [[_player currentItem] asset];
-                    BOOL hasVideo = [asset tracksWithMediaType:AVMediaTypeVideo].count > 0;
-                    BOOL hasAudio = [asset tracksWithMediaType:AVMediaTypeAudio].count > 0;
-
                     NSError *err = nil;
                     AVURLAsset *urlAsset = [_player.currentItem asset];
                     NSURL *masterURL = [urlAsset URL];
@@ -1463,7 +1460,7 @@ static int const RCTVideoUnset = -1;
                     audioTrackDict = @{
                         @"title": currentAudio.name,
                         @"language": currentAudio.language,
-                        @"codecs": [currentAudio groupId],
+                        @"codecs": currentAudio.groupId,
                         @"file": file,
                     };
                 }
@@ -1487,15 +1484,11 @@ static int const RCTVideoUnset = -1;
 
         NSString *codecs = @"";
 
-        for (int i = 0; i < masterModel.masterPlaylist.xStreamList.count; i++)
-        {
-            M3U8ExtXStreamInf *inf = [masterModel.masterPlaylist.xStreamList xStreamInfAtIndex:i];
-            NSString *currentPath = [uri.absoluteString stringByDeletingPathExtension];
-            NSString *infPath = [inf.URI.absoluteString stringByDeletingPathExtension];
-            if ([currentPath isEqualToString:infPath]) {
-                codecs = [inf.codecs componentsJoinedByString: @","];
-            }
+        if (masterModel.masterPlaylist.xStreamList.count > 0) {
+            M3U8ExtXStreamInf *inf = [masterModel.masterPlaylist.xStreamList xStreamInfAtIndex:0];
+            codecs = [inf.codecs componentsJoinedByString: @","];
         }
+
 
         NSString *stringURL = uri.absoluteString;
         audioTrackDict = @{
