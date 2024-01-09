@@ -59,6 +59,7 @@
 - (NSString *)type;
 - (NSURL *)URI;
 - (NSString *)groupId;
+- (NSString *)channels;
 - (NSString *)language;
 - (NSString *)assocLanguage;
 - (NSString *)name;

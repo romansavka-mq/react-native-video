@@ -65,6 +65,10 @@
     return self.dictionary[M3U8_EXT_X_MEDIA_GROUP_ID];
 }
 
+- (NSString *)channels {
+    return self.dictionary[M3U8_EXT_X_MEDIA_CHANNELS];
+}
+
 - (NSString *)language {
     return [self.dictionary[M3U8_EXT_X_MEDIA_LANGUAGE] lowercaseString];
 }

@@ -1462,6 +1462,7 @@ static int const RCTVideoUnset = -1;
                         @"language": currentAudio.language,
                         @"codecs": currentAudio.groupId,
                         @"file": file,
+                        @"channels": currentAudio.channels
                     };
                 }
             }

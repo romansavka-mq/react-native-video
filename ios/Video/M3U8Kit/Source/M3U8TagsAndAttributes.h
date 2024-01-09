@@ -210,7 +210,7 @@
 #define M3U8_EXT_X_MEDIA_INSTREAM_ID        @"INSTREAM-ID" // The value is a quoted-string that specifies a rendition within the segments in the Media Playlist.
 #define M3U8_EXT_X_MEDIA_CHARACTERISTICS    @"CHARACTERISTICS" // The value is a quoted-string containing one or more Uniform Type Identifiers [UTI] separated by comma (,) characters.
 #define M3U8_EXT_X_MEDIA_BANDWIDTH          @"BANDWIDTH"
-
+#define M3U8_EXT_X_MEDIA_CHANNELS           @"CHANNELS"
 
 /// EXT-X-STREAM-INF
 /**
