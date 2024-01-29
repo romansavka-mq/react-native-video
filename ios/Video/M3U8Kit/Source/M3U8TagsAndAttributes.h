@@ -5,7 +5,27 @@
 //  Created by Sun Jin on 3/24/14.
 //  Copyright (c) 2014 Jin Sun. All rights reserved.
 //
-
+//The MIT License (MIT)
+//
+//Copyright (c) 2015 Sun Jin <jeansunvf@gmail.com>
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
 
 // M3U8 Tags & Attributes definded in Draft Pantos Http Live Streaming 12 http://tools.ietf.org/html/draft-pantos-http-live-streaming-12
 
@@ -190,7 +210,7 @@
 #define M3U8_EXT_X_MEDIA_INSTREAM_ID        @"INSTREAM-ID" // The value is a quoted-string that specifies a rendition within the segments in the Media Playlist.
 #define M3U8_EXT_X_MEDIA_CHARACTERISTICS    @"CHARACTERISTICS" // The value is a quoted-string containing one or more Uniform Type Identifiers [UTI] separated by comma (,) characters.
 #define M3U8_EXT_X_MEDIA_BANDWIDTH          @"BANDWIDTH"
-
+#define M3U8_EXT_X_MEDIA_CHANNELS           @"CHANNELS"
 
 /// EXT-X-STREAM-INF
 /**
