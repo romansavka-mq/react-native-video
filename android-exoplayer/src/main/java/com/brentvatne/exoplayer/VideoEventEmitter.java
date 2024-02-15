@@ -15,7 +15,6 @@ import com.google.android.exoplayer2.metadata.emsg.EventMessage;
 import com.google.android.exoplayer2.metadata.id3.Id3Frame;
 import com.google.android.exoplayer2.metadata.id3.TextInformationFrame;
 import com.google.android.exoplayer2.source.dash.manifest.BaseUrl;
-import com.google.android.exoplayer2.source.dash.manifest.Descriptor;
 import com.google.android.exoplayer2.source.dash.manifest.Representation;
 
 import java.lang.annotation.Retention;
@@ -378,18 +377,6 @@ class VideoEventEmitter {
                 String file = Uri.parse(baseUrl.url).getLastPathSegment();
                 audioTrack.putString("file", file);
             }
-            if (representation != null && representation.supplementalProperties.size() > 0) {
-                List<Descriptor> supplementalProperties = representation.supplementalProperties;
-                StringBuilder propertiesString = new StringBuilder();
-                for (int i=0 ; i<supplementalProperties.size() ; i++) {
-                    Descriptor descriptor = supplementalProperties.get(i);
-                    propertiesString
-                            .append(descriptor.id).append(":")
-                            .append(descriptor.schemeIdUri).append(":")
-                            .append(descriptor.value).append("; ");
-                }
-                audioTrack.putString("supplementalProperties", propertiesString.toString());
-            }
         }
         return audioTrack;
     }
@@ -412,18 +399,6 @@ class VideoEventEmitter {
                 BaseUrl baseUrl = representation.baseUrls.get(0);
                 String file = Uri.parse(baseUrl.url).getLastPathSegment();
                 videoTrack.putString("file", file);
-            }
-            if (representation != null && representation.supplementalProperties.size() > 0) {
-                List<Descriptor> supplementalProperties = representation.supplementalProperties;
-                StringBuilder propertiesString = new StringBuilder();
-                for (int i=0 ; i<supplementalProperties.size() ; i++) {
-                    Descriptor descriptor = supplementalProperties.get(i);
-                    propertiesString
-                            .append(descriptor.id).append(":")
-                            .append(descriptor.schemeIdUri).append(":")
-                            .append(descriptor.value).append("; ");
-                }
-                videoTrack.putString("supplementalProperties", propertiesString.toString());
             }
         }
         return videoTrack;
