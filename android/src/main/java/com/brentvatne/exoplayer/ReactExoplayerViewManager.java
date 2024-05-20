@@ -1,5 +1,8 @@
 package com.brentvatne.exoplayer;
 
+import static com.brentvatne.common.toolbox.ReactBridgeUtils.safeGetDynamic;
+import static com.brentvatne.common.toolbox.ReactBridgeUtils.safeGetString;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -19,6 +22,7 @@ import com.brentvatne.common.api.SubtitleStyle;
 import com.brentvatne.common.react.VideoEventEmitter;
 import com.brentvatne.common.toolbox.DebugLog;
 import com.brentvatne.common.toolbox.ReactBridgeUtils;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -26,8 +30,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -71,7 +75,6 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_MIN_LOAD_RETRY_COUNT = "minLoadRetryCount";
     private static final String PROP_MAXIMUM_BIT_RATE = "maxBitRate";
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
-    private static final String PROP_CONTENT_START_TIME = "contentStartTime";
     private static final String PROP_DISABLE_FOCUS = "disableFocus";
     private static final String PROP_BUFFERING_STRATEGY = "bufferingStrategy";
     private static final String PROP_DISABLE_DISCONNECT_ERROR = "disableDisconnectError";
@@ -125,8 +128,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_DRM)
     public void setDRM(final ReactExoplayerView videoView, @Nullable ReadableMap drm) {
         if (drm != null && drm.hasKey(PROP_DRM_TYPE)) {
-            String drmType = ReactBridgeUtils.safeGetString(drm, PROP_DRM_TYPE);
-            String drmLicenseServer = ReactBridgeUtils.safeGetString(drm, PROP_DRM_LICENSESERVER);
+            String drmType = safeGetString(drm, PROP_DRM_TYPE);
+            String drmLicenseServer = safeGetString(drm, PROP_DRM_LICENSESERVER);
             ReadableArray drmHeadersArray = ReactBridgeUtils.safeGetArray(drm, PROP_DRM_HEADERS);
             if (drmType != null && drmLicenseServer != null && Util.getDrmUuid(drmType) != null) {
                 UUID drmUUID = Util.getDrmUuid(drmType);
@@ -151,11 +154,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_SRC)
     public void setSrc(final ReactExoplayerView videoView, @Nullable ReadableMap src) {
         Context context = videoView.getContext().getApplicationContext();
-        String uriString = ReactBridgeUtils.safeGetString(src, PROP_SRC_URI, null);
+        String uriString = safeGetString(src, PROP_SRC_URI, null);
         int startPositionMs = ReactBridgeUtils.safeGetInt(src, PROP_SRC_START_POSITION, -1);
         int cropStartMs = ReactBridgeUtils.safeGetInt(src, PROP_SRC_CROP_START, -1);
         int cropEndMs = ReactBridgeUtils.safeGetInt(src, PROP_SRC_CROP_END, -1);
-        String extension = ReactBridgeUtils.safeGetString(src, PROP_SRC_TYPE, null);
+        String extension = safeGetString(src, PROP_SRC_TYPE, null);
 
         Map<String, String> headers = new HashMap<>();
         ReadableArray propSrcHeadersArray = ReactBridgeUtils.safeGetArray(src, PROP_SRC_HEADERS);
@@ -175,11 +178,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
         ReadableMap propMetadata = ReactBridgeUtils.safeGetMap(src, PROP_SRC_METADATA);
         MediaMetadata customMetadata = null;
         if (propMetadata != null) {
-            String title = ReactBridgeUtils.safeGetString(propMetadata, "title");
-            String subtitle = ReactBridgeUtils.safeGetString(propMetadata, "subtitle");
-            String description = ReactBridgeUtils.safeGetString(propMetadata, "description");
-            String artist = ReactBridgeUtils.safeGetString(propMetadata, "artist");
-            String imageUriString = ReactBridgeUtils.safeGetString(propMetadata, "imageUri");
+            String title = safeGetString(propMetadata, "title");
+            String subtitle = safeGetString(propMetadata, "subtitle");
+            String description = safeGetString(propMetadata, "description");
+            String artist = safeGetString(propMetadata, "artist");
+            String imageUriString = safeGetString(propMetadata, "imageUri");
 
             Uri imageUri = null;
 
@@ -277,10 +280,10 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     public void setSelectedVideoTrack(final ReactExoplayerView videoView,
                                      @Nullable ReadableMap selectedVideoTrack) {
         String typeString = null;
-        String value = null;
+        Dynamic value = null;
         if (selectedVideoTrack != null) {
-            typeString = ReactBridgeUtils.safeGetString(selectedVideoTrack, PROP_SELECTED_VIDEO_TRACK_TYPE);
-            value = ReactBridgeUtils.safeGetString(selectedVideoTrack, PROP_SELECTED_VIDEO_TRACK_VALUE);
+            typeString = safeGetString(selectedVideoTrack, PROP_SELECTED_VIDEO_TRACK_TYPE);
+            value = safeGetDynamic(selectedVideoTrack, PROP_SELECTED_VIDEO_TRACK_VALUE);
         }
         videoView.setSelectedVideoTrack(typeString, value);
     }
@@ -289,10 +292,10 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     public void setSelectedAudioTrack(final ReactExoplayerView videoView,
                                      @Nullable ReadableMap selectedAudioTrack) {
         String typeString = null;
-        String value = null;
+        Dynamic value = null;
         if (selectedAudioTrack != null) {
-            typeString = ReactBridgeUtils.safeGetString(selectedAudioTrack, PROP_SELECTED_AUDIO_TRACK_TYPE);
-            value = ReactBridgeUtils.safeGetString(selectedAudioTrack, PROP_SELECTED_AUDIO_TRACK_VALUE);
+            typeString = safeGetString(selectedAudioTrack, PROP_SELECTED_AUDIO_TRACK_TYPE);
+            value = safeGetDynamic(selectedAudioTrack, PROP_SELECTED_AUDIO_TRACK_VALUE);
         }
         videoView.setSelectedAudioTrack(typeString, value);
     }
@@ -301,10 +304,10 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     public void setSelectedTextTrack(final ReactExoplayerView videoView,
                                      @Nullable ReadableMap selectedTextTrack) {
         String typeString = null;
-        String value = null;
+        Dynamic value = null;
         if (selectedTextTrack != null) {
-            typeString = ReactBridgeUtils.safeGetString(selectedTextTrack, PROP_SELECTED_TEXT_TRACK_TYPE);
-            value = ReactBridgeUtils.safeGetString(selectedTextTrack, PROP_SELECTED_TEXT_TRACK_VALUE);
+            typeString = safeGetString(selectedTextTrack, PROP_SELECTED_TEXT_TRACK_TYPE);
+            value = safeGetDynamic(selectedTextTrack, PROP_SELECTED_TEXT_TRACK_VALUE);
         }
         videoView.setSelectedTextTrack(typeString, value);
     }
@@ -374,11 +377,6 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_FOCUSABLE, defaultBoolean = true)
     public void setFocusable(final ReactExoplayerView videoView, final boolean focusable) {
         videoView.setFocusable(focusable);
-    }
-
-    @ReactProp(name = PROP_CONTENT_START_TIME, defaultInt = -1)
-    public void setContentStartTime(final ReactExoplayerView videoView, final int contentStartTime) {
-        videoView.setContentStartTime(contentStartTime);
     }
 
     @ReactProp(name = PROP_BUFFERING_STRATEGY)

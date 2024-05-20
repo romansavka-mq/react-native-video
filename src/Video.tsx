@@ -19,7 +19,6 @@ import {
 
 import NativeVideoComponent, {
   type OnAudioFocusChangedData,
-  type OnAudioTracksData,
   type OnBandwidthUpdateData,
   type OnBufferData,
   type OnExternalPlaybackChangeData,
@@ -33,7 +32,6 @@ import NativeVideoComponent, {
   type OnTimedMetadataData,
   type OnVideoAspectRatioData,
   type OnVideoErrorData,
-  type OnVideoTracksData,
   type VideoComponentType,
   type VideoSrc,
 } from './specs/VideoNativeComponent';
@@ -46,6 +44,8 @@ import {VideoManager} from './specs/VideoNativeComponent';
 import type {
   OnLoadData,
   OnTextTracksData,
+  OnAudioTracksData,
+  OnVideoTracksData,
   OnReceiveAdEventData,
   ReactVideoProps,
 } from './types';

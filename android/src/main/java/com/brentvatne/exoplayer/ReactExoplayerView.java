@@ -25,13 +25,12 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.view.accessibility.CaptioningManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
+import androidx.annotation.Nullable;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -46,8 +45,6 @@ import androidx.media3.common.PlaybackParameters;
 import androidx.media3.common.Player;
 import androidx.media3.common.StreamKey;
 import androidx.media3.common.Timeline;
-import androidx.media3.common.TrackGroup;
-import androidx.media3.common.TrackSelectionOverride;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.text.CueGroup;
 import androidx.media3.common.util.Util;
@@ -58,12 +55,7 @@ import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.dash.DashMediaSource;
-import androidx.media3.exoplayer.dash.DashUtil;
 import androidx.media3.exoplayer.dash.DefaultDashChunkSource;
-import androidx.media3.exoplayer.dash.manifest.AdaptationSet;
-import androidx.media3.exoplayer.dash.manifest.DashManifest;
-import androidx.media3.exoplayer.dash.manifest.Period;
-import androidx.media3.exoplayer.dash.manifest.Representation;
 import androidx.media3.exoplayer.drm.DefaultDrmSessionManager;
 import androidx.media3.exoplayer.drm.DefaultDrmSessionManagerProvider;
 import androidx.media3.exoplayer.drm.DrmSessionEventListener;
@@ -74,8 +66,6 @@ import androidx.media3.exoplayer.drm.HttpMediaDrmCallback;
 import androidx.media3.exoplayer.drm.UnsupportedDrmException;
 import androidx.media3.exoplayer.hls.HlsMediaSource;
 import androidx.media3.exoplayer.ima.ImaAdsLoader;
-import androidx.media3.exoplayer.mediacodec.MediaCodecInfo;
-import androidx.media3.exoplayer.mediacodec.MediaCodecUtil;
 import androidx.media3.exoplayer.rtsp.RtspMediaSource;
 import androidx.media3.exoplayer.smoothstreaming.DefaultSsChunkSource;
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource;
@@ -85,13 +75,11 @@ import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.MergingMediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.exoplayer.source.SingleSampleMediaSource;
-import androidx.media3.exoplayer.source.TrackGroupArray;
 import androidx.media3.exoplayer.source.ads.AdsMediaSource;
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection;
-import androidx.media3.exoplayer.trackselection.MappingTrackSelector;
-import androidx.media3.exoplayer.trackselection.TrackSelection;
+import androidx.media3.exoplayer.trackselection.MappingTrackSelector.MappedTrackInfo;
 import androidx.media3.exoplayer.trackselection.TrackSelectionArray;
 import androidx.media3.exoplayer.upstream.BandwidthMeter;
 import androidx.media3.exoplayer.upstream.DefaultAllocator;
@@ -109,14 +97,13 @@ import com.brentvatne.common.api.SideLoadedTextTrack;
 import com.brentvatne.common.api.SideLoadedTextTrackList;
 import com.brentvatne.common.api.SubtitleStyle;
 import com.brentvatne.common.api.TimedMetadata;
-import com.brentvatne.common.api.Track;
-import com.brentvatne.common.api.VideoTrack;
 import com.brentvatne.common.react.VideoEventEmitter;
 import com.brentvatne.common.toolbox.DebugLog;
 import com.brentvatne.react.BuildConfig;
 import com.brentvatne.react.R;
 import com.brentvatne.receiver.AudioBecomingNoisyReceiver;
 import com.brentvatne.receiver.BecomingNoisyListener;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -130,14 +117,10 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 @SuppressLint("ViewConstructor")
 public class ReactExoplayerView extends FrameLayout implements
@@ -194,11 +177,12 @@ public class ReactExoplayerView extends FrameLayout implements
     private BufferConfig bufferConfig = new BufferConfig();
     private int maxBitRate = 0;
     private boolean hasDrmFailed = false;
-    private boolean isUsingContentResolution = false;
-    private boolean selectTrackWhenReady = false;
     private Handler mainHandler;
     private Runnable mainRunnable;
     private DataSource.Factory cacheDataSourceFactory;
+
+    @Nullable
+    private TrackSelectionArray lastSeenTrackSelectionArray;
 
     // Props from React
     private Uri srcUri;
@@ -208,16 +192,15 @@ public class ReactExoplayerView extends FrameLayout implements
     private String extension;
     private boolean repeat;
     private String audioTrackType;
-    private String audioTrackValue;
+    private Dynamic audioTrackValue;
     private String videoTrackType;
-    private String videoTrackValue;
+    private Dynamic videoTrackValue;
     private String textTrackType;
-    private String textTrackValue;
+    private Dynamic textTrackValue;
     private SideLoadedTextTrackList textTracks;
     private boolean disableFocus;
     private boolean focusable = true;
     private BufferingStrategy.BufferingStrategyEnum bufferingStrategy;
-    private long contentStartTime = -1L;
     private boolean disableDisconnectError;
     private boolean preventsDisplaySleepDuringVideoPlayback = true;
     private float mProgressUpdateInterval = 250.0f;
@@ -1231,10 +1214,6 @@ public class ReactExoplayerView extends FrameLayout implements
                     clearProgressMessageHandler(); // ensure there is no other message
                     startProgressHandler();
                     videoLoaded();
-                    if (selectTrackWhenReady && isUsingContentResolution) {
-                        selectTrackWhenReady = false;
-                        setSelectedTrack(C.TRACK_TYPE_VIDEO, videoTrackType, videoTrackValue);
-                    }
                     // Setting the visibility for the playerControlView
                     if (playerControlView != null) {
                         playerControlView.show();
@@ -1271,216 +1250,26 @@ public class ReactExoplayerView extends FrameLayout implements
     private void videoLoaded() {
         if (!player.isPlayingAd() && loadVideoStarted) {
             loadVideoStarted = false;
-            if (audioTrackType != null) {
-                setSelectedAudioTrack(audioTrackType, audioTrackValue);
-            }
-            if (videoTrackType != null) {
-                setSelectedVideoTrack(videoTrackType, videoTrackValue);
-            }
-            if (textTrackType != null) {
-                setSelectedTextTrack(textTrackType, textTrackValue);
-            }
+            setSelectedAudioTrack(audioTrackType, audioTrackValue);
+            setSelectedVideoTrack(videoTrackType, videoTrackValue);
+            setSelectedTextTrack(textTrackType, textTrackValue);
             Format videoFormat = player.getVideoFormat();
             int width = videoFormat != null ? videoFormat.width : 0;
             int height = videoFormat != null ? videoFormat.height : 0;
             String trackId = videoFormat != null ? videoFormat.id : "-1";
 
-            // Properties that must be accessed on the main thread
-            long duration = player.getDuration();
-            long currentPosition = player.getCurrentPosition();
-            ArrayList<Track> audioTracks = getAudioTrackInfo();
-            ArrayList<Track> textTracks  = getTextTrackInfo();
-
-            if (this.contentStartTime != -1L) {
-                ExecutorService es = Executors.newSingleThreadExecutor();
-                es.execute(() -> {
-                    // To prevent ANRs caused by getVideoTrackInfo we run this on a different thread and notify the player only when we're done
-                    ArrayList<VideoTrack> videoTracks = getVideoTrackInfoFromManifest();
-                    if (videoTracks != null) {
-                        isUsingContentResolution = true;
-                    }
-                    eventEmitter.load(duration, currentPosition, width, height,
-                            audioTracks, textTracks, videoTracks, trackId );
-
-                });
-                return;
-            }
-
-            ArrayList<VideoTrack> videoTracks = getVideoTrackInfo();
-
-            eventEmitter.load(duration, currentPosition, width, height,
-                    audioTracks, textTracks, videoTracks, trackId);
+            MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+            eventEmitter.load(
+                    player.getDuration(),
+                    player.getCurrentPosition(),
+                    width,
+                    height,
+                    TracksUtil.getAudioTracks(info),
+                    TracksUtil.getVideoTracks(info),
+                    TracksUtil.getTextTracks(info),
+                    trackId
+            );
         }
-    }
-
-    private static boolean isTrackSelected(TrackSelection selection, TrackGroup group,
-                                           int trackIndex){
-        return selection != null && selection.getTrackGroup() == group
-                && selection.indexOf( trackIndex ) != C.INDEX_UNSET;
-    }
-
-    private ArrayList<Track> getAudioTrackInfo() {
-        ArrayList<Track> audioTracks = new ArrayList<>();
-        if (trackSelector == null) {
-            // Likely player is unmounting so no audio tracks are available anymore
-            return audioTracks;
-        }
-
-        MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
-        int index = getTrackRendererIndex(C.TRACK_TYPE_AUDIO);
-        if (info == null || index == C.INDEX_UNSET) {
-            return audioTracks;
-        }
-        TrackGroupArray groups = info.getTrackGroups(index);
-        TrackSelectionArray selectionArray = player.getCurrentTrackSelections();
-        TrackSelection selection = selectionArray.get( C.TRACK_TYPE_AUDIO );
-
-        for (int i = 0; i < groups.length; ++i) {
-            TrackGroup group = groups.get(i);
-            Format format = group.getFormat(0);
-            Track audioTrack = exoplayerTrackToGenericTrack(format, i, selection, group);
-            audioTrack.setBitrate(format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
-            audioTracks.add(audioTrack);
-        }
-        return audioTracks;
-    }
-
-    private VideoTrack exoplayerVideoTrackToGenericVideoTrack(Format format, int trackIndex) {
-        VideoTrack videoTrack = new VideoTrack();
-        videoTrack.setWidth(format.width == Format.NO_VALUE ? 0 : format.width);
-        videoTrack.setHeight(format.height == Format.NO_VALUE ? 0 : format.height);
-        videoTrack.setBitrate(format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
-        if (format.codecs != null) videoTrack.setCodecs(format.codecs);
-        videoTrack.setTrackId(format.id == null ? String.valueOf(trackIndex) : format.id);
-        return videoTrack;
-    }
-
-    private ArrayList<VideoTrack> getVideoTrackInfo() {
-        ArrayList<VideoTrack> videoTracks = new ArrayList<>();
-        if (trackSelector == null) {
-            // Likely player is unmounting so no audio tracks are available anymore
-            return videoTracks;
-        }
-        MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
-        int index = getTrackRendererIndex(C.TRACK_TYPE_VIDEO);
-        if (info == null || index == C.INDEX_UNSET) {
-            return videoTracks;
-        }
-
-        TrackGroupArray groups = info.getTrackGroups(index);
-        for (int i = 0; i < groups.length; ++i) {
-            TrackGroup group = groups.get(i);
-
-            for (int trackIndex = 0; trackIndex < group.length; trackIndex++) {
-                Format format = group.getFormat(trackIndex);
-                if (isFormatSupported(format)) {
-                    VideoTrack videoTrack = exoplayerVideoTrackToGenericVideoTrack(format, trackIndex);
-                    videoTracks.add(videoTrack);
-                }
-            }
-        }
-        return videoTracks;
-    }
-
-    private ArrayList<VideoTrack> getVideoTrackInfoFromManifest() {
-        return this.getVideoTrackInfoFromManifest(0);
-    }
-
-    // We need retry count to in case where minefest request fails from poor network conditions
-    @WorkerThread
-    private ArrayList<VideoTrack> getVideoTrackInfoFromManifest(int retryCount) {
-        ExecutorService es = Executors.newSingleThreadExecutor();
-        final DataSource dataSource = this.mediaDataSourceFactory.createDataSource();
-        final Uri sourceUri = this.srcUri;
-        final long startTime = this.contentStartTime * 1000 - 100; // s -> ms with 100ms offset
-
-        Future<ArrayList<VideoTrack>> result = es.submit(new Callable() {
-            final DataSource ds = dataSource;
-            final Uri uri = sourceUri;
-            final long startTimeUs = startTime * 1000; // ms -> us
-
-            public ArrayList<VideoTrack> call() {
-                ArrayList<VideoTrack> videoTracks = new ArrayList<>();
-                try  {
-                    DashManifest manifest = DashUtil.loadManifest(this.ds, this.uri);
-                    int periodCount = manifest.getPeriodCount();
-                    for (int i = 0; i < periodCount; i++) {
-                        Period period = manifest.getPeriod(i);
-                        for (int adaptationIndex = 0; adaptationIndex < period.adaptationSets.size(); adaptationIndex++) {
-                            AdaptationSet adaptation = period.adaptationSets.get(adaptationIndex);
-                            if (adaptation.type != C.TRACK_TYPE_VIDEO) {
-                                continue;
-                            }
-                            boolean hasFoundContentPeriod = false;
-                            for (int representationIndex = 0; representationIndex < adaptation.representations.size(); representationIndex++) {
-                                Representation representation = adaptation.representations.get(representationIndex);
-                                Format format = representation.format;
-                                if (isFormatSupported(format)) {
-                                    if (representation.presentationTimeOffsetUs <= startTimeUs) {
-                                        break;
-                                    }
-                                    hasFoundContentPeriod = true;
-                                    VideoTrack videoTrack = exoplayerVideoTrackToGenericVideoTrack(format, representationIndex);
-                                    videoTracks.add(videoTrack);
-                                }
-                            }
-                            if (hasFoundContentPeriod) {
-                                return videoTracks;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    DebugLog.w(TAG, "error in getVideoTrackInfoFromManifest:" + e.getMessage());
-                }
-                return null;
-            }
-        });
-
-        try {
-            ArrayList<VideoTrack> results = result.get(3000, TimeUnit.MILLISECONDS);
-            if (results == null && retryCount < 1) {
-                return this.getVideoTrackInfoFromManifest(++retryCount);
-            }
-            es.shutdown();
-            return results;
-        } catch (Exception e) {
-            DebugLog.w(TAG, "error in getVideoTrackInfoFromManifest handling request:" + e.getMessage());
-        }
-
-        return null;
-    }
-
-    private Track exoplayerTrackToGenericTrack(Format format, int trackIndex, TrackSelection selection, TrackGroup group) {
-        Track track = new Track();
-        track.setIndex(trackIndex);
-        if (format.sampleMimeType != null) track.setMimeType(format.sampleMimeType);
-        if (format.language != null) track.setLanguage(format.language);
-        if (format.label != null) track.setTitle(format.label);
-        track.setSelected(isTrackSelected(selection, group, 0));
-        return track;
-    }
-
-    private ArrayList<Track> getTextTrackInfo() {
-        ArrayList<Track> textTracks = new ArrayList<>();
-        if (trackSelector == null) {
-            return textTracks;
-        }
-        MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
-        int index = getTrackRendererIndex(C.TRACK_TYPE_TEXT);
-        if (info == null || index == C.INDEX_UNSET) {
-            return textTracks;
-        }
-        TrackSelectionArray selectionArray = player.getCurrentTrackSelections();
-        TrackSelection selection = selectionArray.get( C.TRACK_TYPE_VIDEO );
-        TrackGroupArray groups = info.getTrackGroups(index);
-
-        for (int i = 0; i < groups.length; ++i) {
-            TrackGroup group = groups.get(i);
-            Format format = group.getFormat(0);
-            Track textTrack = exoplayerTrackToGenericTrack(format, i, selection, group);
-            textTracks.add(textTrack);
-        }
-        return textTracks;
     }
 
     private void onBuffering(boolean buffering) {
@@ -1496,10 +1285,6 @@ public class ReactExoplayerView extends FrameLayout implements
     public void onPositionDiscontinuity(@NonNull Player.PositionInfo oldPosition, @NonNull Player.PositionInfo newPosition, @Player.DiscontinuityReason int reason) {
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
             eventEmitter.seek(player.getCurrentPosition(), newPosition.positionMs % 1000); // time are in seconds /°\
-            if (isUsingContentResolution) {
-                // We need to update the selected track to make sure that it still matches user selection if track list has changed in this period
-                setSelectedTrack(C.TRACK_TYPE_VIDEO, videoTrackType, videoTrackValue);
-            }
         }
 
         if (playerNeedsSource) {
@@ -1508,15 +1293,9 @@ public class ReactExoplayerView extends FrameLayout implements
             // which they seeked.
             updateResumePosition();
         }
-        if (isUsingContentResolution) {
-            // Discontinuity events might have a different track list so we update the selected track
-            setSelectedTrack(C.TRACK_TYPE_VIDEO, videoTrackType, videoTrackValue);
-            selectTrackWhenReady = true;
-        }
         // When repeat is turned on, reaching the end of the video will not cause a state change
         // so we need to explicitly detect it.
-        if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION
-                && player.getRepeatMode() == Player.REPEAT_MODE_ONE) {
+        if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION && player.getRepeatMode() == Player.REPEAT_MODE_ONE) {
             eventEmitter.end();
         }
     }
@@ -1528,9 +1307,29 @@ public class ReactExoplayerView extends FrameLayout implements
 
     @Override
     public void onTracksChanged(@NonNull Tracks tracks) {
-        eventEmitter.textTracks(getTextTrackInfo());
-        eventEmitter.audioTracks(getAudioTrackInfo());
-        eventEmitter.videoTracks(getVideoTrackInfo());
+        TrackSelectionArray currentTrackSelections = player.getCurrentTrackSelections();
+        // don't use Tracks since not able to get the exact selected format when track selection is adaptive
+        if (TracksUtil.selectionChanged(lastSeenTrackSelectionArray, currentTrackSelections)) {
+            lastSeenTrackSelectionArray = currentTrackSelections;
+
+            Object manifest = player.getCurrentManifest();
+            MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+
+            eventEmitter.audioTracks(
+                    TracksUtil.getAudioTracks(info),
+                    TracksUtil.getSelectedAudioTrack(info, currentTrackSelections),
+                    manifest
+            );
+            eventEmitter.videoTracks(
+                    TracksUtil.getVideoTracks(info),
+                    TracksUtil.getSelectedVideoTrack(info, currentTrackSelections),
+                    manifest
+            );
+            eventEmitter.textTracks(
+                    TracksUtil.getTextTracks(info),
+                    TracksUtil.getSelectedTextTrack(info, currentTrackSelections)
+            );
+        }
     }
 
     @Override
@@ -1583,18 +1382,6 @@ public class ReactExoplayerView extends FrameLayout implements
 
     private static boolean isBehindLiveWindow(PlaybackException e) {
         return e.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW;
-    }
-
-    public int getTrackRendererIndex(int trackType) {
-        if (player != null) {
-            int rendererCount = player.getRendererCount();
-            for (int rendererIndex = 0; rendererIndex < rendererCount; rendererIndex++) {
-                if (player.getRendererType(rendererIndex) == trackType) {
-                    return rendererIndex;
-                }
-            }
-        }
-        return C.INDEX_UNSET;
     }
 
     @Override
@@ -1743,227 +1530,37 @@ public class ReactExoplayerView extends FrameLayout implements
         this.preventsDisplaySleepDuringVideoPlayback = preventsDisplaySleepDuringVideoPlayback;
     }
 
-    public void disableTrack(int rendererIndex) {
-        DefaultTrackSelector.Parameters disableParameters = trackSelector.getParameters()
-                .buildUpon()
-                .setRendererDisabled(rendererIndex, true)
-                .build();
-        trackSelector.setParameters(disableParameters);
-    }
-
-    public void setSelectedTrack(int trackType, String type, String value) {
-        if (player == null) return;
-        int rendererIndex = getTrackRendererIndex(trackType);
-        if (rendererIndex == C.INDEX_UNSET) {
-            return;
-        }
-        MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
-        if (info == null) {
-            return;
-        }
-
-        TrackGroupArray groups = info.getTrackGroups(rendererIndex);
-        int groupIndex = C.INDEX_UNSET;
-        List<Integer> tracks = new ArrayList<>();
-        tracks.add(0);
-
-        if (TextUtils.isEmpty(type)) {
-            type = "default";
-        }
-
-        if ("disabled".equals(type)) {
-            disableTrack(rendererIndex);
-            return;
-        } else if ("language".equals(type)) {
-            for (int i = 0; i < groups.length; ++i) {
-                Format format = groups.get(i).getFormat(0);
-                if (format.language != null && format.language.equals(value)) {
-                    groupIndex = i;
-                    break;
-                }
-            }
-        } else if ("title".equals(type)) {
-            for (int i = 0; i < groups.length; ++i) {
-                Format format = groups.get(i).getFormat(0);
-                if (format.id != null && format.id.equals(value)) {
-                    groupIndex = i;
-                    break;
-                }
-            }
-        } else if ("index".equals(type)) {
-            try {
-                int iValue = Integer.parseInt(value);
-                if (iValue < groups.length) {
-                    groupIndex = iValue;
-                }
-            } catch (Exception e) {
-                DebugLog.e(TAG, "cannot parse index:" + value);
-                groupIndex = 0;
-            }
-        } else if ("resolution".equals(type)) {
-            int height = Integer.parseInt(value);
-            for (int i = 0; i < groups.length; ++i) { // Search for the exact height
-                TrackGroup group = groups.get(i);
-                Format closestFormat = null;
-                int closestTrackIndex = -1;
-                boolean usingExactMatch = false;
-                for (int j = 0; j < group.length; j++) {
-                    Format format = group.getFormat(j);
-                    if (format.height == height) {
-                        groupIndex = i;
-                        tracks.set(0, j);
-                        closestFormat = null;
-                        closestTrackIndex = -1;
-                        usingExactMatch = true;
-                        break;
-                    } else if (isUsingContentResolution) {
-                        // When using content resolution rather than ads, we need to try and find the closest match if there is no exact match
-                        if (closestFormat != null) {
-                            if ((format.bitrate > closestFormat.bitrate || format.height > closestFormat.height) && format.height < height) {
-                                // Higher quality match
-                                closestFormat = format;
-                                closestTrackIndex = j;
-                            }
-                        } else if(format.height < height) {
-                            closestFormat = format;
-                            closestTrackIndex = j;
-                        }
-                    }
-                }
-                // This is a fallback if the new period contains only higher resolutions than the user has selected
-                if (closestFormat == null && isUsingContentResolution && !usingExactMatch) {
-                    // No close match found - so we pick the lowest quality
-                    int minHeight = Integer.MAX_VALUE;
-                    for (int j = 0; j < group.length; j++) {
-                        Format format = group.getFormat(j);
-                        if (format.height < minHeight) {
-                            minHeight = format.height;
-                            groupIndex = i;
-                            tracks.set(0, j);
-                        }
-                    }
-                }
-                // Selecting the closest match found
-                if (closestFormat != null && closestTrackIndex != -1) {
-                    // We found the closest match instead of an exact one
-                    groupIndex = i;
-                    tracks.set(0, closestTrackIndex);
-                }
-            }
-        } else if (trackType == C.TRACK_TYPE_TEXT && Util.SDK_INT > 18) { // Text default
-            // Use system settings if possible
-            CaptioningManager captioningManager
-                    = (CaptioningManager)themedReactContext.getSystemService(Context.CAPTIONING_SERVICE);
-            if (captioningManager != null && captioningManager.isEnabled()) {
-                groupIndex = getGroupIndexForDefaultLocale(groups);
-            }
-        } else if (rendererIndex == C.TRACK_TYPE_AUDIO) { // Audio default
-            groupIndex = getGroupIndexForDefaultLocale(groups);
-        }
-
-        if (groupIndex == C.INDEX_UNSET && trackType == C.TRACK_TYPE_VIDEO && groups.length != 0) { // Video auto
-            // Add all tracks as valid options for ABR to choose from
-            TrackGroup group = groups.get(0);
-            ArrayList<Integer> allTracks = new ArrayList<>(group.length);
-            groupIndex = 0;
-            for (int j = 0; j < group.length; j++) {
-                allTracks.add(j);
-            }
-
-            // Valiate list of all tracks and add only supported formats
-            int supportedFormatLength = 0;
-            ArrayList<Integer> supportedTrackList = new ArrayList<>();
-            for (int g = 0; g < allTracks.size(); g++) {
-                Format format = group.getFormat(g);
-                if (isFormatSupported(format)) {
-                    supportedFormatLength++;
-                }
-            }
-            if (allTracks.size() == 1) {
-                // With only one tracks we can't remove any tracks so attempt to play it anyway
-                tracks = allTracks;
-            } else {
-                tracks =  new ArrayList<>(supportedFormatLength + 1);
-                for (int k = 0; k < allTracks.size(); k++) {
-                    Format format = group.getFormat(k);
-                    if (isFormatSupported(format)) {
-                        tracks.add(allTracks.get(k));
-                        supportedTrackList.add(allTracks.get(k));
-                    }
-                }
-            }
-        }
-
-        if (groupIndex == C.INDEX_UNSET) {
-            disableTrack(rendererIndex);
-            return;
-        }
-
-        TrackSelectionOverride selectionOverride = new TrackSelectionOverride(groups.get(groupIndex), tracks);
-
-        DefaultTrackSelector.Parameters selectionParameters = trackSelector.getParameters()
-                .buildUpon()
-                .setRendererDisabled(rendererIndex, false)
-                .clearOverridesOfType(selectionOverride.getType())
-                .addOverride(selectionOverride)
-                .build();
-        trackSelector.setParameters(selectionParameters);
-    }
-
-    private boolean isFormatSupported(Format format) {
-        int width = format.width == Format.NO_VALUE ? 0 : format.width;
-        int height = format.height == Format.NO_VALUE ? 0 : format.height;
-        float frameRate = format.frameRate == Format.NO_VALUE ? 0 : format.frameRate;
-        String mimeType = format.sampleMimeType;
-        if (mimeType == null) {
-            return true;
-        }
-        boolean isSupported;
-        try {
-            MediaCodecInfo codecInfo = MediaCodecUtil.getDecoderInfo(mimeType, false, false);
-            isSupported = codecInfo.isVideoSizeAndRateSupportedV21(width, height, frameRate);
-        } catch (Exception e) {
-            // Failed to get decoder info - assume it is supported
-            isSupported = true;
-        }
-        return isSupported;
-    }
-
-    private int getGroupIndexForDefaultLocale(TrackGroupArray groups) {
-        if (groups.length == 0){
-            return C.INDEX_UNSET;
-        }
-
-        int groupIndex = 0; // default if no match
-        String locale2 = Locale.getDefault().getLanguage(); // 2 letter code
-        String locale3 = Locale.getDefault().getISO3Language(); // 3 letter code
-        for (int i = 0; i < groups.length; ++i) {
-            Format format = groups.get(i).getFormat(0);
-            String language = format.language;
-            if (language != null && (language.equals(locale2) || language.equals(locale3))) {
-                groupIndex = i;
-                break;
-            }
-        }
-        return groupIndex;
-    }
-
-    public void setSelectedVideoTrack(String type, String value) {
+    public void setSelectedVideoTrack(String type, Dynamic value) {
         videoTrackType = type;
         videoTrackValue = value;
         if (!loadVideoStarted) setSelectedTrack(C.TRACK_TYPE_VIDEO, videoTrackType, videoTrackValue);
     }
 
-    public void setSelectedAudioTrack(String type, String value) {
+    public void setSelectedAudioTrack(String type, Dynamic value) {
         audioTrackType = type;
         audioTrackValue = value;
         setSelectedTrack(C.TRACK_TYPE_AUDIO, audioTrackType, audioTrackValue);
     }
 
-    public void setSelectedTextTrack(String type, String value) {
+    public void setSelectedTextTrack(String type, Dynamic value) {
         textTrackType = type;
         textTrackValue = value;
         setSelectedTrack(C.TRACK_TYPE_TEXT, textTrackType, textTrackValue);
+    }
+
+    public void setSelectedTrack(int trackType, String type, Dynamic value) {
+        if (player == null) return;
+        MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+        if (info == null) return;
+        DefaultTrackSelector.Parameters parameters = TracksUtil.buildSelectionParameters(
+                themedReactContext,
+                trackSelector.getParameters(),
+                info,
+                trackType,
+                type,
+                value
+        );
+        trackSelector.setParameters(parameters);
     }
 
     public void setPausedModifier(boolean paused) {
@@ -2061,10 +1658,6 @@ public class ReactExoplayerView extends FrameLayout implements
     public void setFocusable(boolean focusable) {
         this.focusable = focusable;
         exoPlayerView.setFocusable(this.focusable);
-    }
-
-    public void setContentStartTime(int contentStartTime) {
-        this.contentStartTime = contentStartTime;
     }
 
     public void setShowNotificationControls(boolean showNotificationControls) {

@@ -210,7 +210,6 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   bufferConfig?: BufferConfig; // Android
   bufferingStrategy?: BufferingStrategyType;
   chapters?: Chapters[]; // iOS
-  contentStartTime?: number; // Android
   controls?: boolean;
   currentPlaybackTime?: number; // Android
   disableFocus?: boolean;

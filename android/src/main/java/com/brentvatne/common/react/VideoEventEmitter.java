@@ -1,12 +1,17 @@
 package com.brentvatne.common.react;
 
-import androidx.annotation.StringDef;
+import static com.brentvatne.exoplayer.LocaleUtils.getLanguageDisplayName;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+import androidx.media3.common.Format;
+import androidx.media3.exoplayer.dash.manifest.Representation;
+
 import com.brentvatne.common.api.TimedMetadata;
-import com.brentvatne.common.api.Track;
-import com.brentvatne.common.api.VideoTrack;
+import com.brentvatne.exoplayer.ManifestUtils;
+import com.brentvatne.exoplayer.TrackInfo;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
@@ -20,6 +25,8 @@ import java.io.StringWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class VideoEventEmitter {
@@ -186,70 +193,14 @@ public class VideoEventEmitter {
         return naturalSize;
     }
 
-    WritableArray audioTracksToArray(ArrayList<Track> audioTracks) {
-        WritableArray waAudioTracks = Arguments.createArray();
-        if( audioTracks != null ){
-            for (int i = 0; i < audioTracks.size(); ++i) {
-                Track format = audioTracks.get(i);
-                WritableMap audioTrack = Arguments.createMap();
-                audioTrack.putInt("index", i);
-                audioTrack.putString("title", format.getTitle());
-                audioTrack.putString("type", format.getMimeType());
-                audioTrack.putString("language", format.getLanguage());
-                audioTrack.putInt("bitrate", format.getBitrate());
-                audioTrack.putBoolean("selected", format.isSelected());
-                waAudioTracks.pushMap(audioTrack);
-            }
-        }
-        return waAudioTracks;
-    }
-
-    WritableArray videoTracksToArray(ArrayList<VideoTrack> videoTracks) {
-        WritableArray waVideoTracks = Arguments.createArray();
-        if( videoTracks != null ){
-            for (int i = 0; i < videoTracks.size(); ++i) {
-                VideoTrack vTrack = videoTracks.get(i);
-                WritableMap videoTrack = Arguments.createMap();
-                videoTrack.putInt("width", vTrack.getWidth());
-                videoTrack.putInt("height",vTrack.getHeight());
-                videoTrack.putInt("bitrate", vTrack.getBitrate());
-                videoTrack.putString("codecs", vTrack.getCodecs());
-                videoTrack.putInt("trackId",vTrack.getId());
-                videoTrack.putBoolean("selected", vTrack.isSelected());
-                waVideoTracks.pushMap(videoTrack);
-            }
-        }
-        return waVideoTracks;
-    }
-
-    WritableArray textTracksToArray(ArrayList<Track> textTracks) {
-        WritableArray waTextTracks = Arguments.createArray();
-        if (textTracks != null) {
-            for (int i = 0; i < textTracks.size(); ++i) {
-                Track format = textTracks.get(i);
-                WritableMap textTrack = Arguments.createMap();
-                textTrack.putInt("index", i);
-                textTrack.putString("title", format.getTitle());
-                textTrack.putString("type", format.getMimeType());
-                textTrack.putString("language", format.getLanguage());
-                textTrack.putBoolean("selected", format.isSelected());
-                waTextTracks.pushMap(textTrack);
-            }
-        }
-        return waTextTracks;
-    }
-
-    public void load(double duration, double currentPosition, int videoWidth, int videoHeight,
-                     ArrayList<Track> audioTracks, ArrayList<Track> textTracks, ArrayList<VideoTrack> videoTracks, String trackId){
-        WritableArray waAudioTracks = audioTracksToArray(audioTracks);
-        WritableArray waVideoTracks = videoTracksToArray(videoTracks);
-        WritableArray waTextTracks = textTracksToArray(textTracks);
-
-        load( duration,  currentPosition,  videoWidth,  videoHeight, waAudioTracks,  waTextTracks,  waVideoTracks, trackId);
-    }
-
-    void load(double duration, double currentPosition, int videoWidth, int videoHeight,
-              WritableArray audioTracks, WritableArray textTracks, WritableArray videoTracks, String trackId) {
+    public void load(
+            long duration,
+            long currentPosition,
+            int videoWidth,
+            int videoHeight,
+            List<TrackInfo> audioTracks,
+            List<TrackInfo> videoTracks, List<TrackInfo> textTracks,
+            String trackId) {
         WritableMap event = Arguments.createMap();
         event.putDouble(EVENT_PROP_DURATION, duration / 1000D);
         event.putDouble(EVENT_PROP_CURRENT_TIME, currentPosition / 1000D);
@@ -257,9 +208,21 @@ public class VideoEventEmitter {
         WritableMap naturalSize = aspectRatioToNaturalSize(videoWidth, videoHeight);
         event.putMap(EVENT_PROP_NATURAL_SIZE, naturalSize);
         event.putString(EVENT_PROP_TRACK_ID, trackId);
-        event.putArray(EVENT_PROP_VIDEO_TRACKS, videoTracks);
-        event.putArray(EVENT_PROP_AUDIO_TRACKS, audioTracks);
-        event.putArray(EVENT_PROP_TEXT_TRACKS, textTracks);
+        WritableArray videoTrackArray = Arguments.createArray();
+        for (TrackInfo track : videoTracks) {
+            videoTrackArray.pushMap(createVideoTrackInfo(track, false, null));
+        }
+        event.putArray(EVENT_PROP_VIDEO_TRACKS, videoTrackArray);
+        WritableArray audioTrackArray = Arguments.createArray();
+        for (TrackInfo track : audioTracks) {
+            audioTrackArray.pushMap(createAudioTrackInfo(track, false, null));
+        }
+        event.putArray(EVENT_PROP_AUDIO_TRACKS, audioTrackArray);
+        WritableArray textTrackArray = Arguments.createArray();
+        for (TrackInfo track : textTracks) {
+            textTrackArray.pushMap(createTextTrackInfo(track, false));
+        }
+        event.putArray(EVENT_PROP_TEXT_TRACKS, textTrackArray);
 
         // TODO: Actually check if you can.
         event.putBoolean(EVENT_PROP_FAST_FORWARD, true);
@@ -273,28 +236,42 @@ public class VideoEventEmitter {
         receiveEvent(EVENT_LOAD, event);
     }
 
-    WritableMap arrayToObject(String field, WritableArray array) {
+    public void audioTracks(List<TrackInfo> audioTracks, @Nullable TrackInfo selectedTrack, @Nullable Object manifest) {
         WritableMap event = Arguments.createMap();
-        event.putArray(field, array);
-        return event;
+        WritableArray audioTrackArray = Arguments.createArray();
+        for (TrackInfo track : audioTracks) {
+            boolean selected = selectedTrack != null && selectedTrack.complexIndex == track.complexIndex;
+            audioTrackArray.pushMap(createAudioTrackInfo(track, selected, manifest));
+        }
+        event.putArray(EVENT_PROP_AUDIO_TRACKS, audioTrackArray);
+        receiveEvent(EVENT_AUDIO_TRACKS, event);
     }
 
-    public void audioTracks(ArrayList<Track> audioTracks){
-        receiveEvent(EVENT_AUDIO_TRACKS, arrayToObject(EVENT_PROP_AUDIO_TRACKS, audioTracksToArray(audioTracks)));
+    public void videoTracks(List<TrackInfo> videoTracks, @Nullable TrackInfo selectedTrack, @Nullable Object manifest) {
+        WritableMap event = Arguments.createMap();
+        WritableArray videoTrackArray = Arguments.createArray();
+        for (TrackInfo track : videoTracks) {
+            boolean selected = selectedTrack != null && selectedTrack.complexIndex == track.complexIndex;
+            videoTrackArray.pushMap(createVideoTrackInfo(track, selected, manifest));
+        }
+        event.putArray(EVENT_PROP_VIDEO_TRACKS, videoTrackArray);
+        receiveEvent(EVENT_VIDEO_TRACKS, event);
     }
 
-    public void textTracks(ArrayList<Track> textTracks){
-        receiveEvent(EVENT_TEXT_TRACKS, arrayToObject(EVENT_PROP_TEXT_TRACKS, textTracksToArray(textTracks)));
+    public void textTracks(List<TrackInfo> textTracks, @Nullable TrackInfo selectedTrack) {
+        WritableMap event = Arguments.createMap();
+        WritableArray textTrackArray = Arguments.createArray();
+        for (TrackInfo track : textTracks) {
+            boolean selected = selectedTrack != null && selectedTrack.complexIndex == track.complexIndex;
+            textTrackArray.pushMap(createTextTrackInfo(track, selected));
+        }
+        event.putArray(EVENT_PROP_TEXT_TRACKS, textTrackArray);
+        receiveEvent(EVENT_TEXT_TRACKS, event);
     }
-
     public void textTrackDataChanged(String textTrackData){
         WritableMap event = Arguments.createMap();
         event.putString(EVENT_PROP_TEXT_TRACK_DATA, textTrackData);
         receiveEvent(EVENT_TEXT_TRACK_DATA_CHANGED, event);
-    }
-
-    public void videoTracks(ArrayList<VideoTrack> videoTracks){
-        receiveEvent(EVENT_VIDEO_TRACKS, arrayToObject(EVENT_PROP_VIDEO_TRACKS, videoTracksToArray(videoTracks)));
     }
 
     public void progressChanged(double currentPosition, double bufferedDuration, double seekableDuration, double currentPlaybackTime) {
@@ -466,5 +443,62 @@ public class VideoEventEmitter {
         if(uiManager != null) {
            uiManager.receiveEvent(UIManagerHelper.getSurfaceId(mReactContext), viewId, type, event);
         }
+    }
+
+    @Nullable
+    private static WritableMap createAudioTrackInfo(TrackInfo track, boolean selected, @Nullable Object manifest) {
+        if (track == null) return null;
+        long complexIndex = track.complexIndex;
+        Format format = track.format;
+        WritableMap audioTrack = Arguments.createMap();
+        audioTrack.putDouble("index", complexIndex);
+        audioTrack.putString("trackId", format.id != null ? format.id : String.valueOf(complexIndex));
+        audioTrack.putString("title", getLanguageDisplayName(format.language));
+        audioTrack.putString("type", format.sampleMimeType);
+        audioTrack.putString("language", format.language);
+        audioTrack.putInt("bitrate", format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
+        audioTrack.putBoolean("selected", selected);
+        if (manifest != null) {
+            Representation representation = ManifestUtils.getRepresentationOf(manifest, track);
+            audioTrack.putString("file", ManifestUtils.getRepresentationFileName(representation));
+            audioTrack.putString("supplementalProperties", ManifestUtils.getRepresentationSupplementalProperties(representation));
+        }
+        return audioTrack;
+    }
+
+    @Nullable
+    private static WritableMap createVideoTrackInfo(TrackInfo track, boolean selected, @Nullable Object manifest) {
+        if (track == null) return null;
+        long complexIndex = track.complexIndex;
+        Format format = track.format;
+        WritableMap videoTrack = Arguments.createMap();
+        videoTrack.putDouble("index", complexIndex);
+        videoTrack.putString("trackId", format.id != null ? format.id : String.valueOf(complexIndex));
+        videoTrack.putInt("width", format.width == Format.NO_VALUE ? 0 : format.width);
+        videoTrack.putInt("height", format.height == Format.NO_VALUE ? 0 : format.height);
+        videoTrack.putInt("bitrate", format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
+        videoTrack.putString("codecs", format.codecs);
+        videoTrack.putBoolean("selected", selected);
+        if (manifest != null) {
+            Representation representation = ManifestUtils.getRepresentationOf(manifest, track);
+            videoTrack.putString("file", ManifestUtils.getRepresentationFileName(representation));
+            videoTrack.putString("supplementalProperties", ManifestUtils.getRepresentationSupplementalProperties(representation));
+        }
+        return videoTrack;
+    }
+
+    @Nullable
+    private static WritableMap createTextTrackInfo(TrackInfo track, boolean selected) {
+        if (track == null) return null;
+        long complexIndex = track.complexIndex;
+        Format format = track.format;
+        WritableMap textTrack = Arguments.createMap();
+        textTrack.putDouble("index", complexIndex);
+        textTrack.putString("trackId", format.id != null ? format.id : String.valueOf(complexIndex));
+        textTrack.putString("title", getLanguageDisplayName(format.language));
+        textTrack.putString("type", format.sampleMimeType);
+        textTrack.putString("language", format.language);
+        textTrack.putBoolean("selected", selected);
+        return textTrack;
     }
 }
