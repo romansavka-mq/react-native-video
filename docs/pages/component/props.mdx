@@ -128,6 +128,16 @@ If needed, you can also add your controls or use a package like [react-native-vi
 
 The start time in ms for SSAI content. This determines at what time to load the video info like resolutions. Use this only when you have SSAI stream where ads resolution is not the same as content resolution.
 
+### `cookiePolicy`
+
+<PlatformsList types={['Android']} />
+
+Changes the android cookie policy
+* **"original"** - Sets the CookiePolicy as ACCEPT_ORIGINAL_SERVER
+* **"all"** - Sets the CookiePolicy as ACCEPT_ALL
+* **"none"** - Sets the CookiePolicy as ACCEPT_NONE
+* **"system_default (default)"** - Unsets CookiePolicy completely (default is Android system, default in this library)
+
 ### `debug`
 
 <PlatformsList types={['Android']} />

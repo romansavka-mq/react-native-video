@@ -191,6 +191,13 @@ export enum PosterResizeModeType {
   STRETCH = 'stretch',
 }
 
+export enum CookiePolicy {
+  ORIGINAL = 'original',
+  ALL = 'all',
+  NONE = 'none',
+  SYSTME_DEFAULT = 'system_default',
+}
+
 export type AudioOutput = 'speaker' | 'earpiece';
 
 export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
@@ -245,6 +252,7 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   useSecureView?: boolean; // Android
   volume?: number;
   localSourceEncryptionKeyScheme?: string;
+  cookiePolicy: EnumValues<CookiePolicy>;
   debug?: DebugConfig;
   allowsExternalPlayback?: boolean; // iOS
 }

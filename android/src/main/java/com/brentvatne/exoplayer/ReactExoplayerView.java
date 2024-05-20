@@ -6,7 +6,6 @@ import static androidx.media3.common.C.CONTENT_TYPE_OTHER;
 import static androidx.media3.common.C.CONTENT_TYPE_RTSP;
 import static androidx.media3.common.C.CONTENT_TYPE_SS;
 import static androidx.media3.common.C.TIME_END_OF_SOURCE;
-
 import static com.brentvatne.exoplayer.DataSourceUtil.buildAssetDataSourceFactory;
 
 import android.annotation.SuppressLint;
@@ -122,18 +121,17 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.google.ads.interactivemedia.v3.api.AdError;
-import com.google.ads.interactivemedia.v3.api.AdEvent;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
+import com.google.ads.interactivemedia.v3.api.AdEvent;
 import com.google.common.collect.ImmutableList;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.lang.Math;
-import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -157,13 +155,8 @@ public class ReactExoplayerView extends FrameLayout implements
 
     private static final String TAG = "ReactExoplayerView";
 
-    private static final CookieManager DEFAULT_COOKIE_MANAGER;
+    private static final CookieManager DEFAULT_COOKIE_MANAGER = new CookieManager();
     private static final int SHOW_PROGRESS = 1;
-
-    static {
-        DEFAULT_COOKIE_MANAGER = new CookieManager();
-        DEFAULT_COOKIE_MANAGER.setCookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER);
-    }
 
     private final VideoEventEmitter eventEmitter;
     private final ReactExoplayerConfig config;
@@ -238,6 +231,8 @@ public class ReactExoplayerView extends FrameLayout implements
     private Uri adTagUrl;
 
     private boolean showNotificationControls = false;
+
+    private CookiesPolicy cookiesPolicy;
     // \ End props
 
     // React
@@ -316,9 +311,7 @@ public class ReactExoplayerView extends FrameLayout implements
     private void createViews() {
         clearResumePosition();
         mediaDataSourceFactory = buildDataSourceFactory(true);
-        if (CookieHandler.getDefault() != DEFAULT_COOKIE_MANAGER) {
-            CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
-        }
+        setCookiesPolicy(CookiesPolicy.SYSTEM_DEFAULT);
 
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.MATCH_PARENT,
@@ -2263,5 +2256,20 @@ public class ReactExoplayerView extends FrameLayout implements
     public void onAdError(AdErrorEvent adErrorEvent) {
         AdError error = adErrorEvent.getError();
         eventEmitter.receiveAdErrorEvent(error.getMessage(), String.valueOf(error.getErrorCode()), String.valueOf(error.getErrorType()));
+    }
+
+    public void setCookiesPolicy(String policy) {
+        setCookiesPolicy(CookiesPolicy.valueOf(policy));
+    }
+
+    private void setCookiesPolicy(CookiesPolicy policy) {
+        cookiesPolicy = policy;
+        CookiePolicy value = cookiesPolicy.getValue();
+        if (value != null) {
+            DEFAULT_COOKIE_MANAGER.setCookiePolicy(value);
+            CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
+        } else {
+            CookieHandler.setDefault(null);
+        }
     }
 }

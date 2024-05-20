@@ -87,6 +87,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_SUBTITLE_STYLE = "subtitleStyle";
     private static final String PROP_SHUTTER_COLOR = "shutterColor";
     private static final String PROP_SHOW_NOTIFICATION_CONTROLS = "showNotificationControls";
+    private static final String PROP_COOKIES_POLICY = "cookiesPolicy";
     private static final String PROP_DEBUG = "debug";
 
     private final ReactExoplayerConfig config;
@@ -436,6 +437,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_SHOW_NOTIFICATION_CONTROLS)
     public void setShowNotificationControls(final ReactExoplayerView videoView, final boolean showNotificationControls) {
         videoView.setShowNotificationControls(showNotificationControls);
+    }
+
+    @ReactProp(name = PROP_COOKIES_POLICY)
+    public void setCookiesPolicy(final ReactExoplayerView videoView, final String cookiesPolicy) {
+        videoView.setCookiesPolicy(cookiesPolicy);
     }
 
     @ReactProp(name = PROP_DEBUG, defaultBoolean = false)

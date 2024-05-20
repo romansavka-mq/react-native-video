@@ -306,6 +306,7 @@ export interface VideoNativeProps extends ViewProps {
   progressUpdateInterval?: Float;
   restoreUserInterfaceForPIPStopCompletionHandler?: boolean;
   localSourceEncryptionKeyScheme?: string;
+  cookiePolicy: string;
   debug?: DebugConfig;
   showNotificationControls?: WithDefault<boolean, false>; // Android, iOS
   bufferConfig?: BufferConfig; // Android
