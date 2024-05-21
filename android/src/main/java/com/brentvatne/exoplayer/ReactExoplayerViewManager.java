@@ -146,7 +146,6 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
                     }
                     videoView.setDrmLicenseHeader(drmKeyRequestPropertiesList.toArray(new String[0]));
                 }
-                videoView.setUseTextureView(false);
             }
         }
     }
