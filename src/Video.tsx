@@ -64,6 +64,7 @@ export interface VideoRef {
     restore: boolean,
   ) => void;
   save: (options: object) => Promise<VideoSaveData>;
+  getCurrentTime: () => Promise<number>;
 }
 
 const Video = forwardRef<VideoRef, ReactVideoProps>(
@@ -280,6 +281,10 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
 
     const resume = useCallback(() => {
       return VideoManager.setPlayerPauseState(false, getReactTag(nativeRef));
+    }, []);
+
+    const getCurrentTime = useCallback(() => {
+      return VideoManager.getCurrentTime(getReactTag(nativeRef));
     }, []);
 
     const restoreUserInterfaceForPictureInPictureStopCompleted = useCallback(
@@ -504,6 +509,7 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
+        getCurrentTime,
         restoreUserInterfaceForPictureInPictureStopCompleted,
       }),
       [
@@ -513,6 +519,7 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
+        getCurrentTime,
         restoreUserInterfaceForPictureInPictureStopCompleted,
       ],
     );

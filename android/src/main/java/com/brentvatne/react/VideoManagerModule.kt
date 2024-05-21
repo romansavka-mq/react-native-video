@@ -2,6 +2,7 @@ package com.brentvatne.react
 
 import com.brentvatne.common.toolbox.ReactBridgeUtils
 import com.brentvatne.exoplayer.ReactExoplayerView
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -51,6 +52,14 @@ class VideoManagerModule(reactContext: ReactApplicationContext?) : ReactContextB
         val time = ReactBridgeUtils.safeGetInt(info, "time")
         performOnPlayerView(reactTag) {
             it?.seekTo((time * 1000f).roundToInt().toLong())
+        }
+    }
+
+    @ReactMethod
+    fun getCurrentTime(reactTag: Int, p: Promise) {
+        performOnPlayerView(reactTag) { player ->
+            // long is not supported send it as double
+            p.resolve((player?.currentPosition ?: -1).toDouble())
         }
     }
 
