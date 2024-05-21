@@ -5,6 +5,7 @@ import android.content.Context.CAPTIONING_SERVICE
 import android.view.accessibility.CaptioningManager
 import androidx.media3.common.C
 import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector.Parameters
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
@@ -16,6 +17,21 @@ import com.facebook.react.bridge.ReadableType
 import java.util.Locale
 
 object TracksUtil {
+
+    @JvmField
+    val PREFERRED_AUDIO_MIME_TYPE = arrayOf(
+        MimeTypes.AUDIO_AC4,
+        MimeTypes.AUDIO_E_AC3_JOC,
+        MimeTypes.AUDIO_E_AC3,
+        MimeTypes.AUDIO_AC3
+    )
+
+    @JvmField
+    val PREFERRED_VIDEO_MIME_TYPE = arrayOf(
+        MimeTypes.VIDEO_DOLBY_VISION,
+        MimeTypes.VIDEO_H265,
+        MimeTypes.VIDEO_H264
+    )
 
     @JvmStatic
     fun getAudioTracks(info: MappedTrackInfo?): List<TrackInfo> = getTracks(info, C.TRACK_TYPE_AUDIO)
