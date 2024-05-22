@@ -112,6 +112,9 @@ export type SelectedVideoTrack = {
 };
 
 export type SubtitleStyle = {
+  foregroundColor?: string;
+  backgroundColor?: string;
+  windowColor?: string;
   fontSize?: number;
   paddingTop?: number;
   paddingBottom?: number;
@@ -244,6 +247,7 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   selectedTextTrack?: SelectedTrack;
   selectedVideoTrack?: SelectedVideoTrack; // android
   subtitleStyle?: SubtitleStyle; // android
+  subtitleLinesRespected: boolean; // Android
   shutterColor?: string; // Android
   textTracks?: TextTracks;
   testID?: string;

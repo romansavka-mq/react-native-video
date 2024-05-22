@@ -1838,6 +1838,10 @@ public class ReactExoplayerView extends FrameLayout implements
         exoPlayerView.setSubtitleStyle(style);
     }
 
+    public void setSubtitleLinesRespected(boolean linesRespected) {
+        exoPlayerView.setSubtitleLinesRespected(linesRespected);
+    }
+
     public void setShutterColor(Integer color) {
         exoPlayerView.setShutterColor(color);
     }

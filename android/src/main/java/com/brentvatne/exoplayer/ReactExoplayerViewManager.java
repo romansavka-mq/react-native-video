@@ -88,6 +88,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_HIDE_SHUTTER_VIEW = "hideShutterView";
     private static final String PROP_CONTROLS = "controls";
     private static final String PROP_SUBTITLE_STYLE = "subtitleStyle";
+    private static final String PROP_SUBTITLE_LINES_RESPECTED = "subtitleLinesRespected";
     private static final String PROP_SHUTTER_COLOR = "shutterColor";
     private static final String PROP_SHOW_NOTIFICATION_CONTROLS = "showNotificationControls";
     private static final String PROP_COOKIES_POLICY = "cookiesPolicy";
@@ -417,6 +418,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_SUBTITLE_STYLE)
     public void setSubtitleStyle(final ReactExoplayerView videoView, @Nullable final ReadableMap src) {
         videoView.setSubtitleStyle(SubtitleStyle.parse(src));
+    }
+
+    @ReactProp(name = PROP_SUBTITLE_LINES_RESPECTED, defaultBoolean = true)
+    public void setSubtitleLinesRespected(final ReactExoplayerView videoView, final boolean linesRespected) {
+        videoView.setSubtitleLinesRespected(linesRespected);
     }
 
     @ReactProp(name = PROP_SHUTTER_COLOR, customType = "Color")

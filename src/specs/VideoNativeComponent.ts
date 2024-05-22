@@ -108,6 +108,9 @@ type BufferConfig = Readonly<{
 }>;
 
 type SubtitleStyle = Readonly<{
+  foregroundColor?: string;
+  backgroundColor?: string;
+  windowColor?: string;
   fontSize?: Float;
   paddingTop?: WithDefault<Float, 0>;
   paddingBottom?: WithDefault<Float, 0>;
@@ -336,6 +339,7 @@ export interface VideoNativeProps extends ViewProps {
   minLoadRetryCount?: Int32; // Android
   reportBandwidth?: boolean; //Android
   subtitleStyle?: SubtitleStyle; // android
+  subtitleLinesRespected: boolean; // Android
   useTextureView?: boolean; // Android
   useSecureView?: boolean; // Android
   bufferingStrategy?: BufferingStrategyType; // Android

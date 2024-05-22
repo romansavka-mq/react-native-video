@@ -742,20 +742,32 @@ source={{
 
 ### `subtitleStyle`
 
-| Property      | Description                                                                                                                                                                                        | Platforms    |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fontSize      | Adjust the font size of the subtitles. Default: font size of the device                                                                                                                            | Android      |
-| paddingTop    | Adjust the top padding of the subtitles. Default: 0                                                                                                                                                | Android      |
-| paddingBottom | Adjust the bottom padding of the subtitles. Default: 0                                                                                                                                             | Android      |
-| paddingLeft   | Adjust the left padding of the subtitles. Default: 0                                                                                                                                               | Android      |
-| paddingRight  | Adjust the right padding of the subtitles. Default: 0                                                                                                                                              | Android      |
-| opacity       | Adjust the visibility of subtitles with 0 hiding and 1 fully showing them. Android supports float values between 0 and 1 for varying opacity levels, whereas iOS supports only 0 or 1. Default: 1. | Android, iOS |
+| Property      | Value | Description | Platforms |
+| ------------- | ----- | ----------- | --------- |
+| foregroundColor | string (hex) | The preferred foreground color. | Android |
+| backgroundColor | string (hex) | The preferred background color. | Android |
+| windowColor | string (hex) | The preferred window color. | Android |
+| fontSize      | number | Adjust the font size of the subtitles. Default: font size of the device | Android |
+| paddingTop    | number | Adjust the top padding of the subtitles. Default: 0 | Android |
+| paddingBottom | number | Adjust the bottom padding of the subtitles. Default: 0 | Android |
+| paddingLeft   | number | Adjust the left padding of the subtitles. Default: 0 | Android |
+| paddingRight  | number | Adjust the right padding of the subtitles. Default: 0 | Android |
+| opacity       | number | Adjust the visibility of subtitles with 0 hiding and 1 fully showing them. Android supports float values between 0 and 1 for varying opacity levels, whereas iOS supports only 0 or 1. Default: 1. | Android, iOS |
 
 Example:
 
 ```javascript
-subtitleStyle={{ paddingBottom: 50, fontSize: 20, opacity: 0 }}
+subtitleStyle={{ backgroundColor: "#40000000", paddingBottom: 50, fontSize: 20, opacity: 0 }}
 ```
+
+### `subtitleLinesRespected`
+
+<PlatformsList types={['Android']} />
+
+Determines whether if subtitle embedded lines should respected.
+
+- **true (default)** - Respected embedded lines
+- **false** - Ignore embedded lines
 
 ### `textTracks`
 
