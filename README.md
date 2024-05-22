@@ -1,10 +1,24 @@
 # react-native-video
 🎬 `<Video>` component for React Native
 
-> **Note:** version 5.2.1 won't have any updates. We are currently working on making a 6.0.0 fully stable
+This repository is fork of [thewidlarzgroup.github.io/react-native-video/](https://thewidlarzgroup.github.io/react-native-video/).
+
+All modifications are described in `CHANGELOG.md` using version names with `+dolbyxp` suffix.
+
+# Banches
+
+`main-oss` - fork source, synchronized periodically to refrect state of source `master`.
+
+`main-dxp` - modified fork, synchronized periodically to contain oss changes. Main branch of repository. 
 
 ## Documentation
-documentation is available at [thewidlarzgroup.github.io/react-native-video/](https://thewidlarzgroup.github.io/react-native-video/)
+documentation is available at [miquido.github.io/react-native-video/](https://miquido.github.io/react-native-video/).
+
+**Warning:** Be aware that it might contain links to original docs.
+
+## Instalation
+
+`yarn add 'git+https://github.com/miquido/react-native-video.git#6.0.0-dolbyxp.1.0`
 
 ## Usage
 
@@ -47,18 +61,3 @@ var styles = StyleSheet.create({
   },
 });
 ```
-
-## Community support
-We have an discord server where you can ask questions and get help. [Join the discord server](https://discord.gg/WXuM4Tgb9X)
-
-## Enterprise Support
-<p>
-  📱 <i>react-native-video</i> is provided <i>as it is</i>. For enterprise support or other business inquiries, <a href="https://www.thewidlarzgroup.com/">please contact us 🤝</a>. We can help you with the integration, customization and maintenance. We are providing both free and commercial support for this project. let's build something awesome together! 🚀
-</p>
-<a href="https://www.thewidlarzgroup.com/">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/baners/twg-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="./docs/assets/baners/twg-light.png" />
-    <img alt="TheWidlarzGroup" src="./docs/assets/baners/twg-light.png" />
-  </picture>
-</a>
