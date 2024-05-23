@@ -1045,7 +1045,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     func createPlayerViewController(player: AVPlayer, withPlayerItem _: AVPlayerItem) -> RCTVideoPlayerViewController {
         let viewController = RCTVideoPlayerViewController()
         viewController.showsPlaybackControls = self._controls
-        viewController.updatesNowPlayingInfoCenter = false
+        #if !os(tvOS)
+            viewController.updatesNowPlayingInfoCenter = false
+        #endif
         viewController.rctDelegate = self
         viewController.preferredOrientation = _fullscreenOrientation
 
@@ -1381,12 +1383,14 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                 var orientation = "undefined"
 
                 let tracks = await RCTVideoAssetsUtils.getTracks(asset: _playerItem.asset, withMediaType: .video)
-                if let videoTrack = tracks?.first {
-                    width = Float(videoTrack.naturalSize.width)
-                    height = Float(videoTrack.naturalSize.height)
-                } else if _playerItem.presentationSize.height != 0.0 {
-                    width = Float(_playerItem.presentationSize.width)
-                    height = Float(_playerItem.presentationSize.height)
+                var presentationSize = _playerItem.presentationSize
+                if presentationSize.height != 0.0 {
+                    width = Float(presentationSize.width)
+                    height = Float(presentationSize.height)
+                } else if let videoTrack = tracks?.first {
+                    let naturalSize = videoTrack.naturalSize
+                    width = Float(naturalSize.width)
+                    height = Float(naturalSize.height)
                 }
                 orientation = width > height ? "landscape" : width == height ? "square" : "portrait"
 

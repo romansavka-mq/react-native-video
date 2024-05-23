@@ -56,6 +56,13 @@ class VideoManagerModule(reactContext: ReactApplicationContext?) : ReactContextB
     }
 
     @ReactMethod
+    fun setVolume(volume: Float, reactTag: Int) {
+        performOnPlayerView(reactTag) {
+            it?.setVolumeModifier(volume)
+        }
+    }
+
+    @ReactMethod
     fun getCurrentTime(reactTag: Int, p: Promise) {
         performOnPlayerView(reactTag) { player ->
             // long is not supported send it as double

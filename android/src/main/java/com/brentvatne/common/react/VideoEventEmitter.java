@@ -199,7 +199,8 @@ public class VideoEventEmitter {
             int videoWidth,
             int videoHeight,
             List<TrackInfo> audioTracks,
-            List<TrackInfo> videoTracks, List<TrackInfo> textTracks,
+            List<TrackInfo> videoTracks,
+            List<TrackInfo> textTracks,
             String trackId) {
         WritableMap event = Arguments.createMap();
         event.putDouble(EVENT_PROP_DURATION, duration / 1000D);
