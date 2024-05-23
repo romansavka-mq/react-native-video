@@ -92,6 +92,16 @@ By default iOS seeks within 100 milliseconds of the target position. If you need
 
 tolerance is the max distance in milliseconds from the seconds position that's allowed. Using a more exact tolerance can cause seeks to take longer. If you want to seek exactly, set tolerance to 0.
 
+### `getCurrentTime`
+
+<PlatformsList types={['Android']} />
+
+`getCurrentTime() : Promise<Number>`
+
+Get player current time in milliseconds where the played media is.
+
+`getCurrentTime()` can only be called after the `onLoad` event has fired.
+
 ### Example Usage
 
 ```tsx

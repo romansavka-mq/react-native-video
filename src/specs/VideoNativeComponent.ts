@@ -108,6 +108,9 @@ type BufferConfig = Readonly<{
 }>;
 
 type SubtitleStyle = Readonly<{
+  foregroundColor?: string;
+  backgroundColor?: string;
+  windowColor?: string;
   fontSize?: Float;
   paddingTop?: WithDefault<Float, 0>;
   paddingBottom?: WithDefault<Float, 0>;
@@ -126,6 +129,7 @@ type OnLoadData = Readonly<{
   }>;
   audioTracks: {
     index: Int32;
+    trackId: string;
     title?: string;
     language?: string;
     bitrate?: Float;
@@ -134,12 +138,23 @@ type OnLoadData = Readonly<{
   }[];
   textTracks: {
     index: Int32;
+    trackId: string;
     title?: string;
     language?: string;
     /**
      * iOS only supports VTT, Android supports all 3
      */
     type?: WithDefault<string, 'srt'>;
+    selected?: boolean;
+  }[];
+  // android only
+  videoTracks: {
+    index: Int32;
+    trackId: string;
+    codecs?: string;
+    width?: Float;
+    height?: Float;
+    bitrate?: Float;
     selected?: boolean;
   }[];
 }>;
@@ -186,20 +201,24 @@ export type OnTimedMetadataData = Readonly<{
   }[];
 }>;
 
-export type OnAudioTracksData = Readonly<{
+type OnAudioTracksData = Readonly<{
   audioTracks: {
     index: Int32;
+    trackId: string;
     title?: string;
     language?: string;
     bitrate?: Float;
     type?: string;
     selected?: boolean;
+    file?: string;
+    supplementalProperties?: string;
   }[];
 }>;
 
 type OnTextTracksData = Readonly<{
   textTracks: {
     index: Int32;
+    trackId: string;
     title?: string;
     language?: string;
     /**
@@ -214,14 +233,17 @@ export type OnTextTrackDataChangedData = Readonly<{
   subtitleTracks: string;
 }>;
 
-export type OnVideoTracksData = Readonly<{
+type OnVideoTracksData = Readonly<{
   videoTracks: {
-    trackId: Int32;
+    index: Int32;
+    trackId: string;
     codecs?: string;
     width?: Float;
     height?: Float;
     bitrate?: Float;
     selected?: boolean;
+    file?: string;
+    supplementalProperties?: string;
   }[];
 }>;
 
@@ -306,10 +328,10 @@ export interface VideoNativeProps extends ViewProps {
   progressUpdateInterval?: Float;
   restoreUserInterfaceForPIPStopCompletionHandler?: boolean;
   localSourceEncryptionKeyScheme?: string;
+  cookiePolicy: string;
   debug?: DebugConfig;
   showNotificationControls?: WithDefault<boolean, false>; // Android, iOS
   bufferConfig?: BufferConfig; // Android
-  contentStartTime?: Int32; // Android
   currentPlaybackTime?: Double; // Android
   disableDisconnectError?: boolean; // Android
   focusable?: boolean; // Android
@@ -317,6 +339,7 @@ export interface VideoNativeProps extends ViewProps {
   minLoadRetryCount?: Int32; // Android
   reportBandwidth?: boolean; //Android
   subtitleStyle?: SubtitleStyle; // android
+  subtitleLinesRespected: boolean; // Android
   useTextureView?: boolean; // Android
   useSecureView?: boolean; // Android
   bufferingStrategy?: BufferingStrategyType; // Android
@@ -372,6 +395,7 @@ export interface VideoManagerType {
     licenseUrl: string,
     reactTag: number,
   ) => Promise<void>;
+  getCurrentTime: (reactTag: number) => Promise<number>;
 }
 
 export interface VideoDecoderPropertiesType {

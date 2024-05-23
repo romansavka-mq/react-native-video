@@ -45,14 +45,18 @@ Callback function that is called when audio tracks change
 Payload:
 
 An **array** of
-| Property | Type    | Description                                                                                                |
-| -------- | ------- | ---------------------------------------------------------------------------------------------------------- |
-| index    | number  | Internal track ID                                                                                          |
-| title    | string  | Descriptive name for the track                                                                             |
+
+| Property | Type    | Description |
+| -------- | ------- | ------------|
+| index    | number  | Track index |
+| trackId  | string  | Track ID of the video track (android only) |
+| title    | string  | Descriptive name for the track |
 | language | string  | 2 letter [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) representing the language |
-| bitrate  | number  | bitrate of track                                                                                           |
-| type     | string  | Mime type of track                                                                                         |
-| selected | boolean | true if track is playing                                                                                   |
+| bitrate  | number  | bitrate of track |
+| type     | string  | Mime type of track |
+| selected | boolean | true if track is playing |
+| file     | string  | File name from DASH manifest (android only) |
+| supplementalProperties | string | Supplemental properties for the adaptation set from DASH manifest (android only) |
 
 Example:
 
@@ -206,9 +210,9 @@ Payload:
 | currentTime | number | Time in seconds where the media will start                                                                                                                                                                                                                                                                                                                         |
 | duration    | number | Length of the media in seconds                                                                                                                                                                                                                                                                                                                                     |
 | naturalSize | object | Properties:<br/> _ width - Width in pixels that the video was encoded at<br/> _ height - Height in pixels that the video was encoded at<br/> \* orientation - "portrait", "landscape" or "square"                                                                                                                                                                  |
-| audioTracks | array  | An array of audio track info objects with the following properties:<br/> _ index - Index number<br/> _ title - Description of the track<br/> _ language - 2 letter [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) or 3 letter [ISO639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes) language code<br/> _ type - Mime type of track |
-| textTracks  | array  | An array of text track info objects with the following properties:<br/> _ index - Index number<br/> _ title - Description of the track<br/> _ language - 2 letter [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) or 3 letter [ISO 639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes) language code<br/> _ type - Mime type of track |
-| videoTracks | array  | An array of video track info objects with the following properties:<br/> _ trackId - ID for the track<br/> _ bitrate - Bit rate in bits per second<br/> _ codecs - Comma separated list of codecs<br/> _ height - Height of the video<br/> \* width - Width of the video                                                                                           |
+| audioTracks | array  | An array of audio track info objects with properties same us in onAudioTracks |
+| textTracks  | array  | An array of text track info objects with properties same us in onTextTracks |
+| videoTracks | array  | An array of video track info objects with properties same us in onVideoTracks
 
 Example:
 
@@ -517,13 +521,14 @@ Callback function that is called when text tracks change
 
 Payload:
 
-| Property | Type    | Description                                                                                                                                                                                          |
-| -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| index    | number  | Internal track ID                                                                                                                                                                                    |
-| title    | string  | Descriptive name for the track                                                                                                                                                                       |
-| language | string  | 2 letter [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) representing the language                                                                                           |
+| Property | Type    | Description |
+| -------- | ------- | ------------|
+| index    | number  | Track index |
+| trackId  | string  | Track ID of the video track (android only) |
+| title    | string  | Descriptive name for the track |
+| language | string  | 2 letter [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) representing the language |
 | type     | string  | Mime type of the track<br/> _ TextTrackType.SRT - SubRip (.srt)<br/> _ TextTrackType.TTML - TTML (.ttml)<br/> \* TextTrackType.VTT - WebVTT (.vtt)<br/>iOS only supports VTT, Android supports all 3 |
-| selected | boolean | true if track is playing                                                                                                                                                                             |
+| selected | boolean | true if track is playing |
 
 Example:
 
@@ -548,14 +553,17 @@ Callback function that is called when video tracks change
 
 Payload:
 
-| Property | Type    | Description                           |
-| -------- | ------- | ------------------------------------- |
-| trackId  | number  | Internal track ID                     |
+| Property | Type    | Description |
+| -------- | ------- | ------------|
+| index    | number  | Track index |
+| trackId  | string  | Track ID of the video track |
 | codecs   | string  | MimeType of codec used for this track |
-| width    | number  | Track width                           |
-| height   | number  | Track height                          |
-| bitrate  | number  | Bitrate in bps                        |
+| width    | number  | Track width |
+| height   | number  | Track height |
+| bitrate  | number  | Bitrate in bps |
 | selected | boolean | true if track is selected for playing |
+| file     | string  | File name from DASH manifest |
+| supplementalProperties | string | Supplemental properties for the adaptation set from DASH manifest |
 
 Example:
 

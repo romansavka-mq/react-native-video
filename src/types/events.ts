@@ -1,7 +1,6 @@
 import type {WithDefault} from 'react-native/Libraries/Types/CodegenTypes';
 import type {
   OnAudioFocusChangedData,
-  OnAudioTracksData,
   OnBandwidthUpdateData,
   OnBufferData,
   OnExternalPlaybackChangeData,
@@ -15,12 +14,12 @@ import type {
   OnTimedMetadataData,
   OnVideoAspectRatioData,
   OnVideoErrorData,
-  OnVideoTracksData,
   OnVolumeChangeData,
 } from '../specs/VideoNativeComponent';
 
 export type AudioTrack = OnAudioTracksData['audioTracks'][number];
 export type TextTrack = OnTextTracksData['textTracks'][number];
+export type VideoTrack = OnVideoTracksData['videoTracks'][number];
 
 export type OnLoadData = Readonly<{
   currentTime: number;
@@ -32,6 +31,7 @@ export type OnLoadData = Readonly<{
   }>;
   audioTracks: {
     index: number;
+    trackId: string;
     title?: string;
     language?: string;
     bitrate?: number;
@@ -40,6 +40,7 @@ export type OnLoadData = Readonly<{
   }[];
   textTracks: {
     index: number;
+    trackId: string;
     title?: string;
     language?: string;
     /**
@@ -48,11 +49,50 @@ export type OnLoadData = Readonly<{
     type?: WithDefault<'srt' | 'ttml' | 'vtt', 'srt'>;
     selected?: boolean;
   }[];
+  // android only
+  videoTracks: {
+    index: number;
+    trackId: string;
+    codecs?: string;
+    width?: number;
+    height?: number;
+    bitrate?: number;
+    selected?: boolean;
+  }[];
+}>;
+
+export type OnVideoTracksData = Readonly<{
+  videoTracks: {
+    index: number;
+    trackId: string;
+    codecs?: string;
+    width?: number;
+    height?: number;
+    bitrate?: number;
+    selected?: boolean;
+    file?: string;
+    supplementalProperties?: string;
+  }[];
+}>;
+
+export type OnAudioTracksData = Readonly<{
+  audioTracks: {
+    index: number;
+    trackId: string;
+    title?: string;
+    language?: string;
+    bitrate?: number;
+    type?: string;
+    selected?: boolean;
+    file?: string;
+    supplementalProperties?: string;
+  }[];
 }>;
 
 export type OnTextTracksData = Readonly<{
   textTracks: {
     index: number;
+    trackId: string;
     title?: string;
     language?: string;
     /**

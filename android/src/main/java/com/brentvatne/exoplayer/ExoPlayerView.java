@@ -1,18 +1,11 @@
 package com.brentvatne.exoplayer;
 
-import android.content.Context;
-import androidx.core.content.ContextCompat;
-import androidx.media3.common.AdViewProvider;
-import androidx.media3.common.C;
-import androidx.media3.common.Format;
-import androidx.media3.common.Player;
-import androidx.media3.common.Tracks;
-import androidx.media3.common.VideoSize;
-import androidx.media3.common.text.Cue;
-import androidx.media3.common.util.Assertions;
-import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.ui.SubtitleView;
+import static androidx.media3.common.text.Cue.DIMEN_UNSET;
+import static androidx.media3.common.text.Cue.LINE_TYPE_NUMBER;
+import static androidx.media3.ui.CaptionStyleCompat.EDGE_TYPE_NONE;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -22,10 +15,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.core.content.ContextCompat;
+import androidx.media3.common.AdViewProvider;
+import androidx.media3.common.C;
+import androidx.media3.common.Format;
+import androidx.media3.common.Player;
+import androidx.media3.common.Tracks;
+import androidx.media3.common.VideoSize;
+import androidx.media3.common.text.Cue;
+import androidx.media3.common.text.CueGroup;
+import androidx.media3.common.util.Assertions;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.CaptionStyleCompat;
+import androidx.media3.ui.SubtitleView;
+
 import com.brentvatne.common.api.ResizeMode;
 import com.brentvatne.common.api.SubtitleStyle;
 import com.google.common.collect.ImmutableList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class ExoPlayerView extends FrameLayout implements AdViewProvider {
@@ -43,6 +51,8 @@ public final class ExoPlayerView extends FrameLayout implements AdViewProvider {
     private boolean useTextureView = true;
     private boolean useSecureView = false;
     private boolean hideShutterView = false;
+
+    private boolean subtitleLinesRespected = false;
 
     public ExoPlayerView(Context context) {
         this(context, null);
@@ -111,12 +121,24 @@ public final class ExoPlayerView extends FrameLayout implements AdViewProvider {
     }
 
     public void setSubtitleStyle(SubtitleStyle style) {
-        // ensure we reset subtile style before reapplying it
-        subtitleLayout.setUserDefaultStyle();
-        subtitleLayout.setUserDefaultTextSize();
+        // ensure we reset subtitle style before reapplying it
+        if (style.getForegroundColor() != null && style.getBackgroundColor() != null && style.getWindowColor() != null) {
+            subtitleLayout.setStyle(new CaptionStyleCompat(
+                    style.getForegroundColor(),
+                    style.getBackgroundColor(),
+                    style.getWindowColor(),
+                    EDGE_TYPE_NONE,
+                    Color.WHITE,
+                    null
+            ));
+        } else {
+            subtitleLayout.setUserDefaultStyle();
+        }
 
         if (style.getFontSize() > 0) {
             subtitleLayout.setFixedTextSize(TypedValue.COMPLEX_UNIT_SP, style.getFontSize());
+        } else {
+            subtitleLayout.setUserDefaultTextSize();
         }
         subtitleLayout.setPadding(style.getPaddingLeft(), style.getPaddingTop(), style.getPaddingRight(), style.getPaddingBottom());
         if (style.getOpacity() != 0) {
@@ -126,6 +148,10 @@ public final class ExoPlayerView extends FrameLayout implements AdViewProvider {
             subtitleLayout.setVisibility(View.GONE);
         }
 
+    }
+
+    public void setSubtitleLinesRespected(boolean linesRespected) {
+        subtitleLinesRespected = linesRespected;
     }
 
     public void setShutterColor(Integer color) {
@@ -272,8 +298,15 @@ public final class ExoPlayerView extends FrameLayout implements AdViewProvider {
     private final class ComponentListener implements Player.Listener {
 
         @Override
-        public void onCues(List<Cue> cues) {
-            subtitleLayout.setCues(cues);
+        public void onCues(CueGroup cueGroup) {
+            List<Cue> cues = cueGroup.cues;
+            if (!subtitleLinesRespected) {
+                ArrayList<Cue> noLineCues = new ArrayList<>();
+                for (Cue cue : cues) noLineCues.add(cue.buildUpon().setLine(DIMEN_UNSET, LINE_TYPE_NUMBER).build());
+                subtitleLayout.setCues(noLineCues);
+            } else {
+                subtitleLayout.setCues(cues);
+            }
         }
 
         @Override

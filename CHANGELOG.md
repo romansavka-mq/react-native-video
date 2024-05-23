@@ -1,5 +1,33 @@
 
 
+# [6.0.0+dolbyxp.1.0]
+
+### Bug Fixes
+* **android:** Don't force texture view usage when DRM enabled
+* **android:** Change title for audio/text object returned in onLoad callback to contain human readable display names
+* **android:** Fix track selection logic
+   * Fix assumption of single render in method getTrackRendererIndex. Provide tracks from different renders of same type in onLoad callback
+   * Dispatch only support track in onLoad callback
+   * Fix choosing single track from a group .getFormat(0) in multiple places.
+   * Use setPreferredAudioLanguage/setPreferredTextLanguage when controlling track selection by language or making a default selection.
+   * Fix audio deselection
+
+### Features
+* **android:** Add possibility to customize subtitles (background, foreground, window) colors.
+* **android:** Add possibility to ignore/respect cues embedded lines.
+* **android:** Add getCurrentTime method.
+* **android:** Set preferred mime types on TrackSelector.
+   * audio in order ac4, eac3-joc, eac3, ac3
+   * video in order dolby-vision, hevc, avc
+* **android:** Add supplementalProperties property for audio/video object returned in onAudioTracks/onVideoTracks
+* **android:** Add file property for audio/video object returned in onAudioTracks/onVideoTracks
+* **android:** Add trackId for audio/text object returned in onLoad callback
+* **android:** Add videoTracks array returned in onLoad callback
+* **android:** Expose system-wide cookiesPolicy setter from ExoPlayer
+
+### BREAKING CHANGES
+* **android:** Remove contentStartTime property   
+
 # [6.0.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0-rc.2...v6.0.0) (2024-05-14)
 
 
@@ -169,7 +197,7 @@
 
 ### Bug Fixes
 * add missing audioOutput prop (#3450) (f20d68b)
-* **android**: support opacity properly (#3464) (11e5b75)
+* **android:**: support opacity properly (#3464) (11e5b75)
 * **ios**: currentPlaybackTime in ms and not seconds (#3472) (3f63c16)
 * **ios**: remove extra dismissFullscreenPlayer declaration (#3474) (045f5fa)
 

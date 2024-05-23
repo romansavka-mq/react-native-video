@@ -19,7 +19,6 @@ import {
 
 import NativeVideoComponent, {
   type OnAudioFocusChangedData,
-  type OnAudioTracksData,
   type OnBandwidthUpdateData,
   type OnBufferData,
   type OnExternalPlaybackChangeData,
@@ -33,7 +32,6 @@ import NativeVideoComponent, {
   type OnTimedMetadataData,
   type OnVideoAspectRatioData,
   type OnVideoErrorData,
-  type OnVideoTracksData,
   type VideoComponentType,
   type VideoSrc,
 } from './specs/VideoNativeComponent';
@@ -46,6 +44,8 @@ import {VideoManager} from './specs/VideoNativeComponent';
 import type {
   OnLoadData,
   OnTextTracksData,
+  OnAudioTracksData,
+  OnVideoTracksData,
   OnReceiveAdEventData,
   ReactVideoProps,
 } from './types';
@@ -64,6 +64,7 @@ export interface VideoRef {
     restore: boolean,
   ) => void;
   save: (options: object) => Promise<VideoSaveData>;
+  getCurrentTime: () => Promise<number>;
 }
 
 const Video = forwardRef<VideoRef, ReactVideoProps>(
@@ -280,6 +281,10 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
 
     const resume = useCallback(() => {
       return VideoManager.setPlayerPauseState(false, getReactTag(nativeRef));
+    }, []);
+
+    const getCurrentTime = useCallback(() => {
+      return VideoManager.getCurrentTime(getReactTag(nativeRef));
     }, []);
 
     const restoreUserInterfaceForPictureInPictureStopCompleted = useCallback(
@@ -504,6 +509,7 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
+        getCurrentTime,
         restoreUserInterfaceForPictureInPictureStopCompleted,
       }),
       [
@@ -513,6 +519,7 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
+        getCurrentTime,
         restoreUserInterfaceForPictureInPictureStopCompleted,
       ],
     );

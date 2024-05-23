@@ -112,6 +112,9 @@ export type SelectedVideoTrack = {
 };
 
 export type SubtitleStyle = {
+  foregroundColor?: string;
+  backgroundColor?: string;
+  windowColor?: string;
   fontSize?: number;
   paddingTop?: number;
   paddingBottom?: number;
@@ -191,6 +194,13 @@ export enum PosterResizeModeType {
   STRETCH = 'stretch',
 }
 
+export enum CookiePolicy {
+  ORIGINAL = 'original',
+  ALL = 'all',
+  NONE = 'none',
+  SYSTME_DEFAULT = 'system_default',
+}
+
 export type AudioOutput = 'speaker' | 'earpiece';
 
 export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
@@ -203,7 +213,6 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   bufferConfig?: BufferConfig; // Android
   bufferingStrategy?: BufferingStrategyType;
   chapters?: Chapters[]; // iOS
-  contentStartTime?: number; // Android
   controls?: boolean;
   currentPlaybackTime?: number; // Android
   disableFocus?: boolean;
@@ -238,6 +247,7 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   selectedTextTrack?: SelectedTrack;
   selectedVideoTrack?: SelectedVideoTrack; // android
   subtitleStyle?: SubtitleStyle; // android
+  subtitleLinesRespected: boolean; // Android
   shutterColor?: string; // Android
   textTracks?: TextTracks;
   testID?: string;
@@ -245,6 +255,7 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   useSecureView?: boolean; // Android
   volume?: number;
   localSourceEncryptionKeyScheme?: string;
+  cookiePolicy: EnumValues<CookiePolicy>;
   debug?: DebugConfig;
   allowsExternalPlayback?: boolean; // iOS
 }
