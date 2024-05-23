@@ -1,3 +1,7 @@
+# [6.1.1+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/v6.1.1...miquido:react-native-video:6.1.1+dolbyxp.1.0)
+
+Sync with 6.1.1 version
+
 # [6.1.1](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.1.0...v6.1.1) (2024-05-22)
 
 ### Bug Fixes
@@ -27,7 +31,7 @@
 * add setVolume function to component's ref ([#3794](https://github.com/TheWidlarzGroup/react-native-video/issues/3794)) ([3cd7ab6](https://github.com/TheWidlarzGroup/react-native-video/commit/3cd7ab60b27e8820607bd83a5681bc7ba7e6c52e))
 * **android:** add possibility to hide seekBar ([#3789](https://github.com/TheWidlarzGroup/react-native-video/issues/3789)) ([95e6140](https://github.com/TheWidlarzGroup/react-native-video/commit/95e6140eead56efab83871e29b57d30f4f11a77a))
 
-# [6.0.0+dolbyxp.1.0]
+# [6.0.0+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/v6.0.0...miquido:react-native-video:6.0.0+dolbyxp.1.0)
 
 ### Bug Fixes
 * **android:** Don't force texture view usage when DRM enabled
