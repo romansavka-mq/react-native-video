@@ -410,6 +410,7 @@ class ReactExoplayerView extends FrameLayout implements
                     trackSelector.setParameters(trackSelector.buildUponParameters()
                             .setMaxVideoBitrate(maxBitRate == 0 ? Integer.MAX_VALUE : maxBitRate)
                             .setPreferredAudioMimeTypes(TracksUtil.PREFERRED_AUDIO_MIME_TYPE)
+                            .setPreferredVideoMimeTypes(TracksUtil.PREFERRED_VIDEO_MIME_TYPE)
                     );
 
                     DefaultAllocator allocator = new DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE);

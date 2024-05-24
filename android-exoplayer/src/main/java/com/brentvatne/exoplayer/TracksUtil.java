@@ -42,6 +42,12 @@ public class TracksUtil {
             MimeTypes.AUDIO_AC3
     };
 
+    final static String[] PREFERRED_VIDEO_MIME_TYPE = new String[]{
+            MimeTypes.VIDEO_DOLBY_VISION,
+            MimeTypes.VIDEO_H265,
+            MimeTypes.VIDEO_H264
+    };
+
     private TracksUtil() {
     }
 
