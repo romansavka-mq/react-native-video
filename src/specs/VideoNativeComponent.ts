@@ -93,6 +93,14 @@ export type Seek = Readonly<{
   tolerance?: Float;
 }>;
 
+type BufferConfigLive = Readonly<{
+  maxPlaybackSpeed?: Float;
+  minPlaybackSpeed?: Float;
+  maxOffsetMs?: Int32;
+  minOffsetMs?: Int32;
+  targetOffsetMs?: Int32;
+}>;
+
 type BufferingStrategyType = WithDefault<string, 'Default'>;
 
 type BufferConfig = Readonly<{
@@ -105,6 +113,7 @@ type BufferConfig = Readonly<{
   minBackBufferMemoryReservePercent?: Float;
   minBufferMemoryReservePercent?: Float;
   cacheSizeMB?: Float;
+  live?: BufferConfigLive;
 }>;
 
 type SubtitleStyle = Readonly<{
@@ -295,6 +304,10 @@ export type OnAudioFocusChangedData = Readonly<{
   hasAudioFocus: boolean;
 }>;
 
+type ControlsStyles = Readonly<{
+  hideSeekBar?: boolean;
+}>;
+
 export interface VideoNativeProps extends ViewProps {
   src?: VideoSrc;
   drm?: Drm;
@@ -343,6 +356,7 @@ export interface VideoNativeProps extends ViewProps {
   useTextureView?: boolean; // Android
   useSecureView?: boolean; // Android
   bufferingStrategy?: BufferingStrategyType; // Android
+  controlsStyles?: ControlsStyles; // Android
   onVideoLoad?: DirectEventHandler<OnLoadData>;
   onVideoLoadStart?: DirectEventHandler<OnLoadStartData>;
   onVideoAspectRatio?: DirectEventHandler<OnVideoAspectRatioData>;
@@ -395,6 +409,7 @@ export interface VideoManagerType {
     licenseUrl: string,
     reactTag: number,
   ) => Promise<void>;
+  setVolume: (volume: number, reactTag: number) => Promise<void>;
   getCurrentTime: (reactTag: number) => Promise<number>;
 }
 

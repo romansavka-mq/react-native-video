@@ -74,6 +74,14 @@ export enum BufferingStrategyType {
   DEPENDING_ON_MEMORY = 'DependingOnMemory',
 }
 
+export type BufferConfigLive = {
+  maxPlaybackSpeed?: number;
+  minPlaybackSpeed?: number;
+  maxOffsetMs?: number;
+  minOffsetMs?: number;
+  targetOffsetMs?: number;
+};
+
 export type BufferConfig = {
   minBufferMs?: number;
   maxBufferMs?: number;
@@ -84,6 +92,7 @@ export type BufferConfig = {
   minBackBufferMemoryReservePercent?: number;
   minBufferMemoryReservePercent?: number;
   cacheSizeMB?: number;
+  live?: BufferConfigLive;
 };
 
 export enum SelectedTrackType {
@@ -108,7 +117,7 @@ export enum SelectedVideoTrackType {
 
 export type SelectedVideoTrack = {
   type: SelectedVideoTrackType;
-  value?: number;
+  value?: string | number;
 };
 
 export type SubtitleStyle = {
@@ -203,6 +212,10 @@ export enum CookiePolicy {
 
 export type AudioOutput = 'speaker' | 'earpiece';
 
+export type ControlsStyles = {
+  hideSeekBar?: boolean;
+};
+
 export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   source?: ReactVideoSource;
   drm?: Drm;
@@ -258,4 +271,5 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   cookiePolicy: EnumValues<CookiePolicy>;
   debug?: DebugConfig;
   allowsExternalPlayback?: boolean; // iOS
+  controlsStyles?: ControlsStyles; // Android
 }
