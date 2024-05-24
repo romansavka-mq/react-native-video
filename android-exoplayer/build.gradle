@@ -27,14 +27,17 @@ android {
 
 dependencies {
     implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
-    implementation('com.google.android.exoplayer:exoplayer:2.15.1-dolby-exp-2')
+    implementation('com.google.android.exoplayer:exoplayer:2.17.1') {
+        exclude group: 'androidx.core', module: 'core'
+        exclude group: 'androidx.media', module: 'media' 
+    }
 
     // All support libs must use the same version
     implementation "androidx.annotation:annotation:1.1.0"
     implementation "androidx.core:core:1.1.0"
     implementation "androidx.media:media:1.1.0"
 
-    implementation('com.google.android.exoplayer:extension-okhttp:2.15.1-dolby-exp-2') {
+    implementation('com.google.android.exoplayer:extension-okhttp:2.17.1') {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     }
     implementation 'com.squareup.okhttp3:okhttp:3.14.3'
