@@ -207,7 +207,7 @@ export enum CookiePolicy {
   ORIGINAL = 'original',
   ALL = 'all',
   NONE = 'none',
-  SYSTME_DEFAULT = 'system_default',
+  SYSTEM_DEFAULT = 'system_default',
 }
 
 export type AudioOutput = 'speaker' | 'earpiece';
