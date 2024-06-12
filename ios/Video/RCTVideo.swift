@@ -718,9 +718,11 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             } else {
                 _player?.pause()
                 _player?.rate = 0.0
+                RCTPlayerOperations.addSpatialAudioRemoteCommandHandler()
             }
         } else {
             RCTPlayerOperations.configureAudio(ignoreSilentSwitch: _ignoreSilentSwitch, mixWithOthers: _mixWithOthers, audioOutput: _audioOutput)
+            RCTPlayerOperations.removeSpatialAudioRemoteCommandHandler()
 
             if _adPlaying {
                 #if USE_GOOGLE_IMA
