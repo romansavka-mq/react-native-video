@@ -268,6 +268,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
         _player?.pause()
         _player?.rate = 0.0
+        RCTPlayerOperations.removeSpatialAudioRemoteCommandHandler()
     }
 
     @objc
@@ -524,6 +525,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
                     let playerItem = try await self.preparePlayerItem()
                     try await setupPlayer(playerItem: playerItem)
+                    RCTPlayerOperations.addSpatialAudioRemoteCommandHandler()
                 } catch {
                     DebugLog("An error occurred: \(error.localizedDescription)")
 
@@ -1123,6 +1125,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         _playerLayer?.removeFromSuperlayer()
         _playerLayer = nil
         _playerObserver.playerLayer = nil
+        RCTPlayerOperations.removeSpatialAudioRemoteCommandHandler()
     }
 
     @objc
