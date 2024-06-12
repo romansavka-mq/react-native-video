@@ -1793,6 +1793,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             let tolerance: CMTime = CMTimeMake(value: Int64(seekTolerance?.floatValue ?? .zero), timescale: timeScale)
             
             if CMTimeCompare(current, cmSeekTime) != 0 {
+                let wasPaused = _paused
                 _player?.pause()
                 slavePlayer?.pause()
                 
@@ -1810,7 +1811,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                     self.seekCompletedFor(seekTime: seekTime ?? 0)
                     slave.seekCompletedFor(seekTime: seekTime ?? 0)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.setManagedPaused(paused: false)
+                        self.setManagedPaused(paused: wasPaused)
                     }
                 }
                 _pendingSeek = false
@@ -1852,6 +1853,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             return
         }
         if slave?.isVideoReady() ?? false && _masterPendingPlayRequest {
+            self.setPaused(false)
+            _masterPendingPlayRequest = false
+        } else if self.isVideoReady() && self.slave()?.isVideoReady() ?? false {
             self.setPaused(false)
             _masterPendingPlayRequest = false
         }
