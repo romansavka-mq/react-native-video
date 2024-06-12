@@ -516,6 +516,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             self._playerObserver.player = nil
             self._resouceLoaderDelegate = nil
             self._playerObserver.playerItem = nil
+            RCTPlayerOperations.removeSpatialAudioRemoteCommandHandler()
 
             // perform on next run loop, otherwise other passed react-props may not be set
             RCTVideoUtils.delay { [weak self] in
@@ -524,6 +525,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
                     let playerItem = try await self.preparePlayerItem()
                     try await setupPlayer(playerItem: playerItem)
+                    RCTPlayerOperations.addSpatialAudioRemoteCommandHandler()
                 } catch {
                     DebugLog("An error occurred: \(error.localizedDescription)")
 
@@ -718,11 +720,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             } else {
                 _player?.pause()
                 _player?.rate = 0.0
-                RCTPlayerOperations.addSpatialAudioRemoteCommandHandler()
             }
         } else {
             RCTPlayerOperations.configureAudio(ignoreSilentSwitch: _ignoreSilentSwitch, mixWithOthers: _mixWithOthers, audioOutput: _audioOutput)
-            RCTPlayerOperations.removeSpatialAudioRemoteCommandHandler()
 
             if _adPlaying {
                 #if USE_GOOGLE_IMA
