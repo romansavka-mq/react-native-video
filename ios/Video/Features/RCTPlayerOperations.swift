@@ -11,8 +11,6 @@ let RCTVideoUnset = -1
  */
 enum RCTPlayerOperations {
     
-    static var remoteCommandHandlerForSpatialAudio: Any?
-    
     static func setSideloadedText(player: AVPlayer?, textTracks: [TextTrack], criteria: SelectedTrackCriteria?) {
         let type = criteria?.type
 
@@ -206,30 +204,6 @@ enum RCTPlayerOperations {
             } catch {
                 debugPrint("[RCTPlayerOperations] Problem setting up AVAudioSession options. Error: \(error).")
             }
-        }
-    }
-    
-    // MARK: - Spatial Audio / Dolby Atmos Workaround
-
-    /* These functions are a temporarily workaround to enable the rendering of Dolby Atmos on
-     * iOS 15 and above.
-     */
-    
-    static func addSpatialAudioRemoteCommandHandler() {
-        let command = MPRemoteCommandCenter.shared().playCommand
-        
-        remoteCommandHandlerForSpatialAudio = command.addTarget(handler: { event in
-            MPRemoteCommandHandlerStatus.success
-        })
-    }
-    
-    static func removeSpatialAudioRemoteCommandHandler() {
-        
-        let command = MPRemoteCommandCenter.shared().playCommand
-        
-        if let remoteCommand = RCTPlayerOperations.remoteCommandHandlerForSpatialAudio {
-            command.removeTarget(remoteCommand)
-            RCTPlayerOperations.remoteCommandHandlerForSpatialAudio = nil
         }
     }
 }

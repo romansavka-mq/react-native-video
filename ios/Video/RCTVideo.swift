@@ -516,7 +516,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             self._playerObserver.player = nil
             self._resouceLoaderDelegate = nil
             self._playerObserver.playerItem = nil
-            RCTPlayerOperations.removeSpatialAudioRemoteCommandHandler()
 
             // perform on next run loop, otherwise other passed react-props may not be set
             RCTVideoUtils.delay { [weak self] in
@@ -525,7 +524,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
                     let playerItem = try await self.preparePlayerItem()
                     try await setupPlayer(playerItem: playerItem)
-                    RCTPlayerOperations.addSpatialAudioRemoteCommandHandler()
                 } catch {
                     DebugLog("An error occurred: \(error.localizedDescription)")
 
