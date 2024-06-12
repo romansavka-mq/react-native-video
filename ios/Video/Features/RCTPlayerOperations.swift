@@ -116,12 +116,20 @@ enum RCTPlayerOperations {
                 }
             }
         } else { // default. invalid type or "system"
+                #if os(tvOS)
+            // Do noting. Fix for tvOS native audio menu language selector
+                #else
             await player?.currentItem?.selectMediaOptionAutomatically(in: group)
+                #endif
             return
         }
-
+        // If a match isn't found, option will be nil and text tracks will be disabled
+            #if os(tvOS)
+        // Do noting. Fix for tvOS native audio menu language selector
+            #else
         // If a match isn't found, option will be nil and text tracks will be disabled
         await player?.currentItem?.select(mediaOption, in: group)
+            #endif
     }
 
     static func seek(player: AVPlayer, playerItem: AVPlayerItem, paused: Bool, seekTime: Float, seekTolerance: Float, completion: @escaping (Bool) -> Void) {
