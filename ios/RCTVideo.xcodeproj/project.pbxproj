@@ -49,6 +49,10 @@
 		0177D39827170A7A00F5BE18 /* RCTVideo-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTVideo-Bridging-Header.h"; path = "Video/RCTVideo-Bridging-Header.h"; sourceTree = "<group>"; };
 		0177D39927170A7A00F5BE18 /* RCTVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RCTVideo.swift; path = Video/RCTVideo.swift; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libRCTVideo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTVideo.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCF8FEFD2C1A174E00CCA6B0 /* CurrentVideos.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CurrentVideos.h; path = Video/CurrentVideos.h; sourceTree = "<group>"; };
+		DCF8FEFE2C1A174E00CCA6B0 /* CurrentVideos.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CurrentVideos.m; path = Video/CurrentVideos.m; sourceTree = "<group>"; };
+		DCF8FEFF2C1A18AC00CCA6B0 /* WeakVideoRef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WeakVideoRef.h; path = Video/WeakVideoRef.h; sourceTree = "<group>"; };
+		DCF8FF002C1A18AC00CCA6B0 /* WeakVideoRef.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WeakVideoRef.m; path = Video/WeakVideoRef.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +95,10 @@
 				01489051272001A100E69940 /* Features */,
 				0177D39527170A7A00F5BE18 /* RCTSwiftLog */,
 				0177D39927170A7A00F5BE18 /* RCTVideo.swift */,
+				DCF8FEFD2C1A174E00CCA6B0 /* CurrentVideos.h */,
+				DCF8FEFE2C1A174E00CCA6B0 /* CurrentVideos.m */,
+				DCF8FEFF2C1A18AC00CCA6B0 /* WeakVideoRef.h */,
+				DCF8FF002C1A18AC00CCA6B0 /* WeakVideoRef.m */,
 				0177D39727170A7A00F5BE18 /* RCTVideoManager.m */,
 				0177D39227170A7A00F5BE18 /* RCTVideoManager.swift */,
 				0177D39427170A7A00F5BE18 /* RCTVideoPlayerViewController.swift */,

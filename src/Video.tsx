@@ -66,6 +66,8 @@ export interface VideoRef {
   save: (options: object) => Promise<VideoSaveData>;
   setVolume: (volume: number) => void;
   getCurrentTime: () => Promise<number>;
+  setMasterVideoId: () => void;
+  setSlaveVideoId: () => void;
 }
 
 const Video = forwardRef<VideoRef, ReactVideoProps>(
@@ -78,6 +80,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       poster,
       fullscreen,
       drm,
+      masterVideo,
+      slaveVideo,
       textTracks,
       selectedVideoTrack,
       selectedAudioTrack,
@@ -298,6 +302,14 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
 
     const setVolume = useCallback((volume: number) => {
       return VideoManager.setVolume(volume, getReactTag(nativeRef));
+    }, []);
+
+    const setMasterVideoId = useCallback((masterId: string) => {
+      nativeRef.current?.setNativeProps({masterVideo: masterId});
+    }, []);
+
+    const setSlaveVideoId = useCallback((slaveId: string) => {
+      nativeRef.current?.setNativeProps({slaveVideo: slaveId});
     }, []);
 
     const onVideoLoadStart = useCallback(
