@@ -630,6 +630,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         }
 #endif
         let url = ((playerItem.asset as? AVURLAsset)?.url as? NSURL)
+        let tracks = _player?.currentItem?.tracks
+        let videoAsset = tracks?.first
+        let audtioAsset = tracks?.last
         
         url?.m3u_loadAsyncCompletion { model, error in
             if model != nil {
