@@ -674,7 +674,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                             "title": currentAudio.name(),
                             "language": currentAudio.language(),
                             "codecs": currentAudio.groupId(),
-                            "file": audioInfo.uri
+                            "file": audioInfo.uri.absoluteString
                         ]
                     }
                     
@@ -687,9 +687,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     
     func getVideoTrackInfo(model: M3U8PlaylistModel) -> [String: Any] {
         if model.mainMediaPl.segmentList.count > 0 {
-            let uri = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
+            let stringURL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri.absoluteString
             return [
-                "file": uri
+                "file": stringURL
             ]
         }
         return .init()
