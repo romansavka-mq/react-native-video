@@ -53,6 +53,7 @@
 		DCF8FEFE2C1A174E00CCA6B0 /* CurrentVideos.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CurrentVideos.m; path = Video/CurrentVideos.m; sourceTree = "<group>"; };
 		DCF8FEFF2C1A18AC00CCA6B0 /* WeakVideoRef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WeakVideoRef.h; path = Video/WeakVideoRef.h; sourceTree = "<group>"; };
 		DCF8FF002C1A18AC00CCA6B0 /* WeakVideoRef.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WeakVideoRef.m; path = Video/WeakVideoRef.m; sourceTree = "<group>"; };
+		DCF8FF322C1AF64800CCA6B0 /* M3U8Kit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = M3U8Kit; path = Video/M3U8Kit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +92,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				DCF8FF322C1AF64800CCA6B0 /* M3U8Kit */,
 				01489050272001A100E69940 /* DataStructures */,
 				01489051272001A100E69940 /* Features */,
 				0177D39527170A7A00F5BE18 /* RCTSwiftLog */,

@@ -140,6 +140,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     @objc var onPlaybackStalled: RCTDirectEventBlock?
     @objc var onPlaybackResume: RCTDirectEventBlock?
     @objc var onPlaybackRateChange: RCTDirectEventBlock?
+    @objc var onPlayedTracksChange: RCTDirectEventBlock?
     @objc var onVolumeChange: RCTDirectEventBlock?
     @objc var onVideoPlaybackStateChanged: RCTDirectEventBlock?
     @objc var onVideoExternalPlaybackChange: RCTDirectEventBlock?
@@ -628,8 +629,49 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             playerItem.navigationMarkerGroups = RCTVideoTVUtils.makeNavigationMarkerGroups(chapters)
         }
 #endif
+        let url = ((playerItem.asset as? AVURLAsset)?.url as? NSURL)
         
+        url?.m3u_loadAsyncCompletion { model, error in
+            if model != nil {
+                self.onPlayedTracksChange?(
+                    [
+                        "audioTrack": self.getAudioTrackInfo(model: model),
+                        "textTrack": self._textTracks
+                    ]
+                )
+            }
+        }
         return playerItem
+    }
+    
+    func getAudioTrackInfo(model: M3U8PlaylistModel?) -> [String: Any] {
+        guard let model else { return .init() }
+        let group: AVMediaSelectionGroup = _player?.currentItem?
+            .asset.mediaSelectionGroup(forMediaCharacteristic: .audible) ?? .init()
+        
+        if group.options.count > 0 {
+            let currentOption: AVMediaSelectionOption = group.options[0]
+            
+            var title: String?
+            let values = currentOption.commonMetadata.map(\.value)
+            
+            if values.count > 0 {
+                title = values[0] as? String
+            }
+            
+            let language: String = currentOption.extendedLanguageTag ?? ""
+            
+            let file: String = model.originalURL.lastPathComponent
+            
+            return [
+                "index": NSNumber(0),
+                "title": title,
+                "language": language,
+                "file": file
+            ]
+        }
+        
+        return .init()
     }
     
     // MARK: - Prop setters
