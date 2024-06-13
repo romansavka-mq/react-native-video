@@ -68,9 +68,7 @@ RCT_EXPORT_VIEW_PROPERTY(onPictureInPictureStatusChanged, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onRestoreUserInterfaceForPictureInPictureStop, RCTDirectEventBlock);
 
 RCT_EXPORT_VIEW_PROPERTY(onCommandResult, RCTBubblingEventBlock);
-RCT_EXTERN_METHOD(getCurrentTime
-                  : (nonnull NSNumber*)rectTag reactTag
-                  : (nonnull NSNumber *)commandId commandId)
+RCT_EXTERN_METHOD(getCurrentTime : (nonnull NSNumber*)rectTag reactTag : (nonnull NSNumber*)commandId commandId)
 
 RCT_EXPORT_VIEW_PROPERTY(onReceiveAdEvent, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onTextTracks, RCTDirectEventBlock);

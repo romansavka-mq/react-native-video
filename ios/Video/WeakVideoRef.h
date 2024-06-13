@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTVideo;
 @interface WeakVideoRef : NSObject
-@property(weak) RCTVideo *video;
+@property(weak) RCTVideo* video;
 @end
 
 NS_ASSUME_NONNULL_END
