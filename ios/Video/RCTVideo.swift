@@ -674,7 +674,8 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                             "title": currentAudio.name(),
                             "language": currentAudio.language(),
                             "codecs": currentAudio.groupId(),
-                            "file": audioInfo.uri.absoluteString
+                            "file": audioInfo.uri.absoluteString,
+                            "channels": currentAudio.channels
                         ]
                     }
                     
@@ -697,14 +698,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             
             var codecs: String = ""
             
-            for i in 0..<masterModel.masterPlaylist.xStreamList.count {
-                if let inf = masterModel.masterPlaylist.xStreamList.xStreamInf(at: i) {
-                    let currentPath = (uri.absoluteString as NSString).deletingPathExtension
-                    let infPath = (inf.uri.absoluteString as NSString as NSString).deletingPathExtension
-                    
-                    if currentPath == infPath {
-                        codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
-                    }
+            if masterModel.masterPlaylist.xStreamList.count > 0 {
+                if let inf = masterModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
+                    codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
                 }
             }
             
@@ -1561,8 +1557,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             let urlString: String = _player?.currentItem?.accessLog()?.events.last?.uri ?? ""
             let url = NSURL(string: urlString)
             let asset: AVAsset? = _player?.currentItem?.asset
-            let hasVideo: Bool = asset?.tracks(withMediaType: .video).count ?? 0 > 0
-            let hasAudtio: Bool = asset?.tracks(withMediaType: .audio).count ?? 0 > 0
             
             let masterURL: NSURL? = (_player?.currentItem?.asset as? AVURLAsset)?.url as? NSURL
             
