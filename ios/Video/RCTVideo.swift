@@ -695,10 +695,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         return .init()
     }
     
-    func getCurrentMediaData(model: M3U8PlaylistModel) -> M3U8ExtXStreamInf? {
-        nil
-    }
-    
     // MARK: - Prop setters
     
     @objc
