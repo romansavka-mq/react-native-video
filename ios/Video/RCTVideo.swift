@@ -685,11 +685,33 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         return .init()
     }
     
-    func getVideoTrackInfo(model: M3U8PlaylistModel) -> [String: Any] {
+    func getVideoTrackInfo(
+        model: M3U8PlaylistModel,
+        masterModel: M3U8PlaylistModel) -> [String: Any] {
+            
         if model.mainMediaPl.segmentList.count > 0 {
-            let stringURL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri.absoluteString
+            let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
+            if uri == nil {
+                return .init()
+            }
+            
+            var codecs: String = ""
+            
+            for i in 0..<masterModel.masterPlaylist.xStreamList.count {
+                if let inf = masterModel.masterPlaylist.xStreamList.xStreamInf(at: i) {
+                    let currentPath = (uri.absoluteString as NSString).deletingPathExtension
+                    let infPath = (inf.uri.absoluteString as NSString as NSString).deletingPathExtension
+                    
+                    if currentPath == infPath {
+                        codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
+                    }
+                }
+            }
+            
+            let stringURL = uri.absoluteString as NSString
             return [
-                "file": stringURL
+                "file": stringURL,
+                "codecs": codecs
             ]
         }
         return .init()
@@ -1536,21 +1558,26 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     
     func handleMetadataUpdateForTrackChange() {
         if onPlayedTracksChange != nil {
-            let string: String = _player?.currentItem?.accessLog()?.events.last?.uri ?? ""
-            let url = NSURL(string: string)
-            if let url {
-                url.m3u_loadAsyncCompletion { model, _ in
-                    let masterURL = (self._player?.currentItem?.asset as? AVURLAsset)?.url
-                    let masterModel: M3U8PlaylistModel? = try? .init(url: masterURL)
-                    
-                    if let model, let masterModel {
-                        self.onPlayedTracksChange?(
-                            [
-                                "audioTrack": self.getAudioTrackInfo(model: model, masterModel: masterModel),
-                                "textTrack": self._textTracks,
-                                "videoTrack": self.getVideoTrackInfo(model: model)
-                            ]
-                        )
+            let urlString: String = _player?.currentItem?.accessLog()?.events.last?.uri ?? ""
+            let url = NSURL(string: urlString)
+            let asset: AVAsset? = _player?.currentItem?.asset
+            let hasVideo: Bool = asset?.tracks(withMediaType: .video).count ?? 0 > 0
+            let hasAudtio: Bool = asset?.tracks(withMediaType: .audio).count ?? 0 > 0
+            
+            let masterURL: NSURL? = (_player?.currentItem?.asset as? AVURLAsset)?.url as? NSURL
+            
+            masterURL?.m3u_loadAsyncCompletion { masterModel, _ in
+                if let url {
+                    url.m3u_loadAsyncCompletion { model, _ in
+                        if let model, let masterModel {
+                            self.onPlayedTracksChange?(
+                                [
+                                    "audioTrack": self.getAudioTrackInfo(model: model, masterModel: masterModel),
+                                    "textTrack": self._textTracks,
+                                    "videoTrack": self.getVideoTrackInfo(model: model, masterModel: masterModel)
+                                ]
+                            )
+                        }
                     }
                 }
             }
