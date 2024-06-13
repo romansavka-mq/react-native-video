@@ -62,7 +62,7 @@ class RCTVideoManager: RCTViewManager {
             videoView?.dismissFullscreenPlayer()
         })
     }
-    
+
     @objc(getCurrentTime:commandId:)
     func getCurrentTime(_ reactTag: NSNumber, commandId: NSNumber) {
         performOnVideoView(withReactTag: reactTag, callback: { videoView in

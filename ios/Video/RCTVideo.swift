@@ -75,10 +75,10 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     private var _presentingViewController: UIViewController?
     private var _startPosition: Float64 = -1
     private var _showNotificationControls = false
-    private var _masterVideo: NSNumber?
-    private var _slaveVideo: NSNumber?
+    private var _principalVideo: NSNumber?
+    private var _peripheralVideo: NSNumber?
     private var _videoState: VideoState = .unknown
-    private var _masterPendingPlayRequest = false
+    private var _principalPendingPlayRequest = false
     private var _pictureInPictureEnabled = false {
         didSet {
             #if os(iOS)
@@ -111,10 +111,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
     private var _resouceLoaderDelegate: RCTResourceLoaderDelegate?
     private var _playerObserver: RCTPlayerObserver = .init()
-
-    #if USE_VIDEO_CACHING
-        private let _videoCache: RCTVideoCachingHandler = .init()
-    #endif
 
     #if os(iOS)
         private var _pip: RCTPictureInPicture?
@@ -633,12 +629,12 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
     func getAudioTrackInfo(
         model _: M3U8PlaylistModel,
-        masterModel: M3U8PlaylistModel
+        principalModel: M3U8PlaylistModel
     ) -> [String: Any] {
         var streamList: NSArray = .init()
 
-        for i in 0 ..< masterModel.masterPlaylist.xStreamList.count {
-            let inf = masterModel.masterPlaylist.xStreamList.xStreamInf(at: i)
+        for i in 0 ..< principalModel.masterPlaylist.xStreamList.count {
+            let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: i)
             if let inf {
                 streamList.adding(inf)
             }
@@ -651,8 +647,8 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             if let current = current as? M3U8ExtXStreamInf {
                 let mediaList: NSArray = .init()
-                for i in 0 ..< masterModel.masterPlaylist.xMediaList.audio().count {
-                    let inf = masterModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
+                for i in 0 ..< principalModel.masterPlaylist.xMediaList.audio().count {
+                    let inf = principalModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
                     if let inf {
                         mediaList.adding(inf)
                     }
@@ -685,7 +681,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
     func getVideoTrackInfo(
         model: M3U8PlaylistModel,
-        masterModel: M3U8PlaylistModel
+        principalModel: M3U8PlaylistModel
     ) -> [String: Any] {
         if !model.mainMediaPl.segmentList.isEmpty {
             let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
@@ -695,8 +691,8 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             var codecs = ""
 
-            if !masterModel.masterPlaylist.xStreamList.isEmpty {
-                if let inf = masterModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
+            if !principalModel.masterPlaylist.xStreamList.isEmpty {
+                if let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
                     codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
                 }
             }
@@ -842,12 +838,12 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     @objc
     func setSeek(_ info: NSDictionary!) {
         if self.isManaged() {
-            if self.isSlave() {
+            if self.isPeripheral() {
                 return
             }
-            let slave = self.slave()
+            let peripheral = self.peripheral()
             self.setSeekManaged(info: info)
-            slave?.setSeekManaged(info: info)
+            peripheral?.setSeekManaged(info: info)
             return
         }
         let seekTime: NSNumber! = info["time"] as! NSNumber
@@ -1555,17 +1551,17 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             let url = NSURL(string: urlString)
             let asset: AVAsset? = _player?.currentItem?.asset
 
-            let masterURL: NSURL? = (_player?.currentItem?.asset as? AVURLAsset)?.url as? NSURL
+            let principalURL: NSURL? = (_player?.currentItem?.asset as? AVURLAsset)?.url as? NSURL
 
-            masterURL?.m3u_loadAsyncCompletion { masterModel, _ in
+            principalURL?.m3u_loadAsyncCompletion { principalModel, _ in
                 if let url {
                     url.m3u_loadAsyncCompletion { model, _ in
-                        if let model, let masterModel {
+                        if let model, let principalModel {
                             self.onPlayedTracksChange?(
                                 [
-                                    "audioTrack": self.getAudioTrackInfo(model: model, masterModel: masterModel),
+                                    "audioTrack": self.getAudioTrackInfo(model: model, principalModel: principalModel),
                                     "textTrack": self._textTracks,
-                                    "videoTrack": self.getVideoTrackInfo(model: model, masterModel: masterModel),
+                                    "videoTrack": self.getVideoTrackInfo(model: model, principalModel: principalModel),
                                 ]
                             )
                         }
@@ -1606,10 +1602,10 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     // Continue playing (or not if paused) after being paused due to hitting an unbuffered zone.
     func handlePlaybackLikelyToKeepUp(playerItem _: AVPlayerItem, change _: NSKeyValueObservedChange<Bool>) {
         if self.isManaged() {
-            if self.isSlave() {
-                self.onSlaveVideoStatusChange()
+            if self.isPeripheral() {
+                self.onPeripheralVideoStatusChange()
             } else {
-                _masterPendingPlayRequest = true
+                _principalPendingPlayRequest = true
             }
         } else {
             if (!_controls || _fullscreenPlayerPresented || _isBuffering) && _playerItem?.isPlaybackLikelyToKeepUp ?? false {
@@ -1795,72 +1791,72 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     @objc
     func setOnClick(_: Any) {}
 
-    func setMasterVideo(tag: NSNumber) {
-        _masterVideo = tag
+    func setPrincipalVideo(tag: NSNumber) {
+        _principalVideo = tag
     }
 
-    func setSlaveVideo(tag: NSNumber) {
-        _slaveVideo = tag
+    func setPeripheralVideo(tag: NSNumber) {
+        _peripheralVideo = tag
     }
 
-    func isMaster() -> Bool {
-        _slaveVideo != nil
+    func isPrincipal() -> Bool {
+        _peripheralVideo != nil
     }
 
-    func isSlave() -> Bool {
-        _masterVideo != nil
+    func isPeripheral() -> Bool {
+        _principalVideo != nil
     }
 
-    func slave() -> RCTVideo? {
-        guard let video = _slaveVideo else {
+    func peripheral() -> RCTVideo? {
+        guard let video = _peripheralVideo else {
             return nil
         }
         return CurrentVideos.shared().video(forTag: video)
     }
 
-    func master() -> RCTVideo? {
-        guard let video = _masterVideo else {
+    func principal() -> RCTVideo? {
+        guard let video = _principalVideo else {
             return nil
         }
         return CurrentVideos.shared().video(forTag: video)
     }
 
     func isManaged() -> Bool {
-        isSlave() || isMaster()
+        isPeripheral() || isPrincipal()
     }
 
     func setManagedPaused(paused: Bool) {
-        if isSlave() {
+        if isPeripheral() {
             return
         }
-        guard let slave = slave() else {
+        guard let peripheral = peripheral() else {
             return
         }
-        var slavePlayer = slave._player
+        var peripheralPlayer = peripheral._player
         if paused {
             _player?.pause()
-            slavePlayer?.pause()
+            peripheralPlayer?.pause()
             _player?.rate = 0.0
-            slavePlayer?.rate = 0.0
+            peripheralPlayer?.rate = 0.0
         } else {
-            if !isVideoReady() || slave.isVideoReady() {
-                _masterPendingPlayRequest = true
+            if !isVideoReady() || peripheral.isVideoReady() {
+                _principalPendingPlayRequest = true
                 return
             }
             RCTPlayerOperations.configureAudio(ignoreSilentSwitch: _ignoreSilentSwitch, mixWithOthers: _mixWithOthers, audioOutput: _audioOutput)
 
             if #available(iOS 10.0, *), !_automaticallyWaitsToMinimizeStalling {
                 _player?.playImmediately(atRate: _rate)
-                slavePlayer?.playImmediately(atRate: _rate)
+                peripheralPlayer?.playImmediately(atRate: _rate)
             } else {
                 _player?.play()
-                slavePlayer?.play()
+                peripheralPlayer?.play()
             }
             _player?.rate = _rate
-            slavePlayer?.rate = _rate
+            peripheralPlayer?.rate = _rate
         }
         _paused = paused
-        slave.setRaw(paused: paused)
+        peripheral.setRaw(paused: paused)
     }
 
     func isVideoReady() -> Bool {
@@ -1876,10 +1872,10 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     }
 
     func setSeekManaged(info: NSDictionary) {
-        if !isMaster() {
+        if !isPrincipal() {
             return
         }
-        guard let slave = slave() else {
+        guard let peripheral = peripheral() else {
             return
         }
         let seekTime: NSNumber? = info["time"] as? NSNumber
@@ -1888,9 +1884,9 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         let timeScale: Int32 = 1000
 
         let item: AVPlayerItem? = _player?.currentItem
-        let slavePlayer: AVPlayer? = slave.player()
-        let slaveItem: AVPlayerItem? = slavePlayer?.currentItem
-        if let item, item.status == .readyToPlay, let slaveItem, slaveItem.status == .readyToPlay {
+        let peripheralPlayer: AVPlayer? = peripheral.player()
+        let peripheralItem: AVPlayerItem? = peripheralPlayer?.currentItem
+        if let item, item.status == .readyToPlay, let peripheralItem, peripheralItem.status == .readyToPlay {
             // TODO: check loadedTimeRanges
 
             let cmSeekTime: CMTime = CMTimeMakeWithSeconds(Float64(seekTime?.floatValue ?? .zero), preferredTimescale: timeScale)
@@ -1900,7 +1896,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             if CMTimeCompare(current, cmSeekTime) != 0 {
                 let wasPaused = _paused
                 _player?.pause()
-                slavePlayer?.pause()
+                peripheralPlayer?.pause()
 
                 let seekGroup: DispatchGroup = .init()
                 seekGroup.enter()
@@ -1908,13 +1904,13 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                     seekGroup.leave()
                 })
                 seekGroup.enter()
-                slavePlayer?.seek(to: cmSeekTime, toleranceBefore: tolerance, toleranceAfter: tolerance, completionHandler: { _ in
+                peripheralPlayer?.seek(to: cmSeekTime, toleranceBefore: tolerance, toleranceAfter: tolerance, completionHandler: { _ in
                     seekGroup.leave()
                 })
 
                 seekGroup.notify(queue: .main) {
                     self.seekCompletedFor(seekTime: seekTime ?? 0)
-                    slave.seekCompletedFor(seekTime: seekTime ?? 0)
+                    peripheral.seekCompletedFor(seekTime: seekTime ?? 0)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.setManagedPaused(paused: wasPaused)
                     }
@@ -1946,23 +1942,23 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             return
         }
         _videoState != state
-        if self.isSlave() {
-            let master = self.master()
-            master?.onSlaveVideoStatusChange()
+        if self.isPeripheral() {
+            let principal = self.principal()
+            principal?.onPeripheralVideoStatusChange()
         }
     }
 
-    func onSlaveVideoStatusChange() {
-        let slave = self.slave()
-        if slave != nil {
+    func onPeripheralVideoStatusChange() {
+        let peripheral = self.peripheral()
+        if peripheral != nil {
             return
         }
-        if slave?.isVideoReady() ?? false && _masterPendingPlayRequest {
+        if peripheral?.isVideoReady() ?? false && _principalPendingPlayRequest {
             self.setPaused(false)
-            _masterPendingPlayRequest = false
-        } else if self.isVideoReady() && self.slave()?.isVideoReady() ?? false {
+            _principalPendingPlayRequest = false
+        } else if self.isVideoReady() && self.peripheral()?.isVideoReady() ?? false {
             self.setPaused(false)
-            _masterPendingPlayRequest = false
+            _principalPendingPlayRequest = false
         }
     }
 }
