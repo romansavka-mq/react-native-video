@@ -66,8 +66,8 @@ export interface VideoRef {
   save: (options: object) => Promise<VideoSaveData>;
   setVolume: (volume: number) => void;
   getCurrentTime: () => Promise<number>;
-  setMasterVideoId: () => void;
-  setSlaveVideoId: () => void;
+  setPrincipalVideoId: () => void;
+  setPeripheralVideoId: () => void;
 }
 
 const Video = forwardRef<VideoRef, ReactVideoProps>(
@@ -80,8 +80,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       poster,
       fullscreen,
       drm,
-      masterVideo,
-      slaveVideo,
+      principalVideo,
+      peripheralVideo,
       textTracks,
       selectedVideoTrack,
       selectedAudioTrack,
@@ -304,12 +304,12 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       return VideoManager.setVolume(volume, getReactTag(nativeRef));
     }, []);
 
-    const setMasterVideoId = useCallback((masterId: string) => {
-      nativeRef.current?.setNativeProps({masterVideo: masterId});
+    const setPrincipalVideoId = useCallback((principalId: string) => {
+      nativeRef.current?.setNativeProps({principalVideo: principalId});
     }, []);
 
-    const setSlaveVideoId = useCallback((slaveId: string) => {
-      nativeRef.current?.setNativeProps({slaveVideo: slaveId});
+    const setPeripheralVideoId = useCallback((peripheralId: string) => {
+      nativeRef.current?.setNativeProps({peripheralVideo: peripheralId});
     }, []);
 
     const onVideoLoadStart = useCallback(
@@ -551,6 +551,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
           {...rest}
           src={src}
           drm={_drm}
+          principalVideo={principalVideo}
+          peripheralVideo={peripheralVideo}
           style={StyleSheet.absoluteFill}
           resizeMode={resizeMode}
           fullscreen={isFullscreen}
