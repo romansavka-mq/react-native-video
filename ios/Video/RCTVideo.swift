@@ -629,52 +629,74 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             playerItem.navigationMarkerGroups = RCTVideoTVUtils.makeNavigationMarkerGroups(chapters)
         }
 #endif
-        let url = ((playerItem.asset as? AVURLAsset)?.url as? NSURL)
-        let tracks = _player?.currentItem?.tracks
-        let videoAsset = tracks?.first
-        let audtioAsset = tracks?.last
-        
-        url?.m3u_loadAsyncCompletion { model, error in
-            if model != nil {
-                self.onPlayedTracksChange?(
-                    [
-                        "audioTrack": self.getAudioTrackInfo(model: model),
-                        "textTrack": self._textTracks
-                    ]
-                )
-            }
-        }
         return playerItem
     }
     
-    func getAudioTrackInfo(model: M3U8PlaylistModel?) -> [String: Any] {
-        guard let model else { return .init() }
-        let group: AVMediaSelectionGroup = _player?.currentItem?
-            .asset.mediaSelectionGroup(forMediaCharacteristic: .audible) ?? .init()
+    func getAudioTrackInfo(
+        model: M3U8PlaylistModel,
+        masterModel: M3U8PlaylistModel
+    ) -> [String: Any] {
         
-        if group.options.count > 0 {
-            let currentOption: AVMediaSelectionOption = group.options[0]
-            
-            var title: String?
-            let values = currentOption.commonMetadata.map(\.value)
-            
-            if values.count > 0 {
-                title = values[0] as? String
+        var streamList: NSArray = .init()
+        
+        for i in 0..<masterModel.masterPlaylist.xStreamList.count {
+            let inf = masterModel.masterPlaylist.xStreamList.xStreamInf(at: i)
+            if let inf {
+                streamList.adding(inf)
             }
+        }
+        
+        if let currentEvent: AVPlayerItemAccessLogEvent = _player?.currentItem?.accessLog()?.events.last {
+            let predicate: NSPredicate = NSPredicate(format: "%K == %f", "bandwidth", currentEvent.indicatedBitrate)
+            let filteredArray = streamList.filtered(using: predicate)
+            let current = filteredArray.last
             
-            let language: String = currentOption.extendedLanguageTag ?? ""
-            
-            let file: String = model.originalURL.lastPathComponent
-            
-            return [
-                "index": NSNumber(0),
-                "title": title,
-                "language": language,
-                "file": file
-            ]
+            if let current = current as? M3U8ExtXStreamInf {
+                let mediaList: NSArray = .init()
+                for i in 0..<masterModel.masterPlaylist.xMediaList.audio().count {
+                    let inf = masterModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
+                    if let inf {
+                        mediaList.adding(inf)
+                    }
+                }
+                
+                let predicate = NSPredicate(format: "SELF.groupId == %@", current.audio)
+                let currentAudio = mediaList.filtered(using: predicate).last
+                
+                if let currentAudio = currentAudio as? M3U8ExtXMedia {
+                    let url: URL = currentAudio.m3u8URL()
+                    let audioModel: M3U8PlaylistModel? = try? .init(url: url)
+                    
+                    if let audioModel {
+                        let audioInfo: M3U8SegmentInfo = audioModel.mainMediaPl.segmentList.segmentInfo(at: 0)
+                        
+                        return [
+                            "title": currentAudio.name(),
+                            "language": currentAudio.language(),
+                            "codecs": currentAudio.groupId(),
+                            "file": audioInfo.uri
+                        ]
+                    }
+                    
+                }
+            }
         }
         
         return .init()
+    }
+    
+    func getVideoTrackInfo(model: M3U8PlaylistModel) -> [String: Any] {
+        if model.mainMediaPl.segmentList.count > 0 {
+            let uri = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
+            return [
+                "file": uri
+            ]
+        }
+        return .init()
+    }
+    
+    func getCurrentMediaData(model: M3U8PlaylistModel) -> M3U8ExtXStreamInf? {
+        nil
     }
     
     // MARK: - Prop setters
@@ -1510,8 +1532,32 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             }
             
             self._videoLoadStarted = false
+            self.handleMetadataUpdateForTrackChange()
             self._playerObserver.attachPlayerEventListeners()
             self.applyModifiers()
+        }
+    }
+    
+    func handleMetadataUpdateForTrackChange() {
+        if onPlayedTracksChange != nil {
+            let string: String = _player?.currentItem?.accessLog()?.events.last?.uri ?? ""
+            let url = NSURL(string: string)
+            if let url {
+                url.m3u_loadAsyncCompletion { model, _ in
+                    let masterURL = (self._player?.currentItem?.asset as? AVURLAsset)?.url
+                    let masterModel: M3U8PlaylistModel? = try? .init(url: masterURL)
+                    
+                    if let model, let masterModel {
+                        self.onPlayedTracksChange?(
+                            [
+                                "audioTrack": self.getAudioTrackInfo(model: model, masterModel: masterModel),
+                                "textTrack": self._textTracks,
+                                "videoTrack": self.getVideoTrackInfo(model: model)
+                            ]
+                        )
+                    }
+                }
+            }
         }
     }
     
