@@ -66,8 +66,8 @@ export interface VideoRef {
   save: (options: object) => Promise<VideoSaveData>;
   setVolume: (volume: number) => void;
   getCurrentTime: () => Promise<number>;
-  setPrincipalVideoId: () => void;
-  setPeripheralVideoId: () => void;
+  setPrincipalVideoId: (principalId: number) => void;
+  setPeripheralVideoId: (peripheralId: number) => void;
 }
 
 const Video = forwardRef<VideoRef, ReactVideoProps>(
@@ -122,6 +122,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
     const nativeRef = useRef<ComponentRef<VideoComponentType>>(null);
     const [showPoster, setShowPoster] = useState(!!poster);
     const [isFullscreen, setIsFullscreen] = useState(fullscreen);
+    const [getPrincipalVideo, setPrincipalVideo] = useState(principalVideo);
+    const [getPeripheralVideo, setPeripheralVideo] = useState(peripheralVideo);
     const [
       _restoreUserInterfaceForPIPStopCompletionHandler,
       setRestoreUserInterfaceForPIPStopCompletionHandler,
@@ -304,12 +306,12 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       return VideoManager.setVolume(volume, getReactTag(nativeRef));
     }, []);
 
-    const setPrincipalVideoId = useCallback((principalId: string) => {
-      nativeRef.current?.setNativeProps({principalVideo: principalId});
+    const setPrincipalVideoId = useCallback((principalId: number) => {
+      setPrincipalVideo(principalId);
     }, []);
 
-    const setPeripheralVideoId = useCallback((peripheralId: string) => {
-      nativeRef.current?.setNativeProps({peripheralVideo: peripheralId});
+    const setPeripheralVideoId = useCallback((peripheralId: number) => {
+      setPeripheralVideo(peripheralId);
     }, []);
 
     const onVideoLoadStart = useCallback(
@@ -528,6 +530,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         pause,
         resume,
         getCurrentTime,
+        setPrincipalVideoId,
+        setPeripheralVideoId,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
       }),
@@ -539,6 +543,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         pause,
         resume,
         getCurrentTime,
+        setPrincipalVideoId,
+        setPeripheralVideoId,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
       ],
@@ -551,8 +557,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
           {...rest}
           src={src}
           drm={_drm}
-          principalVideo={principalVideo}
-          peripheralVideo={peripheralVideo}
+          principalVideo={getPrincipalVideo}
+          peripheralVideo={getPeripheralVideo}
           style={StyleSheet.absoluteFill}
           resizeMode={resizeMode}
           fullscreen={isFullscreen}
