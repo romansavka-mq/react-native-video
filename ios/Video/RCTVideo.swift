@@ -146,7 +146,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     @objc var onPictureInPictureStatusChanged: RCTDirectEventBlock?
     @objc var onRestoreUserInterfaceForPictureInPictureStop: RCTDirectEventBlock?
     @objc var onGetLicense: RCTDirectEventBlock?
-    @objc var onCommandResult: RCTDirectEventBlock?
     @objc var onReceiveAdEvent: RCTDirectEventBlock?
     @objc var onTextTracks: RCTDirectEventBlock?
     @objc var onAudioTracks: RCTDirectEventBlock?
@@ -1395,23 +1394,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
     func setLicenseResultError(_ error: String!, _ licenseUrl: String!) {
         _resouceLoaderDelegate?.setLicenseResultError(error, licenseUrl)
-    }
-
-    func requestedCurrentTime(_ requestId: NSNumber!) {
-        if let onCommandResult {
-            return
-        }
-
-        let result: [NSString: NSNumber] = [
-            "requestId": requestId,
-            "result": getCurrentTime(),
-        ]
-        onCommandResult?(result)
-    }
-
-    private func getCurrentTime() -> NSNumber {
-        let time = _playerItem != nil ? CMTimeGetSeconds(_playerItem?.currentTime() ?? .zero) : 0
-        return NSNumber(value: time)
     }
 
     func dismissFullscreenPlayer() {
