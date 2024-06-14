@@ -22,6 +22,7 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.Tracks;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
@@ -236,9 +237,9 @@ public final class ExoPlayerView extends FrameLayout {
             if (!captionLinesRespected) {
                 ArrayList<Cue> noLineCues = new ArrayList<>();
                 for (Cue cue : cues) noLineCues.add(cue.buildUpon().setLine(DIMEN_UNSET, LINE_TYPE_NUMBER).build());
-                subtitleLayout.onCues(noLineCues);
+                subtitleLayout.setCues(noLineCues);
             } else {
-                subtitleLayout.onCues(cues);
+                subtitleLayout.setCues(cues);
             }
         }
 
@@ -293,7 +294,7 @@ public final class ExoPlayerView extends FrameLayout {
         }
 
         @Override
-        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+        public void onTracksChanged(Tracks tracks) {
             updateForCurrentTrackSelections();
         }
 

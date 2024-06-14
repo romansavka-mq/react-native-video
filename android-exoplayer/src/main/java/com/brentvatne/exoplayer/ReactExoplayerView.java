@@ -40,6 +40,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.Tracks;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
 import com.google.android.exoplayer2.drm.DrmSessionEventListener;
 import com.google.android.exoplayer2.drm.DrmSessionManager;
@@ -878,7 +879,9 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     @Override
-    public void onTracksChanged(@NonNull TrackGroupArray trackGroups, @NonNull TrackSelectionArray trackSelections) {
+    public void onTracksChanged(Tracks tracks) {
+        TrackGroupArray trackGroups = player.getCurrentTrackGroups();
+        TrackSelectionArray trackSelections = player.getCurrentTrackSelections();
         if (trackGroups != lastSeenTrackGroupArray || TracksUtil.selectionChanged(lastSeenTrackSelectionArray, trackSelections)) {
             lastSeenTrackGroupArray = trackGroups;
 

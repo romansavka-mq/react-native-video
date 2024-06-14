@@ -86,7 +86,7 @@ public class TracksUtil {
             @Nullable String type,
             @Nullable Dynamic value) {
         List<TrackInfo> selection = new ArrayList<>();
-        ParametersBuilder builder = initialParameters.buildUpon();
+        Parameters.Builder builder = initialParameters.buildUpon();
         if (type == null || value == null) type = "default";
         switch (type) {
             case "disabled": {
