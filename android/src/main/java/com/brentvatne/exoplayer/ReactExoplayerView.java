@@ -306,7 +306,7 @@ public class ReactExoplayerView extends FrameLayout implements
     private void createViews() {
         clearResumePosition();
         mediaDataSourceFactory = buildDataSourceFactory(true);
-        setCookiesPolicy(CookiesPolicy.SYSTEM_DEFAULT);
+        setCookiePolicy(CookiesPolicy.SYSTEM_DEFAULT);
 
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.MATCH_PARENT,
@@ -1932,11 +1932,11 @@ public class ReactExoplayerView extends FrameLayout implements
         refreshProgressBarVisibility();
     }
 
-    public void setCookiesPolicy(String policy) {
-        setCookiesPolicy(CookiesPolicy.valueOf(policy));
+    public void setCookiePolicy(String policy) {
+        setCookiePolicy(CookiesPolicy.valueOf(policy));
     }
 
-    private void setCookiesPolicy(CookiesPolicy policy) {
+    private void setCookiePolicy(CookiesPolicy policy) {
         cookiesPolicy = policy;
         CookiePolicy value = cookiesPolicy.getValue();
         if (value != null) {

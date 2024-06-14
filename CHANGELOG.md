@@ -1,3 +1,10 @@
+# [6.1.2+dolbyxp.1.1](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.1)
+
+
+### Bug Fixes
+
+* **android:** Fix typo for cookiePolicy property. 
+* Fix typo in CookiePolicy enum.
 
 # [6.1.2+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/6.0.0+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.0)
 
