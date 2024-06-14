@@ -139,7 +139,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     @objc var onPlaybackStalled: RCTDirectEventBlock?
     @objc var onPlaybackResume: RCTDirectEventBlock?
     @objc var onPlaybackRateChange: RCTDirectEventBlock?
-    @objc var onPlayedTracksChange: RCTDirectEventBlock?
     @objc var onVolumeChange: RCTDirectEventBlock?
     @objc var onVideoPlaybackStateChanged: RCTDirectEventBlock?
     @objc var onVideoExternalPlaybackChange: RCTDirectEventBlock?
@@ -149,6 +148,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     @objc var onReceiveAdEvent: RCTDirectEventBlock?
     @objc var onTextTracks: RCTDirectEventBlock?
     @objc var onAudioTracks: RCTDirectEventBlock?
+    @objc var onVideoTracks: RCTDirectEventBlock?
     @objc var onTextTrackDataChanged: RCTDirectEventBlock?
 
     @objc
@@ -1530,25 +1530,44 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     }
 
     func handleMetadataUpdateForTrackChange() {
-        if onPlayedTracksChange != nil {
-            let urlString: String = _player?.currentItem?.accessLog()?.events.last?.uri ?? ""
-            let url = NSURL(string: urlString)
-            let asset: AVAsset? = _player?.currentItem?.asset
+        if onTextTracks != nil {
+            self.onTextTracks?(
+                [
+                    "textTrack": self._textTracks,
+                ]
+            )
+        }
 
-            let principalURL: NSURL? = (_player?.currentItem?.asset as? AVURLAsset)?.url as? NSURL
+        guard let player = _player,
+              let urlString = _player?.currentItem?.accessLog()?.events.last?.uri,
+              let url = NSURL(string: urlString),
+              let principalURL: NSURL = (_player?.currentItem?.asset as? AVURLAsset)?.url as? NSURL else {
+            return
+        }
 
-            principalURL?.m3u_loadAsyncCompletion { principalModel, _ in
-                if let url {
-                    url.m3u_loadAsyncCompletion { model, _ in
-                        if let model, let principalModel {
-                            self.onPlayedTracksChange?(
-                                [
-                                    "audioTrack": self.getAudioTrackInfo(model: model, principalModel: principalModel),
-                                    "textTrack": self._textTracks,
-                                    "videoTrack": self.getVideoTrackInfo(model: model, principalModel: principalModel),
-                                ]
-                            )
-                        }
+        principalURL.m3u_loadAsyncCompletion { principalModel, _ in
+            url.m3u_loadAsyncCompletion { model, _ in
+                if let model, let principalModel {
+                    if self.onAudioTracks != nil {
+                        self.onAudioTracks?(
+                            [
+                                "audioTrack": self.getAudioTrackInfo(
+                                    model: model,
+                                    principalModel: principalModel
+                                ),
+                            ]
+                        )
+                    }
+
+                    if self.onVideoTracks != nil {
+                        self.onVideoTracks?(
+                            [
+                                "videoTrack": self.getVideoTrackInfo(
+                                    model: model,
+                                    principalModel: principalModel
+                                ),
+                            ]
+                        )
                     }
                 }
             }
