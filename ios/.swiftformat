@@ -10,7 +10,5 @@
 
 --enable markTypes
 
---enable isEmpty
-
 --funcattributes "prev-line"
 --maxwidth 160

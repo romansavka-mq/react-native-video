@@ -112,6 +112,10 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     private var _resouceLoaderDelegate: RCTResourceLoaderDelegate?
     private var _playerObserver: RCTPlayerObserver = .init()
 
+    #if USE_VIDEO_CACHING
+        private let _videoCache: RCTVideoCachingHandler = .init()
+    #endif
+
     #if os(iOS)
         private var _pip: RCTPictureInPicture?
     #endif
@@ -683,15 +687,13 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         model: M3U8PlaylistModel,
         principalModel: M3U8PlaylistModel
     ) -> [String: Any] {
-        if !model.mainMediaPl.segmentList.isEmpty {
+        // swiftlint:disable:next empty_count
+        if !(model.mainMediaPl.segmentList.count == 0) {
             let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
-            if uri == nil {
-                return .init()
-            }
 
             var codecs = ""
-
-            if !principalModel.masterPlaylist.xStreamList.isEmpty {
+            // swiftlint:disable:next empty_count
+            if !(principalModel.masterPlaylist.xStreamList.count == 0) {
                 if let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
                     codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
                 }
