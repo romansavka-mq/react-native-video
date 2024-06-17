@@ -1,4 +1,5 @@
-# [6.0.0] ??
+# [6.1.2+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.1...miquido:react-native-video:6.1.2+dolbyxp.1.2)
+
 
 ### Features
 
@@ -6,12 +7,12 @@
     ([675207f](https://github.com/miquido/react-native-video/commit/675207f6dbe7b817bb2c19292a9c487406b36ea1)
     ([a6823bb])(https://github.com/miquido/react-native-video/commit/a6823bbca0cfa135b995bd2117f18b6834ba20ad)
 * **ios:** Send on played tracks change
-    ([69cd4f0])(https://github.com/miquido/react-native-video/commit/69cd4f0d26ff2012cb5cd7f49f2da12b566333d3)
+    ([1b96ed6])(https://github.com/miquido/react-native-video/pull/25/commits/1b96ed6025d65484ddab7391366c8c97ea788938)
 * **ios:** Attempt to sync two videos.
     ([300794d])(https://github.com/miquido/react-native-video/commit/300794dd73d36c6722106ad6ec3399a580d3c407)
-* **ios: Send current time request and handle command result on iOS.
-    ([dbba295])(https://github.com/miquido/react-native-video/commit/dbba295e783f8f9f667346640e1df6b78a63c474)
-    
+
+### Bug Fixes
+
 * **ios:** Fix displaying string uri
     ([320985f])(https://github.com/miquido/react-native-video/commit/320985f7afef60a3a1e647dc02df1b5630ac7359)
 * **ios:** Removed unused method
