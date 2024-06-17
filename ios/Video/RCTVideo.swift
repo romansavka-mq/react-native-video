@@ -682,33 +682,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         return .init()
     }
 
-    func getVideoTrackInfo(
-        model: M3U8PlaylistModel,
-        principalModel: M3U8PlaylistModel
-    ) -> [String: Any] {
-        // swiftformat:disable:next isEmpty
-        if !(model.mainMediaPl.segmentList.count == 0) {
-            // swiftlint:disable:previous empty_count
-            let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
-
-            var codecs = ""
-            // swiftformat:disable:next isEmpty
-            if !(principalModel.masterPlaylist.xStreamList.count == 0) {
-                // swiftlint:disable:previous empty_count
-                if let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
-                    codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
-                }
-            }
-
-            let stringURL = uri.absoluteString as NSString
-            return [
-                "file": stringURL,
-                "codecs": codecs,
-            ]
-        }
-        return .init()
-    }
-
     // MARK: - Prop setters
 
     @objc
@@ -1503,9 +1476,10 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                     height = Float(naturalSize.height)
                 }
                 orientation = width > height ? "landscape" : width == height ? "square" : "portrait"
-
-                let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player)
+                let models = await RCTVideoUtils.getModels(player: _player)
+                let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models)
                 let textTracks = await RCTVideoUtils.getTextTrackInfo(self._player)
+                let videoTracks = RCTVideoUtils.getVideoTrackInfo(models: models)
                 self.onVideoLoad?(["duration": NSNumber(value: duration),
                                    "currentTime": NSNumber(value: Float(CMTimeGetSeconds(_playerItem.currentTime()))),
                                    "canPlayReverse": NSNumber(value: _playerItem.canPlayReverse),
@@ -1521,58 +1495,13 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                                    ],
                                    "audioTracks": audioTracks,
                                    "textTracks": self._textTracks?.compactMap { $0.json } ?? textTracks.map(\.json),
+                                   "videoTracks": videoTracks,
                                    "target": self.reactTag as Any])
             }
 
             self._videoLoadStarted = false
-            self.handleMetadataUpdateForTrackChange()
             self._playerObserver.attachPlayerEventListeners()
             self.applyModifiers()
-        }
-    }
-
-    func handleMetadataUpdateForTrackChange() {
-        if onTextTracks != nil {
-            self.onTextTracks?(
-                [
-                    "textTrack": self._textTracks,
-                ]
-            )
-        }
-
-        guard let player = _player,
-              let urlString = _player?.currentItem?.accessLog()?.events.last?.uri,
-              let url = NSURL(string: urlString),
-              let principalURL: NSURL = (_player?.currentItem?.asset as? AVURLAsset)?.url as? NSURL else {
-            return
-        }
-
-        principalURL.m3u_loadAsyncCompletion { principalModel, _ in
-            url.m3u_loadAsyncCompletion { model, _ in
-                if let model, let principalModel {
-                    if self.onAudioTracks != nil {
-                        self.onAudioTracks?(
-                            [
-                                "audioTrack": self.getAudioTrackInfo(
-                                    model: model,
-                                    principalModel: principalModel
-                                ),
-                            ]
-                        )
-                    }
-
-                    if self.onVideoTracks != nil {
-                        self.onVideoTracks?(
-                            [
-                                "videoTrack": self.getVideoTrackInfo(
-                                    model: model,
-                                    principalModel: principalModel
-                                ),
-                            ]
-                        )
-                    }
-                }
-            }
         }
     }
 
@@ -1778,8 +1707,17 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
         if onAudioTracks != nil {
             Task {
-                let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player)
+                let models = await RCTVideoUtils.getModels(player: _player)
+                let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models!)
                 self.onAudioTracks?(["audioTracks": audioTracks])
+            }
+        }
+
+        if onVideoTracks != nil {
+            Task {
+                let models = await RCTVideoUtils.getModels(player: _player)
+                let videoTracks = await RCTVideoUtils.getVideoTrackInfo(models: models)
+                self.onAudioTracks?(["videoTracks": videoTracks])
             }
         }
     }
