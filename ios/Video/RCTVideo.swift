@@ -687,11 +687,13 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         principalModel: M3U8PlaylistModel
     ) -> [String: Any] {
         // swiftlint:disable:next empty_count
+        // swiftformat:disable:next isEmpty
         if !(model.mainMediaPl.segmentList.count == 0) {
             let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
 
             var codecs = ""
             // swiftlint:disable:next empty_count
+            // swiftformat:disable:next isEmpty
             if !(principalModel.masterPlaylist.xStreamList.count == 0) {
                 if let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
                     codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
