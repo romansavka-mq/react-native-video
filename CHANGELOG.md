@@ -25,7 +25,6 @@
 * **ios:** Fix for tvOS native audio menu language selector
     ([a42240d])(https://github.com/miquido/react-native-video/commit/a42240d5543cbc9f7c11a0692c05d625d345457a)
 
-    
 # [6.1.2+dolbyxp.1.1](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.1)
 
 
