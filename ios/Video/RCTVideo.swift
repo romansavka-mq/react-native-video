@@ -555,7 +555,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             }
 
             self._videoLoadStarted = true
-            CurrentVideos.shared().add(self, forTag: self.reactTag)
+            CurrentVideos.sharedInstance.add(video: self, for: self.reactTag)
             self.applyNextSource()
         }
 
@@ -686,15 +686,15 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         model: M3U8PlaylistModel,
         principalModel: M3U8PlaylistModel
     ) -> [String: Any] {
-        // swiftlint:disable:next empty_count
         // swiftformat:disable:next isEmpty
         if !(model.mainMediaPl.segmentList.count == 0) {
+            // swiftlint:disable:previous empty_count
             let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
 
             var codecs = ""
-            // swiftlint:disable:next empty_count
             // swiftformat:disable:next isEmpty
             if !(principalModel.masterPlaylist.xStreamList.count == 0) {
+                // swiftlint:disable:previous empty_count
                 if let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
                     codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
                 }
@@ -1816,14 +1816,14 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         guard let video = _peripheralVideo else {
             return nil
         }
-        return CurrentVideos.shared().video(forTag: video)
+        return CurrentVideos.sharedInstance.video(for: video)
     }
 
     func principal() -> RCTVideo? {
         guard let video = _principalVideo else {
             return nil
         }
-        return CurrentVideos.shared().video(forTag: video)
+        return CurrentVideos.sharedInstance.video(for: video)
     }
 
     func isManaged() -> Bool {
