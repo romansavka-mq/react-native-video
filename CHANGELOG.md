@@ -1,3 +1,32 @@
+# [6.1.2+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.1...miquido:react-native-video:6.1.2+dolbyxp.1.2)
+
+
+### Features
+
+* **ios:** XHUB-5327 - Expose channel (HLS) and Dolby SupplementalProperty (DASH) values from currently played resource to ReactNative  
+    ([675207f](https://github.com/miquido/react-native-video/commit/675207f6dbe7b817bb2c19292a9c487406b36ea1)
+    ([a6823bb])(https://github.com/miquido/react-native-video/commit/a6823bbca0cfa135b995bd2117f18b6834ba20ad)
+* **ios:** Add onVideoTracks event.
+    ([1b96ed6])(https://github.com/miquido/react-native-video/pull/25/commits/1b96ed6025d65484ddab7391366c8c97ea788938)
+    ([13bfaf9])(https://github.com/miquido/react-native-video/pull/25/commits/13bfaf9753597008ae32ba50404eb350d8e9b111)
+* **ios:** Attempt to sync two videos.
+    ([300794d])(https://github.com/miquido/react-native-video/commit/300794dd73d36c6722106ad6ec3399a580d3c407)
+
+### Bug Fixes
+
+* **ios:** Fix displaying string uri
+    ([320985f])(https://github.com/miquido/react-native-video/commit/320985f7afef60a3a1e647dc02df1b5630ac7359)
+* **ios:** Removed unused method
+    ([ce29859])(https://github.com/miquido/react-native-video/commit/ce2985978d036fe0685355c6a760157603243acb)
+* **ios:** Add proper audio parsing
+    ([2c55b87])(https://github.com/miquido/react-native-video/commit/2c55b87d693cfe39651086811ebaf6a61a0c51da)
+* **ios:** Fix autoplay & playing after buffering
+    ([8a15097])(https://github.com/miquido/react-native-video/commit/8a150978234cdb2efbdd1a84dcab29fef09c08f8)
+* **ios:** Adding Dolby Atmos workaround.
+    ([3030ddd])(https://github.com/miquido/react-native-video/commit/3030ddd01a9a50b730ec0af13dc0650296347402)
+* **ios:** Fix for tvOS native audio menu language selector
+    ([a42240d])(https://github.com/miquido/react-native-video/commit/a42240d5543cbc9f7c11a0692c05d625d345457a)
+
 # [6.1.2+dolbyxp.1.1](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.1)
 
 

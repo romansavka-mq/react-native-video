@@ -1,5 +1,6 @@
 import AVFoundation
 import MediaAccessibility
+import MediaPlayer
 
 let RCTVideoUnset = -1
 
@@ -9,6 +10,8 @@ let RCTVideoUnset = -1
  * Collection of mutating functions
  */
 enum RCTPlayerOperations {
+    static var remoteCommandHandlerForSpatialAudio: Any?
+
     static func setSideloadedText(player: AVPlayer?, textTracks: [TextTrack], criteria: SelectedTrackCriteria?) {
         let type = criteria?.type
 
@@ -116,12 +119,20 @@ enum RCTPlayerOperations {
                 }
             }
         } else { // default. invalid type or "system"
-            await player?.currentItem?.selectMediaOptionAutomatically(in: group)
+            #if os(tvOS)
+            // Do noting. Fix for tvOS native audio menu language selector
+            #else
+                await player?.currentItem?.selectMediaOptionAutomatically(in: group)
+            #endif
             return
         }
-
         // If a match isn't found, option will be nil and text tracks will be disabled
-        await player?.currentItem?.select(mediaOption, in: group)
+        #if os(tvOS)
+        // Do noting. Fix for tvOS native audio menu language selector
+        #else
+            // If a match isn't found, option will be nil and text tracks will be disabled
+            await player?.currentItem?.select(mediaOption, in: group)
+        #endif
     }
 
     static func seek(player: AVPlayer, playerItem: AVPlayerItem, paused: Bool, seekTime: Float, seekTolerance: Float, completion: @escaping (Bool) -> Void) {
@@ -194,6 +205,29 @@ enum RCTPlayerOperations {
             } catch {
                 debugPrint("[RCTPlayerOperations] Problem setting up AVAudioSession options. Error: \(error).")
             }
+        }
+    }
+
+    // MARK: - Spatial Audio / Dolby Atmos Workaround
+
+    /* These functions are a temporarily workaround to enable the rendering of Dolby Atmos on
+     * iOS 15 and above.
+     */
+
+    static func addSpatialAudioRemoteCommandHandler() {
+        let command = MPRemoteCommandCenter.shared().playCommand
+
+        remoteCommandHandlerForSpatialAudio = command.addTarget(handler: { _ in
+            MPRemoteCommandHandlerStatus.success
+        })
+    }
+
+    static func removeSpatialAudioRemoteCommandHandler() {
+        let command = MPRemoteCommandCenter.shared().playCommand
+
+        if let remoteCommand = RCTPlayerOperations.remoteCommandHandlerForSpatialAudio {
+            command.removeTarget(remoteCommand)
+            RCTPlayerOperations.remoteCommandHandlerForSpatialAudio = nil
         }
     }
 }

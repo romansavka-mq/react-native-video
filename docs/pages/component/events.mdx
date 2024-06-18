@@ -52,11 +52,13 @@ An **array** of
 | trackId  | string  | Track ID of the video track (android only) |
 | title    | string  | Descriptive name for the track |
 | language | string  | 2 letter [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) representing the language |
-| bitrate  | number  | bitrate of track |
-| type     | string  | Mime type of track |
+| bitrate  | number  | bitrate of track (android only) |
+| type     | string  | Mime type of track (android only) |
 | selected | boolean | true if track is playing |
-| file     | string  | File name from DASH manifest (android only) |
+| file     | string  | File name from DASH manifest on Android and M3U8 file on iOS |
 | supplementalProperties | string | Supplemental properties for the adaptation set from DASH manifest (android only) |
+| codecs | string | MimeType of codec used for this track |
+| channels | array | Relevant to ports of hardware channels (iOS only) |
 
 Example:
 
@@ -547,7 +549,7 @@ Example:
 
 ### `onVideoTracks`
 
-<PlatformsList types={['Android']} />
+<PlatformsList types={['Android', 'iOS']} />
 
 Callback function that is called when video tracks change
 
@@ -555,15 +557,15 @@ Payload:
 
 | Property | Type    | Description |
 | -------- | ------- | ------------|
-| index    | number  | Track index |
-| trackId  | string  | Track ID of the video track |
+| index    | number  | Track index (android only) |
+| trackId  | string  | Track ID of the video track (android only) |
 | codecs   | string  | MimeType of codec used for this track |
-| width    | number  | Track width |
-| height   | number  | Track height |
-| bitrate  | number  | Bitrate in bps |
-| selected | boolean | true if track is selected for playing |
-| file     | string  | File name from DASH manifest |
-| supplementalProperties | string | Supplemental properties for the adaptation set from DASH manifest |
+| width    | number  | Track width (android only) |
+| height   | number  | Track height (android only) |
+| bitrate  | number  | Bitrate in bps (android only) |
+| selected | boolean | true if track is selected for playing (android only) |
+| file     | string  | File name from DASH manifest on Android and M3U8 file on iOS |
+| supplementalProperties | string | Supplemental properties for the adaptation set from DASH manifest (android only) |
 
 Example:
 

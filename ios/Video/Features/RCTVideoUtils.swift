@@ -122,7 +122,30 @@ enum RCTVideoUtils {
         return 0
     }
 
-    static func getAudioTrackInfo(_ player: AVPlayer?) async -> [AnyObject] {
+    static func getModels(player: AVPlayer?, completion: @escaping (PlayerModels?) -> Void) {
+        guard let player,
+              let urlString = player.currentItem?.accessLog()?.events.last?.uri,
+              let url = NSURL(string: urlString),
+              let principalURL: NSURL = (player.currentItem?.asset as? AVURLAsset)?.url as? NSURL else {
+            return completion(nil)
+        }
+
+        principalURL.m3u_loadAsyncCompletion { principalModel, _ in
+            url.m3u_loadAsyncCompletion { model, _ in
+                completion(.init(model: model!, principalModel: principalModel!))
+            }
+        }
+    }
+
+    static func getModels(player: AVPlayer?) async -> PlayerModels? {
+        await withCheckedContinuation { continuation in
+            getModels(player: player) { models in
+                continuation.resume(returning: models)
+            }
+        }
+    }
+
+    static func getAudioTrackInfo(_ player: AVPlayer?, models: PlayerModels?) async -> [AnyObject] {
         guard let player, let asset = player.currentItem?.asset else {
             return []
         }
@@ -141,17 +164,74 @@ enum RCTVideoUtils {
             let language: String! = currentOption?.extendedLanguageTag ?? ""
 
             let selectedOption: AVMediaSelectionOption? = player.currentItem?.currentMediaSelection.selectedMediaOption(in: group!)
-
-            let audioTrack = [
+            var audioTrack = [
                 "index": NSNumber(value: i),
                 "title": title,
                 "language": language ?? "",
                 "selected": currentOption?.displayName == selectedOption?.displayName,
             ] as [String: Any]
+            if let models {
+                let additionalTrackInfo = getAdditionalAudioTrackInfo(
+                    player: player,
+                    model: models.model,
+                    principalModel: models.principalModel
+                )
+                audioTrack.merge(dict: additionalTrackInfo)
+            }
             audioTracks.add(audioTrack)
         }
 
         return audioTracks as [AnyObject]
+    }
+
+    static func getAdditionalAudioTrackInfo(
+        player: AVPlayer,
+        model _: M3U8PlaylistModel,
+        principalModel: M3U8PlaylistModel
+    ) -> [String: Any] {
+        var streamList: NSArray = .init()
+
+        for i in 0 ..< principalModel.masterPlaylist.xStreamList.count {
+            let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: i)
+            if let inf {
+                streamList.adding(inf)
+            }
+        }
+
+        if let currentEvent: AVPlayerItemAccessLogEvent = player.currentItem?.accessLog()?.events.last {
+            let predicate = NSPredicate(format: "%K == %f", "bandwidth", currentEvent.indicatedBitrate)
+            let filteredArray = streamList.filtered(using: predicate)
+            let current = filteredArray.last
+
+            if let current = current as? M3U8ExtXStreamInf {
+                let mediaList: NSArray = .init()
+                for i in 0 ..< principalModel.masterPlaylist.xMediaList.audio().count {
+                    let inf = principalModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
+                    if let inf {
+                        mediaList.adding(inf)
+                    }
+                }
+
+                let predicate = NSPredicate(format: "SELF.groupId == %@", current.audio)
+
+                if let currentAudio = mediaList.filtered(using: predicate).last as? M3U8ExtXMedia {
+                    let url: URL = currentAudio.m3u8URL()
+                    let audioModel: M3U8PlaylistModel? = try? .init(url: url)
+
+                    if let audioModel {
+                        let audioInfo: M3U8SegmentInfo = audioModel.mainMediaPl.segmentList.segmentInfo(at: 0)
+
+                        return [
+                            "codecs": currentAudio.groupId(),
+                            "file": audioInfo.uri.absoluteString,
+                            "channels": currentAudio.channels,
+                        ]
+                    }
+                }
+            }
+        }
+
+        return .init()
     }
 
     static func getTextTrackInfo(_ player: AVPlayer?) async -> [TextTrack] {
@@ -183,6 +263,32 @@ enum RCTVideoUtils {
         }
 
         return textTracks
+    }
+
+    static func getVideoTrackInfo(models: PlayerModels?) -> [AnyObject] {
+        guard let models else { return [] }
+        let videoTracks: NSMutableArray! = NSMutableArray()
+        // swiftformat:disable:next isEmpty
+        if !(models.model.mainMediaPl.segmentList.count == 0) { // swiftlint:disable:this empty_count
+            let uri: URL = models.model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
+
+            var codecs = ""
+            // swiftformat:disable:next isEmpty
+            if !(models.principalModel.masterPlaylist.xStreamList.count == 0) { // swiftlint:disable:this empty_count
+                if let inf = models.principalModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
+                    codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
+                }
+            }
+
+            let stringURL = uri.absoluteString as NSString
+            videoTracks.add(
+                [
+                    "file": stringURL,
+                    "codecs": codecs,
+                ]
+            )
+        }
+        return .init()
     }
 
     // UNUSED

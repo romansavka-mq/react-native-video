@@ -199,7 +199,9 @@ public class VideoEventEmitter {
             int videoWidth,
             int videoHeight,
             List<TrackInfo> audioTracks,
-            List<TrackInfo> videoTracks, List<TrackInfo> textTracks,
+            List<TrackInfo> videoTracks,
+            List<TrackInfo> textTracks,
+            @Nullable Object manifest,
             String trackId) {
         WritableMap event = Arguments.createMap();
         event.putDouble(EVENT_PROP_DURATION, duration / 1000D);
@@ -210,12 +212,12 @@ public class VideoEventEmitter {
         event.putString(EVENT_PROP_TRACK_ID, trackId);
         WritableArray videoTrackArray = Arguments.createArray();
         for (TrackInfo track : videoTracks) {
-            videoTrackArray.pushMap(createVideoTrackInfo(track, false, null));
+            videoTrackArray.pushMap(createVideoTrackInfo(track, false, manifest));
         }
         event.putArray(EVENT_PROP_VIDEO_TRACKS, videoTrackArray);
         WritableArray audioTrackArray = Arguments.createArray();
         for (TrackInfo track : audioTracks) {
-            audioTrackArray.pushMap(createAudioTrackInfo(track, false, null));
+            audioTrackArray.pushMap(createAudioTrackInfo(track, false, manifest));
         }
         event.putArray(EVENT_PROP_AUDIO_TRACKS, audioTrackArray);
         WritableArray textTrackArray = Arguments.createArray();
@@ -457,6 +459,7 @@ public class VideoEventEmitter {
         audioTrack.putString("type", format.sampleMimeType);
         audioTrack.putString("language", format.language);
         audioTrack.putInt("bitrate", format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
+        audioTrack.putString("codecs", format.codecs);
         audioTrack.putBoolean("selected", selected);
         if (manifest != null) {
             Representation representation = ManifestUtils.getRepresentationOf(manifest, track);
