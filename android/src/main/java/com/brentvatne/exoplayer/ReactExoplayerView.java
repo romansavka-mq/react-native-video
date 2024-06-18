@@ -1338,6 +1338,7 @@ public class ReactExoplayerView extends FrameLayout implements
                     TracksUtil.getAudioTracks(info),
                     TracksUtil.getVideoTracks(info),
                     TracksUtil.getTextTracks(info),
+                    player.getCurrentManifest(),
                     trackId
             );
         }
