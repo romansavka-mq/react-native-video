@@ -81,11 +81,13 @@ export type OnAudioTracksData = Readonly<{
     trackId: string;
     title?: string;
     language?: string;
+    codecs?: string;
     bitrate?: number;
     type?: string;
     selected?: boolean;
     file?: string;
     supplementalProperties?: string;
+    channels?: string;
   }[];
 }>;
 

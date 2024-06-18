@@ -141,9 +141,13 @@ type OnLoadData = Readonly<{
     trackId: string;
     title?: string;
     language?: string;
+    codecs?: string;
     bitrate?: Float;
     type?: string;
     selected?: boolean;
+    file?: string;
+    supplementalProperties?: string;
+    channels?: string;
   }[];
   textTracks: {
     index: Int32;
@@ -165,6 +169,8 @@ type OnLoadData = Readonly<{
     height?: Float;
     bitrate?: Float;
     selected?: boolean;
+    file?: string;
+    supplementalProperties?: string;
   }[];
 }>;
 
@@ -216,11 +222,13 @@ type OnAudioTracksData = Readonly<{
     trackId: string;
     title?: string;
     language?: string;
+    codecs?: string;
     bitrate?: Float;
     type?: string;
     selected?: boolean;
     file?: string;
     supplementalProperties?: string;
+    channels?: string;
   }[];
 }>;
 
