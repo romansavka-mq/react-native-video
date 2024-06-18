@@ -630,58 +630,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         return playerItem
     }
 
-    func getAudioTrackInfo(
-        model _: M3U8PlaylistModel,
-        principalModel: M3U8PlaylistModel
-    ) -> [String: Any] {
-        var streamList: NSArray = .init()
-
-        for i in 0 ..< principalModel.masterPlaylist.xStreamList.count {
-            let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: i)
-            if let inf {
-                streamList.adding(inf)
-            }
-        }
-
-        if let currentEvent: AVPlayerItemAccessLogEvent = _player?.currentItem?.accessLog()?.events.last {
-            let predicate = NSPredicate(format: "%K == %f", "bandwidth", currentEvent.indicatedBitrate)
-            let filteredArray = streamList.filtered(using: predicate)
-            let current = filteredArray.last
-
-            if let current = current as? M3U8ExtXStreamInf {
-                let mediaList: NSArray = .init()
-                for i in 0 ..< principalModel.masterPlaylist.xMediaList.audio().count {
-                    let inf = principalModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
-                    if let inf {
-                        mediaList.adding(inf)
-                    }
-                }
-
-                let predicate = NSPredicate(format: "SELF.groupId == %@", current.audio)
-                let currentAudio = mediaList.filtered(using: predicate).last
-
-                if let currentAudio = currentAudio as? M3U8ExtXMedia {
-                    let url: URL = currentAudio.m3u8URL()
-                    let audioModel: M3U8PlaylistModel? = try? .init(url: url)
-
-                    if let audioModel {
-                        let audioInfo: M3U8SegmentInfo = audioModel.mainMediaPl.segmentList.segmentInfo(at: 0)
-
-                        return [
-                            "title": currentAudio.name(),
-                            "language": currentAudio.language(),
-                            "codecs": currentAudio.groupId(),
-                            "file": audioInfo.uri.absoluteString,
-                            "channels": currentAudio.channels,
-                        ]
-                    }
-                }
-            }
-        }
-
-        return .init()
-    }
-
     // MARK: - Prop setters
 
     @objc
@@ -1705,19 +1653,17 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             }
         }
 
-        if onAudioTracks != nil {
-            Task {
-                let models = await RCTVideoUtils.getModels(player: _player)
+        Task {
+            let models = await RCTVideoUtils.getModels(player: _player)
+
+            if onAudioTracks != nil {
                 let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models!)
                 self.onAudioTracks?(["audioTracks": audioTracks])
             }
-        }
 
-        if onVideoTracks != nil {
-            Task {
-                let models = await RCTVideoUtils.getModels(player: _player)
+            if onVideoTracks != nil {
                 let videoTracks = await RCTVideoUtils.getVideoTrackInfo(models: models)
-                self.onAudioTracks?(["videoTracks": videoTracks])
+                self.onVideoTracks?(["videoTracks": videoTracks])
             }
         }
     }
