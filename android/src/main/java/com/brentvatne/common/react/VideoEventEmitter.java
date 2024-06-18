@@ -482,6 +482,7 @@ public class VideoEventEmitter {
         videoTrack.putInt("bitrate", format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
         videoTrack.putString("codecs", format.codecs);
         videoTrack.putBoolean("selected", selected);
+        videoTrack.putInt("rotation", format.rotationDegrees);
         if (manifest != null) {
             Representation representation = ManifestUtils.getRepresentationOf(manifest, track);
             videoTrack.putString("file", ManifestUtils.getRepresentationFileName(representation));

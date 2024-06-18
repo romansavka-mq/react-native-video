@@ -59,25 +59,6 @@ A Boolean value that indicates whether the player should automatically delay pla
 - **false** - Immediately starts playback
 - **true (default)** - Delays playback in order to minimize stalling
 
-### `controlsStyles`
-
-<PlatformsList types={['Android']} />
-
-Adjust the control styles. This prop is need only if `controls={true}` and is an object. See the list of prop supported below.
-
-| Property    | Type    | Description                                                                          |
-|-------------|---------|--------------------------------------------------------------------------------------|
-| hideSeekBar | boolean | The default value is `false`, allowing you to hide the seek bar for live broadcasts. |
-
-Example with default values:
-
-```javascript
-controlsStyles={{
-  hideSeekBar: false,
-}}
-```
-
-
 ### `bufferConfig`
 
 <PlatformsList types={['Android']} />
@@ -169,6 +150,26 @@ Determines whether to show player controls.
 Note on iOS, controls are always shown when in fullscreen mode.
 Note on Android, native controls are available by default.
 If needed, you can also add your controls or use a package like [react-native-video-controls](https://github.com/itsnubix/react-native-video-controls) or [react-native-media-console](https://github.com/criszz77/react-native-media-console), see [Useful Side Project](/projects).
+
+### `controlsStyles`
+
+<PlatformsList types={['Android']} />
+
+Adjust the control styles. This prop is need only if `controls={true}` and is an object. See the list of prop supported below.
+
+| Property        | Type    | Description                                                                             |
+|-----------------|---------|-----------------------------------------------------------------------------------------|
+| hideSeekBar     | boolean | The default value is `false`, allowing you to hide the seek bar for live broadcasts.    |
+| seekIncrementMS | number  | The default value is `10000`. You can change the value to increment forward and rewind. |
+
+Example with default values:
+
+```javascript
+controlsStyles={{
+  hideSeekBar: false,
+  seekIncrementMS: 10000,
+}}
+```
 
 ### `cookiePolicy`
 
@@ -768,7 +769,7 @@ source={{ uri: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'
 
 #### Overriding the metadata of a source
 
-<PlatformsList types={['Android, iOS, tvOS']} />
+<PlatformsList types={['Android', 'iOS', 'tvOS']} />
 
 Provide an optional `title`, `subtitle`, `artist`, `imageUri` and/or `description` properties for the video.
 Useful when using notification controls on Android or iOS or to adapt the tvOS playback experience.
@@ -785,6 +786,21 @@ source={{
       description: 'Custom Description',
       imageUri: 'https://pbs.twimg.com/profile_images/1498641868397191170/6qW2XkuI_400x400.png'
     }
+  }}
+```
+
+#### `textTracksAllowChunklessPreparation`
+<PlatformsList types={['Android']} />
+
+AllowChunklessPreparation for hls media source.
+see: [disabling-chunkless](https://developer.android.com/media/media3/exoplayer/hls?#disabling-chunkless) in android documentation.
+
+Default value: true.
+
+```javascript
+source={{
+    uri: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+    textTracksAllowChunklessPreparation: false,
   }}
 ```
 
@@ -857,12 +873,14 @@ textTracks={[
 ]}
 ```
 
-### `showNotificationContorols`
+### `showNotificationControls`
 
 <PlatformsList types={['Android', 'iOS']} />
 
 Controls whether to show media controls in the notification area.
 For Android each Video component will have its own notification controls and for iOS only one notification control will be shown for the last Active Video component.
+
+On android this will also allow for external controls, Google Assistant session and other benefits of MediaSession.
 
 You propably want also set `playInBackground` to `true` to keep the video playing when the app is in the background or `playWhenInactive` to `true` to keep the video playing when notifications or the Control Center are in front of the video.
 

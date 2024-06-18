@@ -1,38 +1,68 @@
+# [6.2.0+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.2)
+
+Sync with 6.2.0.
+
+# [6.2.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.1.2...v6.2.0) (2024-06-07)
+
+
+### Bug Fixes
+
+* **android:** allow notification tap to foreground app ([#3831](https://github.com/TheWidlarzGroup/react-native-video/issues/3831)) ([5c29b48](https://github.com/TheWidlarzGroup/react-native-video/commit/5c29b48747b4a30eb9911daa579baaa93402ba67))
+* **android:** android cache header ([#3832](https://github.com/TheWidlarzGroup/react-native-video/issues/3832)) ([c2a1424](https://github.com/TheWidlarzGroup/react-native-video/commit/c2a14240ada24cd7c816bcb1ac942986eb855792))
+* **android:** fix null pointer exception at playback start with item metadata ([#3879](https://github.com/TheWidlarzGroup/react-native-video/issues/3879)) ([c2cd752](https://github.com/TheWidlarzGroup/react-native-video/commit/c2cd7529fd9c9a3c8b1ae7b87d0b80e822ca400d))
+* **android:** optimize lag on old android ([#3860](https://github.com/TheWidlarzGroup/react-native-video/issues/3860)) ([c2ce66e](https://github.com/TheWidlarzGroup/react-native-video/commit/c2ce66ed26efb975335ee7b229744a9957b0621e))
+* **android:** refactor source, fix random DRM issue and crop start on local asset ([#3835](https://github.com/TheWidlarzGroup/react-native-video/issues/3835)) ([bdf3e55](https://github.com/TheWidlarzGroup/react-native-video/commit/bdf3e556d802caa426d098d3f5fffe00dfb96660))
+* **android:** video resolution orientation android ([#3862](https://github.com/TheWidlarzGroup/react-native-video/issues/3862)) ([b698b18](https://github.com/TheWidlarzGroup/react-native-video/commit/b698b1837b71f2c93d488c521eb363e236e41aa5))
+* ensure progress is sent before `onEnd` callback ([#3872](https://github.com/TheWidlarzGroup/react-native-video/issues/3872)) ([7133c96](https://github.com/TheWidlarzGroup/react-native-video/commit/7133c96cac905f06f7a9bccd21eeb2f7a8a27c06))
+* ensure view drop stop playback startup ([#3875](https://github.com/TheWidlarzGroup/react-native-video/issues/3875)) ([ff1e24a](https://github.com/TheWidlarzGroup/react-native-video/commit/ff1e24aaad179656af71443b3db3b9817a98eb92))
+* **ios:** don't crash app if view wasn't found ([#3841](https://github.com/TheWidlarzGroup/react-native-video/issues/3841)) ([cd28d37](https://github.com/TheWidlarzGroup/react-native-video/commit/cd28d370d27571b6f42b68e506b0bd1eaa9c770c))
+* **ios:** fix notification controls enabled by default ([#3861](https://github.com/TheWidlarzGroup/react-native-video/issues/3861)) ([5c6dfb2](https://github.com/TheWidlarzGroup/react-native-video/commit/5c6dfb26c56c2b9165b25a01b9224c489e2fd2a5))
+* **ios:** fix playback status with lifecycle ([#3819](https://github.com/TheWidlarzGroup/react-native-video/issues/3819)) ([1b51c15](https://github.com/TheWidlarzGroup/react-native-video/commit/1b51c1534881216f9975834657e8add1e7fe9621))
+* **ios:** Implicit use of 'self' in closure - use 'self.' to make capture semantics explicit ([#3764](https://github.com/TheWidlarzGroup/react-native-video/issues/3764)) ([#3881](https://github.com/TheWidlarzGroup/react-native-video/issues/3881)) ([ac0a9c3](https://github.com/TheWidlarzGroup/react-native-video/commit/ac0a9c3e3a4fec474a963207a343765d1776406d)), closes [#3875](https://github.com/TheWidlarzGroup/react-native-video/issues/3875)
+
+
+### Features
+
+* add getCurrentPosition to component's ref ([#3824](https://github.com/TheWidlarzGroup/react-native-video/issues/3824)) ([c7f4d7b](https://github.com/TheWidlarzGroup/react-native-video/commit/c7f4d7b83bd09178f945d21e1f252a57ee1c8ab1))
+* **android:** allow chunckless preparation ([#3882](https://github.com/TheWidlarzGroup/react-native-video/issues/3882)) ([d4a8c24](https://github.com/TheWidlarzGroup/react-native-video/commit/d4a8c24f65eda5f3ce17263b234e47b667947e08))
+* **android:** Change subtitleLayout from child to sibling of layout ([#3830](https://github.com/TheWidlarzGroup/react-native-video/issues/3830)) ([c2cc917](https://github.com/TheWidlarzGroup/react-native-video/commit/c2cc91736852ea8b128e63bee71979d64b805c91))
+* **android:** handle increment forward and rewind buttons ([#3818](https://github.com/TheWidlarzGroup/react-native-video/issues/3818)) ([5059e7a](https://github.com/TheWidlarzGroup/react-native-video/commit/5059e7a7f122447a1762249429d5fe289cbb0a4d))
+
 # [6.1.2+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.1...miquido:react-native-video:6.1.2+dolbyxp.1.2)
 
 
 ### Features
 
 * **ios:** XHUB-5327 - Expose channel (HLS) and Dolby SupplementalProperty (DASH) values from currently played resource to ReactNative  
-    ([675207f](https://github.com/miquido/react-native-video/commit/675207f6dbe7b817bb2c19292a9c487406b36ea1)
-    ([a6823bb])(https://github.com/miquido/react-native-video/commit/a6823bbca0cfa135b995bd2117f18b6834ba20ad)
+  ([675207f](https://github.com/miquido/react-native-video/commit/675207f6dbe7b817bb2c19292a9c487406b36ea1))
+  ([a6823bb](https://github.com/miquido/react-native-video/commit/a6823bbca0cfa135b995bd2117f18b6834ba20ad))
 * **ios:** Add onVideoTracks event.
-    ([1b96ed6])(https://github.com/miquido/react-native-video/pull/25/commits/1b96ed6025d65484ddab7391366c8c97ea788938)
-    ([13bfaf9])(https://github.com/miquido/react-native-video/pull/25/commits/13bfaf9753597008ae32ba50404eb350d8e9b111)
+  ([1b96ed6](https://github.com/miquido/react-native-video/pull/25/commits/1b96ed6025d65484ddab7391366c8c97ea788938))
+  ([13bfaf9](https://github.com/miquido/react-native-video/pull/25/commits/13bfaf9753597008ae32ba50404eb350d8e9b111))
 * **ios:** Attempt to sync two videos.
-    ([300794d])(https://github.com/miquido/react-native-video/commit/300794dd73d36c6722106ad6ec3399a580d3c407)
+  ([300794d](https://github.com/miquido/react-native-video/commit/300794dd73d36c6722106ad6ec3399a580d3c407))
 
 ### Bug Fixes
 
 * **ios:** Fix displaying string uri
-    ([320985f])(https://github.com/miquido/react-native-video/commit/320985f7afef60a3a1e647dc02df1b5630ac7359)
+  ([320985f](https://github.com/miquido/react-native-video/commit/320985f7afef60a3a1e647dc02df1b5630ac7359))
 * **ios:** Removed unused method
-    ([ce29859])(https://github.com/miquido/react-native-video/commit/ce2985978d036fe0685355c6a760157603243acb)
+  ([ce29859](https://github.com/miquido/react-native-video/commit/ce2985978d036fe0685355c6a760157603243acb))
 * **ios:** Add proper audio parsing
-    ([2c55b87])(https://github.com/miquido/react-native-video/commit/2c55b87d693cfe39651086811ebaf6a61a0c51da)
+  ([2c55b87](https://github.com/miquido/react-native-video/commit/2c55b87d693cfe39651086811ebaf6a61a0c51da))
 * **ios:** Fix autoplay & playing after buffering
-    ([8a15097])(https://github.com/miquido/react-native-video/commit/8a150978234cdb2efbdd1a84dcab29fef09c08f8)
+  ([8a15097](https://github.com/miquido/react-native-video/commit/8a150978234cdb2efbdd1a84dcab29fef09c08f8))
 * **ios:** Adding Dolby Atmos workaround.
-    ([3030ddd])(https://github.com/miquido/react-native-video/commit/3030ddd01a9a50b730ec0af13dc0650296347402)
+  ([3030ddd](https://github.com/miquido/react-native-video/commit/3030ddd01a9a50b730ec0af13dc0650296347402))
 * **ios:** Fix for tvOS native audio menu language selector
-    ([a42240d])(https://github.com/miquido/react-native-video/commit/a42240d5543cbc9f7c11a0692c05d625d345457a)
+  ([a42240d](https://github.com/miquido/react-native-video/commit/a42240d5543cbc9f7c11a0692c05d625d345457a))
 
 # [6.1.2+dolbyxp.1.1](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.1)
 
 
 ### Bug Fixes
 
-* **android:** Fix typo for cookiePolicy property. 
+* **android:** Fix typo for cookiePolicy property.
 * Fix typo in CookiePolicy enum.
 
 # [6.1.2+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/6.0.0+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.0)
