@@ -6,8 +6,9 @@
 * **ios:** XHUB-5327 - Expose channel (HLS) and Dolby SupplementalProperty (DASH) values from currently played resource to ReactNative  
     ([675207f](https://github.com/miquido/react-native-video/commit/675207f6dbe7b817bb2c19292a9c487406b36ea1)
     ([a6823bb])(https://github.com/miquido/react-native-video/commit/a6823bbca0cfa135b995bd2117f18b6834ba20ad)
-* **ios:** Send on played tracks change
+* **ios:** Add onVideoTracks event.
     ([1b96ed6])(https://github.com/miquido/react-native-video/pull/25/commits/1b96ed6025d65484ddab7391366c8c97ea788938)
+    ([13bfaf9])(https://github.com/miquido/react-native-video/pull/25/commits/13bfaf9753597008ae32ba50404eb350d8e9b111)
 * **ios:** Attempt to sync two videos.
     ([300794d])(https://github.com/miquido/react-native-video/commit/300794dd73d36c6722106ad6ec3399a580d3c407)
 

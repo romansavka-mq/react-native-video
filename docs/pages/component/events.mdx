@@ -555,15 +555,15 @@ Payload:
 
 | Property | Type    | Description |
 | -------- | ------- | ------------|
-| index    | number  | Track index |
-| trackId  | string  | Track ID of the video track |
+| index    | number  | Track index (android only) |
+| trackId  | string  | Track ID of the video track (android only) |
 | codecs   | string  | MimeType of codec used for this track |
-| width    | number  | Track width |
-| height   | number  | Track height |
-| bitrate  | number  | Bitrate in bps |
-| selected | boolean | true if track is selected for playing |
-| file     | string  | File name from DASH manifest |
-| supplementalProperties | string | Supplemental properties for the adaptation set from DASH manifest |
+| width    | number  | Track width (android only) |
+| height   | number  | Track height (android only) |
+| bitrate  | number  | Bitrate in bps (android only) |
+| selected | boolean | true if track is selected for playing (android only) |
+| file     | string  | File name from DASH manifest on Android nad M3U8 file on iOS |
+| supplementalProperties | string | Supplemental properties for the adaptation set from DASH manifest (android only) |
 
 Example:
 
