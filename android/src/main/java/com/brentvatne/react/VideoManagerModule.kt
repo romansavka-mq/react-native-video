@@ -63,10 +63,9 @@ class VideoManagerModule(reactContext: ReactApplicationContext?) : ReactContextB
     }
 
     @ReactMethod
-    fun getCurrentTime(reactTag: Int, p: Promise) {
-        performOnPlayerView(reactTag) { player ->
-            // long is not supported send it as double
-            p.resolve((player?.currentPosition ?: -1).toDouble())
+    fun getCurrentPosition(reactTag: Int, promise: Promise) {
+        performOnPlayerView(reactTag) {
+            it?.getCurrentPosition(promise)
         }
     }
 

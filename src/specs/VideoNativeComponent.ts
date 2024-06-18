@@ -39,6 +39,7 @@ export type VideoSrc = Readonly<{
   cropStart?: Float;
   cropEnd?: Float;
   metadata?: VideoMetadata;
+  textTracksAllowChunklessPreparation?: boolean; // android
 }>;
 
 type DRMType = WithDefault<string, 'widevine'>;
@@ -314,6 +315,7 @@ export type OnAudioFocusChangedData = Readonly<{
 
 type ControlsStyles = Readonly<{
   hideSeekBar?: boolean;
+  seekIncrementMS?: number;
 }>;
 
 export interface VideoNativeProps extends ViewProps {
@@ -420,7 +422,7 @@ export interface VideoManagerType {
     reactTag: number,
   ) => Promise<void>;
   setVolume: (volume: number, reactTag: number) => Promise<void>;
-  getCurrentTime: (reactTag: number) => Promise<number>;
+  getCurrentPosition: (reactTag: number) => Promise<number>;
 }
 
 export interface VideoDecoderPropertiesType {

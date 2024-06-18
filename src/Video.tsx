@@ -65,7 +65,7 @@ export interface VideoRef {
   ) => void;
   save: (options: object) => Promise<VideoSaveData>;
   setVolume: (volume: number) => void;
-  getCurrentTime: () => Promise<number>;
+  getCurrentPosition: () => Promise<number>;
   setPrincipalVideoId: (principalId: number) => void;
   setPeripheralVideoId: (peripheralId: number) => void;
 }
@@ -291,10 +291,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       return VideoManager.setPlayerPauseState(false, getReactTag(nativeRef));
     }, []);
 
-    const getCurrentTime = useCallback(() => {
-      return VideoManager.getCurrentTime(getReactTag(nativeRef));
-    }, []);
-
     const restoreUserInterfaceForPictureInPictureStopCompleted = useCallback(
       (restored: boolean) => {
         setRestoreUserInterfaceForPIPStopCompletionHandler(restored);
@@ -304,6 +300,10 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
 
     const setVolume = useCallback((volume: number) => {
       return VideoManager.setVolume(volume, getReactTag(nativeRef));
+    }, []);
+
+    const getCurrentPosition = useCallback(() => {
+      return VideoManager.getCurrentPosition(getReactTag(nativeRef));
     }, []);
 
     const setPrincipalVideoId = useCallback((principalId: number) => {
@@ -529,11 +529,11 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
-        getCurrentTime,
         setPrincipalVideoId,
         setPeripheralVideoId,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
+        getCurrentPosition,
       }),
       [
         seek,
@@ -542,11 +542,11 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
-        getCurrentTime,
         setPrincipalVideoId,
         setPeripheralVideoId,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
+        getCurrentPosition,
       ],
     );
 
