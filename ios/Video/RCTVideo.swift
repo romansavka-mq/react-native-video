@@ -1439,7 +1439,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                 let models = await RCTVideoUtils.getModels(player: _player)
                 let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models)
                 let textTracks = await RCTVideoUtils.getTextTrackInfo(self._player)
-                let videoTracks = RCTVideoUtils.getVideoTrackInfo(models: models)
+                let videoTracks = await RCTVideoUtils.getVideoTrackInfo(self._player, models: models)
                 self.onVideoLoad?(["duration": NSNumber(value: duration),
                                    "currentTime": NSNumber(value: Float(CMTimeGetSeconds(_playerItem.currentTime()))),
                                    "canPlayReverse": NSNumber(value: _playerItem.canPlayReverse),
@@ -1672,16 +1672,16 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         }
 
         Task {
-            let models = await RCTVideoUtils.getModels(player: _player)
+            if let models = await RCTVideoUtils.getModels(player: _player) {
+                if onAudioTracks != nil {
+                    let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models)
+                    self.onAudioTracks?(["audioTracks": audioTracks])
+                }
 
-            if onAudioTracks != nil {
-                let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models!)
-                self.onAudioTracks?(["audioTracks": audioTracks])
-            }
-
-            if onVideoTracks != nil {
-                let videoTracks = await RCTVideoUtils.getVideoTrackInfo(models: models)
-                self.onVideoTracks?(["videoTracks": videoTracks])
+                if onVideoTracks != nil {
+                    let videoTracks = await RCTVideoUtils.getVideoTrackInfo(self._player, models: models)
+                    self.onVideoTracks?(["videoTracks": videoTracks])
+                }
             }
         }
     }
