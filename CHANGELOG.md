@@ -1,3 +1,15 @@
+# [6.2.0+dolbyxp.1.3](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.3)
+
+
+### Bug Fixes
+
+* **ios:** handle optionality of M3U8 models
+
+
+### Features
+
+* **android:** Add codecs/channels to audio track info. Simplify supplementalProperties structure
+
 # [6.2.0+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.2)
 
 Sync with 6.2.0.
