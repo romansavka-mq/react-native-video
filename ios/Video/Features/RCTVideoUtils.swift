@@ -132,7 +132,7 @@ enum RCTVideoUtils {
 
         principalURL.m3u_loadAsyncCompletion { principalModel, _ in
             url.m3u_loadAsyncCompletion { model, _ in
-                completion(.init(model: model!, principalModel: principalModel!))
+                completion(.init(model: model, principalModel: principalModel))
             }
         }
     }
@@ -170,11 +170,11 @@ enum RCTVideoUtils {
                 "language": language ?? "",
                 "selected": currentOption?.displayName == selectedOption?.displayName,
             ] as [String: Any]
-            if let models {
+            if let model = models?.model, let principalModel = models?.principalModel {
                 let additionalTrackInfo = getAdditionalAudioTrackInfo(
                     player: player,
-                    model: models.model,
-                    principalModel: models.principalModel
+                    model: model,
+                    principalModel: principalModel
                 )
                 audioTrack.merge(dict: additionalTrackInfo)
             }
@@ -189,12 +189,12 @@ enum RCTVideoUtils {
         model _: M3U8PlaylistModel,
         principalModel: M3U8PlaylistModel
     ) -> [String: Any] {
-        var streamList: NSArray = .init()
+        var streamList: NSMutableArray = .init()
 
         for i in 0 ..< principalModel.masterPlaylist.xStreamList.count {
             let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: i)
             if let inf {
-                streamList.adding(inf)
+                streamList.add(inf)
             }
         }
 
@@ -204,11 +204,11 @@ enum RCTVideoUtils {
             let current = filteredArray.last
 
             if let current = current as? M3U8ExtXStreamInf {
-                let mediaList: NSArray = .init()
+                let mediaList: NSMutableArray = .init()
                 for i in 0 ..< principalModel.masterPlaylist.xMediaList.audio().count {
                     let inf = principalModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
                     if let inf {
-                        mediaList.adding(inf)
+                        mediaList.add(inf)
                     }
                 }
 
@@ -220,11 +220,10 @@ enum RCTVideoUtils {
 
                     if let audioModel {
                         let audioInfo: M3U8SegmentInfo = audioModel.mainMediaPl.segmentList.segmentInfo(at: 0)
-
                         return [
-                            "codecs": currentAudio.groupId(),
+                            "codecs": current.value(forKey: "codecs"),
                             "file": audioInfo.uri.absoluteString,
-                            "channels": currentAudio.channels,
+                            "channels": currentAudio.channels(),
                         ]
                     }
                 }
@@ -265,21 +264,23 @@ enum RCTVideoUtils {
         return textTracks
     }
 
-    static func getVideoTrackInfo(models: PlayerModels?) -> [AnyObject] {
-        guard let models else { return [] }
+    static func getVideoTrackInfo(_ player: AVPlayer?, models: PlayerModels?) async -> [AnyObject] {
+        guard let model = models?.model,
+              let playList = models?.principalModel?.masterPlaylist,
+              let player else { return [] }
+
         let videoTracks: NSMutableArray! = NSMutableArray()
         // swiftformat:disable:next isEmpty
-        if !(models.model.mainMediaPl.segmentList.count == 0) { // swiftlint:disable:this empty_count
-            let uri: URL = models.model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
+        if !(model.mainMediaPl.segmentList.count == 0) { // swiftlint:disable:this empty_count
+            let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
 
             var codecs = ""
             // swiftformat:disable:next isEmpty
-            if !(models.principalModel.masterPlaylist.xStreamList.count == 0) { // swiftlint:disable:this empty_count
-                if let inf = models.principalModel.masterPlaylist.xStreamList.xStreamInf(at: 0) {
+            if !(playList.xStreamList.count == 0) { // swiftlint:disable:this empty_count
+                if let inf = playList.xStreamList.xStreamInf(at: 0) {
                     codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
                 }
             }
-
             let stringURL = uri.absoluteString as NSString
             videoTracks.add(
                 [
