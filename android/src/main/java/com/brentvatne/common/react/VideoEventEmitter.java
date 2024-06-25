@@ -26,7 +26,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class VideoEventEmitter {
@@ -460,6 +459,7 @@ public class VideoEventEmitter {
         audioTrack.putString("language", format.language);
         audioTrack.putInt("bitrate", format.bitrate == Format.NO_VALUE ? 0 : format.bitrate);
         audioTrack.putString("codecs", format.codecs);
+        audioTrack.putString("channels", String.valueOf(format.channelCount != Format.NO_VALUE ? format.channelCount : 0));
         audioTrack.putBoolean("selected", selected);
         if (manifest != null) {
             Representation representation = ManifestUtils.getRepresentationOf(manifest, track);

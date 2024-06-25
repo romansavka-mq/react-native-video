@@ -34,6 +34,6 @@ object ManifestUtils {
         representation
             ?.supplementalProperties
             ?.joinToString("; ") {
-                "${it.id}:${it.schemeIdUri}:${it.value}"
+                "${it.schemeIdUri}=${it.value}"
             }
 }
