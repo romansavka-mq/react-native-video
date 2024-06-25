@@ -189,12 +189,12 @@ enum RCTVideoUtils {
         model _: M3U8PlaylistModel,
         principalModel: M3U8PlaylistModel
     ) -> [String: Any] {
-        var streamList: NSArray = .init()
+        var streamList: NSMutableArray = .init()
 
         for i in 0 ..< principalModel.masterPlaylist.xStreamList.count {
             let inf = principalModel.masterPlaylist.xStreamList.xStreamInf(at: i)
             if let inf {
-                streamList.adding(inf)
+                streamList.add(inf)
             }
         }
 
@@ -204,11 +204,11 @@ enum RCTVideoUtils {
             let current = filteredArray.last
 
             if let current = current as? M3U8ExtXStreamInf {
-                let mediaList: NSArray = .init()
+                let mediaList: NSMutableArray = .init()
                 for i in 0 ..< principalModel.masterPlaylist.xMediaList.audio().count {
                     let inf = principalModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
                     if let inf {
-                        mediaList.adding(inf)
+                        mediaList.add(inf)
                     }
                 }
 
@@ -220,11 +220,10 @@ enum RCTVideoUtils {
 
                     if let audioModel {
                         let audioInfo: M3U8SegmentInfo = audioModel.mainMediaPl.segmentList.segmentInfo(at: 0)
-
                         return [
-                            "codecs": currentAudio.groupId(),
+                            "codecs": current.value(forKey: "codecs"),
                             "file": audioInfo.uri.absoluteString,
-                            "channels": currentAudio.channels,
+                            "channels": currentAudio.channels(),
                         ]
                     }
                 }
@@ -268,34 +267,27 @@ enum RCTVideoUtils {
     static func getVideoTrackInfo(_ player: AVPlayer?, models: PlayerModels?) async -> [AnyObject] {
         guard let model = models?.model,
               let playList = models?.principalModel?.masterPlaylist,
-              let player,
-              let asset = player.currentItem?.asset else { return [] }
+              let player else { return [] }
+
         let videoTracks: NSMutableArray! = NSMutableArray()
+        // swiftformat:disable:next isEmpty
+        if !(model.mainMediaPl.segmentList.count == 0) { // swiftlint:disable:this empty_count
+            let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
 
-        let group = await RCTVideoAssetsUtils.getMediaSelectionGroup(asset: asset, for: .visual)
-        for i in 0 ..< (group?.options.count ?? 0) {
-            let currentOption = group?.options[i]
+            var codecs = ""
             // swiftformat:disable:next isEmpty
-            if !(model.mainMediaPl.segmentList.count == 0) { // swiftlint:disable:this empty_count
-                let uri: URL = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri
-
-                var codecs = ""
-                // swiftformat:disable:next isEmpty
-                if !(playList.xStreamList.count == 0) { // swiftlint:disable:this empty_count
-                    if let inf = playList.xStreamList.xStreamInf(at: 0) {
-                        codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
-                    }
+            if !(playList.xStreamList.count == 0) { // swiftlint:disable:this empty_count
+                if let inf = playList.xStreamList.xStreamInf(at: 0) {
+                    codecs = (inf.codecs as NSArray).componentsJoined(by: ",")
                 }
-                let selectedOption: AVMediaSelectionOption? = player.currentItem?.currentMediaSelection.selectedMediaOption(in: group!)
-                let stringURL = uri.absoluteString as NSString
-                videoTracks.add(
-                    [
-                        "file": stringURL,
-                        "codecs": codecs,
-                        "selected": currentOption?.displayName == selectedOption?.displayName,
-                    ]
-                )
             }
+            let stringURL = uri.absoluteString as NSString
+            videoTracks.add(
+                [
+                    "file": stringURL,
+                    "codecs": codecs,
+                ]
+            )
         }
         return .init()
     }
