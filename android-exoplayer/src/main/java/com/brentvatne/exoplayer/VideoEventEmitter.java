@@ -371,6 +371,8 @@ class VideoEventEmitter {
         audioTrack.putString("language", format.language != null ? format.language : "");
         audioTrack.putString("bitrate", format.bitrate == Format.NO_VALUE ? ""
                 : String.format(Locale.US, "%.2fMbps", format.bitrate / 1000000f));
+        audioTrack.putString("codecs", format.codecs != null ? format.codecs : "");
+        audioTrack.putString("channels", String.valueOf(format.channelCount != Format.NO_VALUE ? format.channelCount : 0));
         if (manifest != null) {
             Representation representation = ManifestUtils.getRepresentationOf(manifest, track);
             if (representation != null && representation.baseUrls.size() > 0) {
@@ -384,8 +386,7 @@ class VideoEventEmitter {
                 for (int i=0 ; i<supplementalProperties.size() ; i++) {
                     Descriptor descriptor = supplementalProperties.get(i);
                     propertiesString
-                            .append(descriptor.id).append(":")
-                            .append(descriptor.schemeIdUri).append(":")
+                            .append(descriptor.schemeIdUri).append("=")
                             .append(descriptor.value).append("; ");
                 }
                 audioTrack.putString("supplementalProperties", propertiesString.toString());
@@ -419,8 +420,7 @@ class VideoEventEmitter {
                 for (int i=0 ; i<supplementalProperties.size() ; i++) {
                     Descriptor descriptor = supplementalProperties.get(i);
                     propertiesString
-                            .append(descriptor.id).append(":")
-                            .append(descriptor.schemeIdUri).append(":")
+                            .append(descriptor.schemeIdUri).append("=")
                             .append(descriptor.value).append("; ");
                 }
                 videoTrack.putString("supplementalProperties", propertiesString.toString());
