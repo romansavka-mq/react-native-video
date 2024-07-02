@@ -124,6 +124,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -1942,7 +1943,7 @@ public class ReactExoplayerView extends FrameLayout implements
     }
 
     public void setCookiePolicy(String policy) {
-        setCookiePolicy(CookiesPolicy.valueOf(policy));
+        setCookiePolicy(CookiesPolicy.valueOf(policy.toUpperCase(Locale.ROOT)));
     }
 
     private void setCookiePolicy(CookiesPolicy policy) {
