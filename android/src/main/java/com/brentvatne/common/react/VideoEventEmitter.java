@@ -43,6 +43,7 @@ public class VideoEventEmitter {
     private static final String EVENT_ERROR = "onVideoError";
     private static final String EVENT_PROGRESS = "onVideoProgress";
     private static final String EVENT_BANDWIDTH = "onVideoBandwidthUpdate";
+    private static final String EVENT_CONTROLS_VISIBILITY_CHANGE = "onControlsVisibilityChange";
     private static final String EVENT_SEEK = "onVideoSeek";
     private static final String EVENT_END = "onVideoEnd";
     private static final String EVENT_FULLSCREEN_WILL_PRESENT = "onVideoFullscreenPlayerWillPresent";
@@ -95,6 +96,7 @@ public class VideoEventEmitter {
             EVENT_TEXT_TRACK_DATA_CHANGED,
             EVENT_VIDEO_TRACKS,
             EVENT_BANDWIDTH,
+            EVENT_CONTROLS_VISIBILITY_CHANGE,
             EVENT_ON_RECEIVE_AD_EVENT
     };
 
@@ -126,6 +128,7 @@ public class VideoEventEmitter {
             EVENT_TEXT_TRACK_DATA_CHANGED,
             EVENT_VIDEO_TRACKS,
             EVENT_BANDWIDTH,
+            EVENT_CONTROLS_VISIBILITY_CHANGE,
             EVENT_ON_RECEIVE_AD_EVENT
     })
     @interface VideoEvents {
@@ -169,6 +172,8 @@ public class VideoEventEmitter {
     private static final String EVENT_PROP_BITRATE = "bitrate";
 
     private static final String EVENT_PROP_IS_PLAYING = "isPlaying";
+
+    private static final String EVENT_CONTROLS_VISIBLE = "isVisible";
 
     public void setViewId(int viewId) {
         this.viewId = viewId;
@@ -322,6 +327,12 @@ public class VideoEventEmitter {
 
     public void end() {
         receiveEvent(EVENT_END, null);
+    }
+
+    public void controlsVisibilityChanged(boolean isVisible) {
+        WritableMap map = Arguments.createMap();
+        map.putBoolean(EVENT_CONTROLS_VISIBLE, isVisible);
+        receiveEvent(EVENT_CONTROLS_VISIBILITY_CHANGE, map);
     }
 
     public void fullscreenWillPresent() {
