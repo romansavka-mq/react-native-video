@@ -1,3 +1,10 @@
+# [6.2.0+dolbyxp.1.4](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.3...miquido:react-native-video:6.2.0+dolbyxp.1.4)
+
+
+### Bug Fixes
+
+* **android:** fix crash when cookiePolicy applied
+
 # [6.2.0+dolbyxp.1.3](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.3)
 
 
