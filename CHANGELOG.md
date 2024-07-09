@@ -1,3 +1,10 @@
+# [6.3.0+dolbyxp.1.5](https://github.com/miquido/react-native-video/compare/6.3.0+dolbyxp.1.4...miquido:react-native-video:6.3.0+dolbyxp.1.5)
+
+
+### Bug Fixes
+
+* **android:** fix getCurrentPosition seconds rounded
+
 # [6.3.0+dolbyxp.1.4](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.4...miquido:react-native-video:6.3.0+dolbyxp.1.4)
 
 Sync with 6.3.0.
