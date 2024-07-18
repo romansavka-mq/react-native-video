@@ -71,6 +71,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     private var _presentingViewController: UIViewController?
     private var _startPosition: Float64 = -1
     private var _showNotificationControls = false
+    private var _reactNativeTag: NSNumber?
     private var _principalVideo: NSNumber?
     private var _peripheralVideo: NSNumber?
     private var _videoState: VideoState = .unknown
@@ -944,6 +945,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         setControls(_controls)
         setPaused(_paused)
         setAllowsExternalPlayback(_allowsExternalPlayback)
+        setReactNativeTag(reactTag)
     }
 
     @objc
@@ -1163,6 +1165,11 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         } else {
             NowPlayingInfoCenterManager.shared.removePlayer(player: player)
         }
+    }
+    
+    @objc
+    func setReactNativeTag(_ reactTag: NSNumber) {
+        _reactNativeTag = reactTag
     }
 
     @objc
