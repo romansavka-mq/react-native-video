@@ -75,14 +75,14 @@ class RCTVideoManager: RCTViewManager {
     @objc(setPrincipalVideoTagCmd:principalTag:)
     func setPrincipalVideoTagCmd(_ reactTag: NSNumber, principalTag: NSNumber) {
         performOnVideoView(withReactTag: reactTag, callback: { videoView in
-            videoView?.setPrincipalVideo(principalTag)
+            videoView?.setPrincipalVideo(tag: principalTag)
         })
     }
 
     @objc(setPeripheralVideoTagCmd:peripheralTag:)
     func setPeripheralVideoTagCmd(_ reactTag: NSNumber, peripheralTag: NSNumber) {
         performOnVideoView(withReactTag: reactTag, callback: { videoView in
-            videoView?.setPeripheralVideo(peripheralTag)
+            videoView?.setPeripheralVideo(tag: peripheralTag)
         })
     }
 
