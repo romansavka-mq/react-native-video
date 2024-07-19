@@ -1710,10 +1710,12 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     @objc
     func setOnClick(_: Any) {}
 
+    @objc
     func setPrincipalVideo(tag: NSNumber) {
         _principalVideo = tag
     }
 
+    @objc
     func setPeripheralVideo(tag: NSNumber) {
         _peripheralVideo = tag
     }
