@@ -793,21 +793,20 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         }
         let item: AVPlayerItem? = _player?.currentItem
         if (item != nil) && item?.status == .readyToPlay {
-            
             let cmSeekTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: 1000)
             let current: CMTime = item?.currentTime() ?? .zero
-            
+
             let tolerance: CMTime = CMTimeMake(value: Int64(tolerance), timescale: 1000)
             let wasPaused = _paused
-            
+
             if CMTimeCompare(current, cmSeekTime) != 0 {
                 if !wasPaused { _player?.pause() }
-                _player?.seek(to: cmSeekTime, toleranceBefore: tolerance, toleranceAfter: tolerance) { finished in
+                _player?.seek(to: cmSeekTime, toleranceBefore: tolerance, toleranceAfter: tolerance) { _ in
                     self._playerObserver.addTimeObserverIfNotSet()
                     if !wasPaused {
                         self.setPaused(false)
                     }
-                    if (self.onVideoSeek != nil) {
+                    if self.onVideoSeek != nil {
                         self.onVideoSeek?(["currentTime": NSNumber(value: Float(CMTimeGetSeconds(item?.currentTime() ?? .zero))),
                                            "seekTime": time,
                                            "target": self.reactTag])
@@ -1820,7 +1819,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                 peripheralPlayer?.pause()
 
                 let seekGroup: DispatchGroup = .init()
-                
+
                 seekGroup.enter()
                 _player?.seek(to: cmSeekTime, toleranceBefore: tolerance, toleranceAfter: tolerance, completionHandler: { _ in
                     seekGroup.leave()
@@ -1864,10 +1863,13 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             return
         }
         _videoState = .init(rawValue: .init(_videoState.rawValue | state.rawValue))
-        
+
         if self.isPeripheral() {
             let principal = self.principal()
             principal?.onPeripheralVideoStatusChange()
+        } else if isVideoReady() && self.peripheral()?.isVideoReady() ?? false {
+            self.setPaused(false)
+            _principalPendingPlayRequest = false
         }
     }
 
@@ -1877,9 +1879,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
             return
         }
         if peripheral?.isVideoReady() ?? false && _principalPendingPlayRequest {
-            self.setPaused(false)
-            _principalPendingPlayRequest = false
-        } else if self.isVideoReady() && self.peripheral()?.isVideoReady() ?? false {
             self.setPaused(false)
             _principalPendingPlayRequest = false
         }
