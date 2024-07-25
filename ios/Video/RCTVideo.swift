@@ -1832,15 +1832,15 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                 seekGroup.notify(queue: .main) {
                     self.seekCompletedFor(seekTime: seekTime ?? 0)
                     peripheral.seekCompletedFor(seekTime: seekTime ?? 0)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.setManagedPaused(paused: wasPaused)
                     }
                 }
                 _pendingSeek = false
-            } else {
-                _pendingSeek = true
-                _pendingSeekTime = seekTime?.floatValue ?? .zero
             }
+        } else {
+            _pendingSeek = true
+            _pendingSeekTime = seekTime?.floatValue ?? .zero
         }
     }
 
