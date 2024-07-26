@@ -59,8 +59,9 @@ export interface VideoRef {
   setFullScreen: (fullScreen: boolean) => void;
   save: (options: object) => Promise<VideoSaveData> | void;
   getCurrentPosition: () => Promise<number>;
-  setPrincipalVideoId: (principalId: number) => void;
-  setPeripheralVideoId: (peripheralId: number) => void;
+  setPrincipalVideoTag: (principalTag: number) => void;
+  setPeripheralVideoTag: (peripheralTag: number) => void;
+  getTag: () => number;
 }
 
 const Video = forwardRef<VideoRef, ReactVideoProps>(
@@ -72,8 +73,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       posterResizeMode,
       poster,
       drm,
-      principalVideo,
-      peripheralVideo,
       textTracks,
       selectedVideoTrack,
       selectedAudioTrack,
@@ -118,8 +117,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
   ) => {
     const nativeRef = useRef<ElementRef<typeof NativeVideoComponent>>(null);
     const [showPoster, setShowPoster] = useState(!!poster);
-    const [getPrincipalVideo, setPrincipalVideo] = useState(principalVideo);
-    const [getPeripheralVideo, setPeripheralVideo] = useState(peripheralVideo);
     const [
       _restoreUserInterfaceForPIPStopCompletionHandler,
       setRestoreUserInterfaceForPIPStopCompletionHandler,
@@ -335,6 +332,10 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       return NativeVideoManager.getCurrentPosition(getReactTag(nativeRef));
     }, []);
 
+    const getTag = useCallback(() => {
+      return getReactTag(nativeRef);
+    }, []);
+
     const restoreUserInterfaceForPictureInPictureStopCompleted = useCallback(
       (restored: boolean) => {
         setRestoreUserInterfaceForPIPStopCompletionHandler(restored);
@@ -342,12 +343,18 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       [setRestoreUserInterfaceForPIPStopCompletionHandler],
     );
 
-    const setPrincipalVideoId = useCallback((principalId: number) => {
-      setPrincipalVideo(principalId);
+    const setPrincipalVideoTag = useCallback((principalTag: number) => {
+      return NativeVideoManager.setPrincipalVideoTagCmd(
+        getReactTag(nativeRef),
+        principalTag,
+      );
     }, []);
 
-    const setPeripheralVideoId = useCallback((peripheralId: number) => {
-      setPeripheralVideo(peripheralId);
+    const setPeripheralVideoTag = useCallback((peripheralTag: number) => {
+      return NativeVideoManager.setPeripheralVideoTagCmd(
+        getReactTag(nativeRef),
+        peripheralTag,
+      );
     }, []);
 
     const onVideoLoadStart = useCallback(
@@ -562,12 +569,13 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
-        setPrincipalVideoId,
-        setPeripheralVideoId,
+        setPrincipalVideoTag,
+        setPeripheralVideoTag,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
         getCurrentPosition,
         setFullScreen,
+        getTag,
       }),
       [
         seek,
@@ -576,12 +584,13 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
-        setPrincipalVideoId,
-        setPeripheralVideoId,
+        setPrincipalVideoTag,
+        setPeripheralVideoTag,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
         getCurrentPosition,
         setFullScreen,
+        getTag,
       ],
     );
 
@@ -622,8 +631,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
           ref={nativeRef}
           {...rest}
           src={src}
-          principalVideo={getPrincipalVideo}
-          peripheralVideo={getPeripheralVideo}
           style={StyleSheet.absoluteFill}
           resizeMode={resizeMode}
           restoreUserInterfaceForPIPStopCompletionHandler={

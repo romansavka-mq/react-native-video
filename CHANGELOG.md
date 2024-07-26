@@ -1,3 +1,9 @@
+# [6.4.2+dolbyxp.1.6](https://github.com/miquido/react-native-video/compare/6.4.2+dolbyxp.1.5...miquido:react-native-video:6.4.2+dolbyxp.1.6)
+
+### Bug Fixes
+
+* **iso** Fix principalVideo/peripheralVideo synchronization.
+
 # [6.4.2+dolbyxp.1.5](https://github.com/miquido/react-native-video/compare/6.3.0+dolbyxp.1.5...miquido:react-native-video:6.4.2+dolbyxp.1.5)
 
 Sync with 6.4.2.

@@ -278,8 +278,6 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   volume?: number;
   localSourceEncryptionKeyScheme?: string;
   cookiePolicy: EnumValues<CookiePolicy>;
-  principalVideo: number;
-  peripheralVideo: number;
   debug?: DebugConfig;
   allowsExternalPlayback?: boolean; // iOS
   controlsStyles?: ControlsStyles; // Android
