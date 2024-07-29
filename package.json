@@ -7,10 +7,10 @@
     "react-native": "src/index",
     "license": "MIT",
     "author": "Community Contributors",
-    "homepage": "https://thewidlarzgroup.github.io/react-native-video/",
+    "homepage": "https://miquido.github.io/react-native-video/",
     "repository": {
         "type": "git",
-        "url": "git@github.com:TheWidlarzGroup/react-native-video.git"
+        "url": "git@github.com:miquido/react-native-video.git"
     },
     "resolutions": {
         "@types/react": "~18.0.0"
