@@ -28,7 +28,7 @@ Run `pod install` in the `ios` directory of your project.
 
 ### Enable custom feature in podfile file
 
-Samples available in sample app see [sample pod file](https://github.com/TheWidlarzGroup/react-native-video/blob/9c669a2d8a53df36773fd82ff0917280d0659bc7/examples/basic/ios/Podfile#L34)
+Samples available in sample app see [sample pod file](https://github.com/miquido/react-native-video/blob/9c669a2d8a53df36773fd82ff0917280d0659bc7/examples/basic/ios/Podfile#L34)
 
 #### Video caching
 
@@ -57,12 +57,14 @@ $RNVideoUseGoogleIMA=true
 
 ## Android
 
-From version >= 6.0.0, your application needs to have kotlin version >= 1.7.0
+From version >= 6.0.0, your application needs to have kotlin version >= 1.8.0
 
 ```:
 buildscript {
     ...
-    ext.kotlinVersion = '1.7.0'
+    ext.kotlinVersion = '1.8.0',
+    ext.compileSdkVersion = 34
+    ext.targetSdkVersion = 34
     ...
 }
 ```
@@ -98,7 +100,7 @@ buildscript {
 }
 ```
 
-See [sample app](https://github.com/TheWidlarzGroup/react-native-video/blob/9c669a2d8a53df36773fd82ff0917280d0659bc7/examples/basic/android/build.gradle#L14C5-L14C5)
+See [sample app](https://github.com/miquido/react-native-video/blob/9c669a2d8a53df36773fd82ff0917280d0659bc7/examples/basic/android/build.gradle#L14C5-L14C5)
 
 </details>
 <details>

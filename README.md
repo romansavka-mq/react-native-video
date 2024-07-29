@@ -1,13 +1,13 @@
 # react-native-video
 🎬 `<Video>` component for React Native
 
-This repository is fork of [thewidlarzgroup.github.io/react-native-video/](https://thewidlarzgroup.github.io/react-native-video/).
+This repository is fork of [miquido.github.io/react-native-video/](https://miquido.github.io/react-native-video/).
 
 All modifications are described in `CHANGELOG.md` using version names with `+dolbyxp` suffix.
 
 # Banches
 
-`main-oss` - fork source, synchronized periodically to refrect state of source `master`.
+`main-oss` - fork source, synchronized periodically to reflect state of source `master`.
 
 `main-dxp` - modified fork, synchronized periodically to contain oss changes. Main branch of repository. 
 
