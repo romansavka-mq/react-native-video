@@ -777,8 +777,8 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                     self?._playerObserver.addTimeObserverIfNotSet()
                     if finished {
                         self?.onVideoSeek?(["currentTime": NSNumber(value: Float(CMTimeGetSeconds(item?.currentTime() ?? .zero))),
-                                           "seekTime": time,
-                                           "target": self?.reactTag])
+                                            "seekTime": time,
+                                            "target": self?.reactTag])
                     }
                 }
                 _pendingSeek = false
@@ -1446,11 +1446,11 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         )
     }
 
-    func handlePlaybackBufferKeyEmpty(playerItem: AVPlayerItem, change: NSKeyValueObservedChange<Bool>) {
+    func handlePlaybackBufferKeyEmpty(playerItem _: AVPlayerItem, change _: NSKeyValueObservedChange<Bool>) {
         // noop - we rely only on full buffer
     }
 
-    func handlePlaybackLikelyToKeepUp(playerItem: AVPlayerItem, change: NSKeyValueObservedChange<Bool>) {
+    func handlePlaybackLikelyToKeepUp(playerItem _: AVPlayerItem, change: NSKeyValueObservedChange<Bool>) {
         _isBuffering = change.newValue.map { !$0 } ?? true
     }
 
