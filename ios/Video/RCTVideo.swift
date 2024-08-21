@@ -63,7 +63,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     private var _presentingViewController: UIViewController?
     private var _startPosition: Float64 = -1
     private var _showNotificationControls = false
-    
+
     private var _pictureInPictureEnabled = false {
         didSet {
             #if os(iOS)
