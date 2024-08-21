@@ -50,7 +50,6 @@
 		0177D39927170A7A00F5BE18 /* RCTVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RCTVideo.swift; path = Video/RCTVideo.swift; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libRCTVideo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTVideo.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCD62EF02C20781F00669DF5 /* WeakVideoRef.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WeakVideoRef.swift; path = Video/WeakVideoRef.swift; sourceTree = "<group>"; };
-		DCD62EF12C20781F00669DF5 /* CurrentVideos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CurrentVideos.swift; path = Video/CurrentVideos.swift; sourceTree = "<group>"; };
 		DCD62EF32C20BB4200669DF5 /* PlayerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PlayerModels.swift; path = Video/PlayerModels.swift; sourceTree = "<group>"; };
 		DCD62EF52C20BBC400669DF5 /* Dictionary+Merge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Dictionary+Merge.swift"; path = "Video/Dictionary+Merge.swift"; sourceTree = "<group>"; };
 		DCF8FF322C1AF64800CCA6B0 /* M3U8Kit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = M3U8Kit; path = Video/M3U8Kit; sourceTree = "<group>"; };
@@ -97,7 +96,6 @@
 				01489051272001A100E69940 /* Features */,
 				0177D39527170A7A00F5BE18 /* RCTSwiftLog */,
 				0177D39927170A7A00F5BE18 /* RCTVideo.swift */,
-				DCD62EF12C20781F00669DF5 /* CurrentVideos.swift */,
 				DCD62EF02C20781F00669DF5 /* WeakVideoRef.swift */,
 				DCD62EF32C20BB4200669DF5 /* PlayerModels.swift */,
 				0177D39727170A7A00F5BE18 /* RCTVideoManager.m */,

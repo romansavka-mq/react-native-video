@@ -75,8 +75,6 @@ RCT_EXTERN_METHOD(setLicenseResultErrorCmd : (nonnull NSNumber*)reactTag error :
 RCT_EXTERN_METHOD(setPlayerPauseStateCmd : (nonnull NSNumber*)reactTag paused : (nonnull BOOL)paused)
 RCT_EXTERN_METHOD(setVolumeCmd : (nonnull NSNumber*)reactTag volume : (nonnull float*)volume)
 RCT_EXTERN_METHOD(setFullScreenCmd : (nonnull NSNumber*)reactTag fullscreen : (nonnull BOOL)fullScreen)
-RCT_EXTERN_METHOD(setPrincipalVideoTagCmd : (nonnull NSNumber*)reactTag principalTag : (nonnull NSNumber*)principalTag)
-RCT_EXTERN_METHOD(setPeripheralVideoTagCmd : (nonnull NSNumber*)reactTag peripheralTag : (nonnull NSNumber*)peripheralTag)
 
 RCT_EXTERN_METHOD(save
                   : (nonnull NSNumber*)reactTag options

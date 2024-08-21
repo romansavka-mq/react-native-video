@@ -72,20 +72,6 @@ class RCTVideoManager: RCTViewManager {
         })
     }
 
-    @objc(setPrincipalVideoTagCmd:principalTag:)
-    func setPrincipalVideoTagCmd(_ reactTag: NSNumber, principalTag: NSNumber) {
-        performOnVideoView(withReactTag: reactTag, callback: { videoView in
-            videoView?.setPrincipalVideo(tag: principalTag)
-        })
-    }
-
-    @objc(setPeripheralVideoTagCmd:peripheralTag:)
-    func setPeripheralVideoTagCmd(_ reactTag: NSNumber, peripheralTag: NSNumber) {
-        performOnVideoView(withReactTag: reactTag, callback: { videoView in
-            videoView?.setPeripheralVideo(tag: peripheralTag)
-        })
-    }
-
     @objc(save:options:resolve:reject:)
     func save(_ reactTag: NSNumber, options: NSDictionary, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         performOnVideoView(withReactTag: reactTag, callback: { videoView in
