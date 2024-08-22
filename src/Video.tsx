@@ -65,8 +65,6 @@ export interface VideoRef {
   setFullScreen: (fullScreen: boolean) => void;
   save: (options: object) => Promise<VideoSaveData> | void;
   getCurrentPosition: () => Promise<number>;
-  setPrincipalVideoTag: (principalTag: number) => void;
-  setPeripheralVideoTag: (peripheralTag: number) => void;
   getTag: () => number;
 }
 
@@ -353,20 +351,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       [setRestoreUserInterfaceForPIPStopCompletionHandler],
     );
 
-    const setPrincipalVideoTag = useCallback((principalTag: number) => {
-      return NativeVideoManager.setPrincipalVideoTagCmd(
-        getReactTag(nativeRef),
-        principalTag,
-      );
-    }, []);
-
-    const setPeripheralVideoTag = useCallback((peripheralTag: number) => {
-      return NativeVideoManager.setPeripheralVideoTagCmd(
-        getReactTag(nativeRef),
-        peripheralTag,
-      );
-    }, []);
-
     const onVideoLoadStart = useCallback(
       (e: NativeSyntheticEvent<OnLoadStartData>) => {
         hasPoster && setShowPoster(true);
@@ -579,8 +563,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
-        setPrincipalVideoTag,
-        setPeripheralVideoTag,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
         getCurrentPosition,
@@ -594,8 +576,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         save,
         pause,
         resume,
-        setPrincipalVideoTag,
-        setPeripheralVideoTag,
         restoreUserInterfaceForPictureInPictureStopCompleted,
         setVolume,
         getCurrentPosition,
