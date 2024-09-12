@@ -1603,25 +1603,25 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
         onVideoBandwidthUpdate?(["bitrate": lastEvent.observedBitrate, "target": reactTag])
     }
 
-    func handleTracksChange(playerItem _: AVPlayerItem, change _: NSKeyValueObservedChange<[AVPlayerItemTrack]>) {
-        if onTextTracks != nil {
-            Task {
-                let textTracks = await RCTVideoUtils.getTextTrackInfo(self._player)
-                self.onTextTracks?(["textTracks": self._textTracks?.compactMap { $0.json } ?? textTracks.compactMap(\.json)])
-            }
-        }
-
+    func handleTracksChange(playerItem: AVPlayerItem, change: NSKeyValueObservedChange<[AVPlayerItemTrack]>) {
         Task {
-            if let models = await RCTVideoUtils.getModels(player: _player) {
-                if onAudioTracks != nil {
-                    let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models)
-                    self.onAudioTracks?(["audioTracks": audioTracks])
-                }
+            if onTextTracks != nil {
+                    let textTracks = await RCTVideoUtils.getTextTrackInfo(self._player)
+                    self.onTextTracks?(["textTracks": self._textTracks?.compactMap { $0.json } ?? textTracks.compactMap(\.json)])
+            }
+            guard let models = await RCTVideoUtils.getModels(player: _player) else { return }
+            
+            if onAudioTracks != nil {
+                let audioTracks = await RCTVideoUtils.getAudioTrackInfo(self._player, models: models)
+                self.onAudioTracks?(["audioTracks": audioTracks])
+            }
 
-                if onVideoTracks != nil {
-                    let videoTracks = await RCTVideoUtils.getVideoTrackInfo(self._player, models: models)
-                    self.onVideoTracks?(["videoTracks": videoTracks])
+            if onVideoTracks != nil {
+                let videoTracks = models.composeVideoTracksSummary(for: playerItem)
+                if #available(iOS 14.0, *) {
+                    Logger().info("👀 \(videoTracks)")
                 }
+                self.onVideoTracks?(["videoTracks": videoTracks])
             }
         }
     }
@@ -1647,4 +1647,37 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
     // Workaround for #3418 - https://github.com/TheWidlarzGroup/react-native-video/issues/3418#issuecomment-2043508862
     @objc
     func setOnClick(_: Any) {}
+}
+
+extension PlayerModels {
+    
+    func composeVideoTracksSummary(for item: AVPlayerItem) -> [VideoTrackSummaryUnit] {
+        var result = [VideoTrackSummaryUnit]()
+        
+        guard let playlist = principalModel?.masterPlaylist, playlist.xStreamList.count > 0 else { return result }
+        guard let model = model, model.mainMediaPl.segmentList.count > 0 else { return result }
+        guard let lastAccessLogInfo = item.accessLog()?.events.last else { return result }
+        
+        let url = model.mainMediaPl.segmentList.segmentInfo(at: 0).uri.absoluteString
+        
+        for i in 0...playlist.xStreamList.count {
+            guard let streamInfo = playlist.xStreamList.xStreamInf(at: i) else { continue }
+            let codecs = (streamInfo.codecs as NSArray).componentsJoined(by: ",")
+            result.append(.init(file: url, codecs: codecs, selected: streamInfo.bandwidth == Int(lastAccessLogInfo.indicatedBitrate)))
+        }
+        return result
+    }
+    
+}
+
+class VideoTrackSummaryUnit {
+    var file: String
+    var codecs: String
+    var selected: Bool
+    
+    init(file: String, codecs: String, selected: Bool) {
+        self.file = file
+        self.codecs = codecs
+        self.selected = selected
+    }
 }
