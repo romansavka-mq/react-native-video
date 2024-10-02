@@ -994,7 +994,7 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - "react-native-video (6.4.2+dolbyxp.1.5)":
+  - "react-native-video (6.6.3+dolbyxp.1.7)":
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1008,7 +1008,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - "react-native-video/Video (= 6.4.2+dolbyxp.1.5)"
+    - "react-native-video/Video (= 6.6.3+dolbyxp.1.7)"
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1038,7 +1038,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - "react-native-video/Video (6.4.2+dolbyxp.1.5)":
+  - "react-native-video/Video (6.6.3+dolbyxp.1.7)":
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1290,9 +1290,9 @@ PODS:
     - React-utils (= 0.74.3)
   - RNCPicker (2.7.5):
     - React-Core
-  - SDWebImage (5.19.2):
-    - SDWebImage/Core (= 5.19.2)
-  - SDWebImage/Core (5.19.2)
+  - SDWebImage (5.19.4):
+    - SDWebImage/Core (= 5.19.4)
+  - SDWebImage/Core (5.19.4)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -1559,7 +1559,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 1aa5681c353b41573b03e0e480a5adf5fa1c56d8
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 70da5955150a58732e9336a0c7e71cd49e909f25
-  react-native-video: 62466b25be5b825ea1ed781aaa88271037d21d2c
+  react-native-video: 9249f04bd09cfd730c2b08b959a2bf0697695c92
   react-native-video-plugin-sample: d3a93b7ad777cad7fa2c30473de75a2635ce5feb
   React-nativeconfig: 84806b820491db30175afbf027e99e8415dc63f0
   React-NativeModulesApple: 7b79212f8cf496ab554e0b7b09acbd4aa4690260
@@ -1585,7 +1585,7 @@ SPEC CHECKSUMS:
   React-utils: 6f7ac39d9a0de447d4334bb25d144a28c0c5d8c9
   ReactCommon: 4a09c7d8a06e93c1e2e988a3b9f3db3d2449f2fc
   RNCPicker: 3e2c37a8328f368ce14da050cdc8231deb5fc9f9
-  SDWebImage: dfe95b2466a9823cf9f0c6d01217c06550d7b29a
+  SDWebImage: 066c47b573f408f18caa467d71deace7c0f8280d
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380

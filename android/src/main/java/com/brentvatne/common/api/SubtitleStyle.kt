@@ -1,6 +1,7 @@
 package com.brentvatne.common.api
 
 import androidx.core.graphics.toColorInt
+import com.brentvatne.common.toolbox.ReactBridgeUtils.safeGetBool
 import com.brentvatne.common.toolbox.ReactBridgeUtils.safeGetFloat
 import com.brentvatne.common.toolbox.ReactBridgeUtils.safeGetInt
 import com.brentvatne.common.toolbox.ReactBridgeUtils.safeGetString
@@ -9,7 +10,7 @@ import com.facebook.react.bridge.ReadableMap
 /**
  * Helper file to parse SubtitleStyle prop and build a dedicated class
  */
-class SubtitleStyle private constructor() {
+class SubtitleStyle {
     var foregroundColor: Int? = null
         private set
     var backgroundColor: Int? = null
@@ -28,6 +29,8 @@ class SubtitleStyle private constructor() {
         private set
     var opacity = 1f
         private set
+    var subtitlesFollowVideo = true
+        private set
 
     companion object {
         private const val PROP_FOREGROUND_COLOR = "foregroundColor"
@@ -39,6 +42,7 @@ class SubtitleStyle private constructor() {
         private const val PROP_PADDING_LEFT = "paddingLeft"
         private const val PROP_PADDING_RIGHT = "paddingRight"
         private const val PROP_OPACITY = "opacity"
+        private const val PROP_SUBTITLES_FOLLOW_VIDEO = "subtitlesFollowVideo"
 
         @JvmStatic
         fun parse(src: ReadableMap?): SubtitleStyle =
@@ -58,6 +62,7 @@ class SubtitleStyle private constructor() {
                 paddingLeft = safeGetInt(src, PROP_PADDING_LEFT, 0)
                 paddingRight = safeGetInt(src, PROP_PADDING_RIGHT, 0)
                 opacity = safeGetFloat(src, PROP_OPACITY, 1f)
+                subtitlesFollowVideo = safeGetBool(src, PROP_SUBTITLES_FOLLOW_VIDEO, true)
             }
     }
 }

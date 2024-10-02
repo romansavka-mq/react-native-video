@@ -16,7 +16,9 @@ import type {
   ImageResizeMode,
 } from 'react-native';
 
-import NativeVideoComponent from './specs/VideoNativeComponent';
+import NativeVideoComponent, {
+  NativeCmcdConfiguration,
+} from './specs/VideoNativeComponent';
 import type {
   OnAudioFocusChangedData,
   OnBandwidthUpdateData,
@@ -42,7 +44,7 @@ import {
 } from './utils';
 import NativeVideoManager from './specs/NativeVideoManager';
 import type {VideoSaveData} from './specs/NativeVideoManager';
-import {ViewType} from './types';
+import {CmcdMode, ViewType} from './types';
 import type {
   OnLoadData,
   OnTextTracksData,
@@ -50,6 +52,7 @@ import type {
   OnVideoTracksData,
   OnReceiveAdEventData,
   ReactVideoProps,
+  CmcdData,
 } from './types';
 
 export interface VideoRef {
@@ -116,6 +119,7 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       onTextTrackDataChanged,
       onVideoTracks,
       onAspectRatio,
+      localSourceEncryptionKeyScheme,
       ...rest
     },
     ref,
@@ -124,8 +128,18 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
 
     const isPosterDeprecated = typeof poster === 'string';
 
+    const _renderLoader = useMemo(
+      () =>
+        !renderLoader
+          ? undefined
+          : renderLoader instanceof Function
+          ? renderLoader
+          : () => renderLoader,
+      [renderLoader],
+    );
+
     const hasPoster = useMemo(() => {
-      if (renderLoader) {
+      if (_renderLoader) {
         return true;
       }
 
@@ -134,7 +148,7 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       }
 
       return !!poster?.source;
-    }, [isPosterDeprecated, poster, renderLoader]);
+    }, [isPosterDeprecated, poster, _renderLoader]);
 
     const [showPoster, setShowPoster] = useState(hasPoster);
 
@@ -164,6 +178,7 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       );
 
       const selectedDrm = source.drm || drm;
+      const _textTracks = source.textTracks || textTracks;
       const _drm = !selectedDrm
         ? undefined
         : {
@@ -175,7 +190,34 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
             base64Certificate: selectedDrm.base64Certificate,
             useExternalGetLicense: !!selectedDrm.getLicense,
             multiDrm: selectedDrm.multiDrm,
+            localSourceEncryptionKeyScheme:
+              selectedDrm.localSourceEncryptionKeyScheme ||
+              localSourceEncryptionKeyScheme,
           };
+
+      let _cmcd: NativeCmcdConfiguration | undefined;
+      if (Platform.OS === 'android' && source?.cmcd) {
+        const cmcd = source.cmcd;
+
+        if (typeof cmcd === 'boolean') {
+          _cmcd = cmcd ? {mode: CmcdMode.MODE_QUERY_PARAMETER} : undefined;
+        } else if (typeof cmcd === 'object' && !Array.isArray(cmcd)) {
+          const createCmcdHeader = (property?: CmcdData) =>
+            property ? generateHeaderForNative(property) : undefined;
+
+          _cmcd = {
+            mode: cmcd.mode ?? CmcdMode.MODE_QUERY_PARAMETER,
+            request: createCmcdHeader(cmcd.request),
+            session: createCmcdHeader(cmcd.session),
+            object: createCmcdHeader(cmcd.object),
+            status: createCmcdHeader(cmcd.status),
+          };
+        } else {
+          throw new Error(
+            'Invalid CMCD configuration: Expected a boolean or an object.',
+          );
+        }
+      }
 
       return {
         uri,
@@ -191,10 +233,12 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
         cropEnd: resolvedSource.cropEnd,
         metadata: resolvedSource.metadata,
         drm: _drm,
+        cmcd: _cmcd,
+        textTracks: _textTracks,
         textTracksAllowChunklessPreparation:
           resolvedSource.textTracksAllowChunklessPreparation,
       };
-    }, [drm, source]);
+    }, [drm, source, textTracks, localSourceEncryptionKeyScheme]);
 
     const _selectedTextTrack = useMemo(() => {
       if (!selectedTextTrack) {
@@ -517,7 +561,8 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       [onControlsVisibilityChange],
     );
 
-    const usingExternalGetLicense = drm?.getLicense instanceof Function;
+    const selectedDrm = source?.drm || drm;
+    const usingExternalGetLicense = selectedDrm?.getLicense instanceof Function;
 
     const onGetLicense = useCallback(
       async (event: NativeSyntheticEvent<OnGetLicenseData>) => {
@@ -525,33 +570,43 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
           return;
         }
         const data = event.nativeEvent;
-        let result;
-        if (data?.spcBase64) {
-          try {
-            // Handles both scenarios, getLicenseOverride being a promise and not.
-            const license = await drm.getLicense(
+        try {
+          if (!data?.spcBase64) {
+            throw new Error('No spc received');
+          }
+          // Handles both scenarios, getLicenseOverride being a promise and not.
+          const license = await Promise.resolve(
+            selectedDrm.getLicense(
               data.spcBase64,
               data.contentId,
               data.licenseUrl,
               data.loadedLicenseUrl,
-            );
-            result =
-              typeof license === 'string' ? license : 'Empty license result';
-          } catch {
-            result = 'fetch error';
+            ),
+          ).catch(() => {
+            throw new Error('fetch error');
+          });
+          if (typeof license !== 'string') {
+            throw Error('Empty license result');
           }
-        } else {
-          result = 'No spc received';
-        }
-        if (nativeRef.current) {
-          NativeVideoManager.setLicenseResultErrorCmd(
-            getReactTag(nativeRef),
-            result,
-            data.loadedLicenseUrl,
-          );
+          if (nativeRef.current) {
+            NativeVideoManager.setLicenseResultCmd(
+              getReactTag(nativeRef),
+              license,
+              data.loadedLicenseUrl,
+            );
+          }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : 'fetch error';
+          if (nativeRef.current) {
+            NativeVideoManager.setLicenseResultErrorCmd(
+              getReactTag(nativeRef),
+              msg,
+              data.loadedLicenseUrl,
+            );
+          }
         }
       },
-      [drm, usingExternalGetLicense],
+      [selectedDrm, usingExternalGetLicense],
     );
 
     useImperativeHandle(
@@ -591,28 +646,32 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       const shallForceViewType =
         hasValidDrmProp && (viewType === ViewType.TEXTURE || useTextureView);
 
-      if (shallForceViewType) {
-        console.warn(
-          'cannot use DRM on texture view. please set useTextureView={false}',
-        );
-      }
       if (useSecureView && useTextureView) {
         console.warn(
           'cannot use SecureView on texture view. please set useTextureView={false}',
         );
       }
 
-      return shallForceViewType
-        ? useSecureView
-          ? ViewType.SURFACE_SECURE
-          : ViewType.SURFACE // check if we should force the type to Surface due to DRM
-        : viewType
-        ? viewType // else use ViewType from source
-        : useSecureView // else infer view type from useSecureView and useTextureView
-        ? ViewType.SURFACE_SECURE
-        : useTextureView
-        ? ViewType.TEXTURE
-        : ViewType.SURFACE;
+      if (shallForceViewType) {
+        console.warn(
+          'cannot use DRM on texture view. please set useTextureView={false}',
+        );
+        return useSecureView ? ViewType.SURFACE_SECURE : ViewType.SURFACE;
+      }
+
+      if (viewType !== undefined && viewType !== null) {
+        return viewType;
+      }
+
+      if (useSecureView) {
+        return ViewType.SURFACE_SECURE;
+      }
+
+      if (useTextureView) {
+        return ViewType.TEXTURE;
+      }
+
+      return ViewType.SURFACE;
     }, [drm, useSecureView, useTextureView, viewType]);
 
     const _renderPoster = useCallback(() => {
@@ -645,15 +704,23 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       }
 
       // render poster
-      if (renderLoader && (poster || posterResizeMode)) {
+      if (_renderLoader && (poster || posterResizeMode)) {
         console.warn(
           'You provided both `renderLoader` and `poster` or `posterResizeMode` props. `renderLoader` will be used.',
         );
       }
 
       // render loader
-      if (renderLoader) {
-        return <View style={StyleSheet.absoluteFill}>{renderLoader}</View>;
+      if (_renderLoader) {
+        return (
+          <View style={StyleSheet.absoluteFill}>
+            {_renderLoader({
+              source: source,
+              style: posterStyle,
+              resizeMode: resizeMode,
+            })}
+          </View>
+        );
       }
 
       return (
@@ -668,8 +735,10 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
       isPosterDeprecated,
       poster,
       posterResizeMode,
-      renderLoader,
+      _renderLoader,
       showPoster,
+      source,
+      resizeMode,
     ]);
 
     const _style: StyleProp<ViewStyle> = useMemo(
@@ -691,7 +760,6 @@ const Video = forwardRef<VideoRef, ReactVideoProps>(
           restoreUserInterfaceForPIPStopCompletionHandler={
             _restoreUserInterfaceForPIPStopCompletionHandler
           }
-          textTracks={textTracks}
           selectedTextTrack={_selectedTextTrack}
           selectedAudioTrack={_selectedAudioTrack}
           selectedVideoTrack={_selectedVideoTrack}
