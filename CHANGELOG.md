@@ -1,3 +1,10 @@
+# [6.4.3+dolbyxp.1.7](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.6...miquido:react-native-video:6.4.3+dolbyxp.1.7)
+
+### Bug Fixes
+
+* **iso** Fixed synchronization and buffer issues
+
+
 # [6.4.3+dolbyxp.1.6](https://github.com/miquido/react-native-video/compare/6.4.2+dolbyxp.1.6...miquido:react-native-video:6.4.3+dolbyxp.1.6)
 
 Sync with 6.4.3.
