@@ -1396,6 +1396,7 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
                 self._startPosition = -1
             }
 
+            self.applyModifiers()
             if onVideoLoad != nil, self._videoLoadStarted {
                 var duration = Float(CMTimeGetSeconds(_playerItem.asset.duration))
 
@@ -1448,7 +1449,6 @@ class RCTVideo: UIView, RCTVideoPlayerViewControllerDelegate, RCTPlayerObserverH
 
             self._videoLoadStarted = false
             self._playerObserver.attachPlayerEventListeners()
-            self.applyModifiers()
         }
     }
 
