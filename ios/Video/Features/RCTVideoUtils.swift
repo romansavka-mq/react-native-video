@@ -214,7 +214,7 @@ enum RCTVideoUtils {
             let filteredArray = streamList.filtered(using: predicate)
             let current = filteredArray.last
 
-            if let current = current as? M3U8ExtXStreamInf {
+            if let current = current as? M3U8ExtXStreamInf, let audio = current.audio {
                 let mediaList: NSMutableArray = .init()
                 for i in 0 ..< principalModel.masterPlaylist.xMediaList.audio().count {
                     let inf = principalModel.masterPlaylist.xMediaList.audio().xMedia(at: i)
@@ -223,7 +223,7 @@ enum RCTVideoUtils {
                     }
                 }
 
-                let predicate = NSPredicate(format: "SELF.groupId == %@", current.audio)
+                let predicate = NSPredicate(format: "SELF.groupId == %@", audio)
 
                 if let currentAudio = mediaList.filtered(using: predicate).last as? M3U8ExtXMedia {
                     let url: URL = currentAudio.m3u8URL()

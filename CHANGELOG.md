@@ -1,4 +1,4 @@
-# [6.6.3+dolbyxp.1.7](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.7...miquido:react-native-video:6.6.3+dolbyxp.1.7)
+# [6.6.3+dolbyxp.1.8](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.8...miquido:react-native-video:6.6.3+dolbyxp.1.8)
 
 Sync with 6.6.3.
 
@@ -97,6 +97,12 @@ Sync with 6.6.3.
 * fix(android): viewType is ignored when its value is ViewType.TEXTURE (#4031) (22cfd6ce)
 * fix(ios): metadata update race (#4033) (08a57a3b)
 * fix(ios): updated getLicense call to work with new syntax, and fixed spelling error (#4014) (#4042) (2348c5e4)
+
+# [6.4.3+dolbyxp.1.8](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.7...miquido:react-native-video:6.4.3+dolbyxp.1.8)
+
+### Bug Fixes
+
+* **iso** crash after providing silent video (without audio)
 
 # [6.4.3+dolbyxp.1.7](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.6...miquido:react-native-video:6.4.3+dolbyxp.1.7)
 
