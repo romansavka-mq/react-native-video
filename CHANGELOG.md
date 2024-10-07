@@ -1,4 +1,4 @@
-# [6.6.3+dolbyxp.1.8](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.8...miquido:react-native-video:6.6.3+dolbyxp.1.8)
+## [6.6.3+dolbyxp.1.8](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.8...miquido:react-native-video:6.6.3+dolbyxp.1.8)
 
 Sync with 6.6.3.
 
@@ -32,7 +32,7 @@ Sync with 6.6.3.
 
 * **ios:** fix side loaded text track management ([#4180](https://github.com/TheWidlarzGroup/react-native-video/issues/4180)) ([7d43d5d](https://github.com/TheWidlarzGroup/react-native-video/commit/7d43d5d3da72495e94468756be21442f96cc7a89))
 
-# [6.6.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.5.0...v6.6.0) (2024-09-18)
+## [6.6.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.5.0...v6.6.0) (2024-09-18)
 
 
 ### Bug Fixes
@@ -52,7 +52,7 @@ Sync with 6.6.3.
 
 * **android:** upgrade dependencies / media3 1.4.1 / androidxCore to 1.13.1 / androidxActivity 1.8.2 ([#4173](https://github.com/TheWidlarzGroup/react-native-video/issues/4173)) ([e57c7bd](https://github.com/TheWidlarzGroup/react-native-video/commit/e57c7bda5df7d624d90b20620859b8a4eb3f76b7))
 
-# [6.5.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.4.5...v6.5.0) (2024-09-04)
+## [6.5.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.4.5...v6.5.0) (2024-09-04)
 
 
 ### Bug Fixes
@@ -98,20 +98,20 @@ Sync with 6.6.3.
 * fix(ios): metadata update race (#4033) (08a57a3b)
 * fix(ios): updated getLicense call to work with new syntax, and fixed spelling error (#4014) (#4042) (2348c5e4)
 
-# [6.4.3+dolbyxp.1.8](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.7...miquido:react-native-video:6.4.3+dolbyxp.1.8)
+## [6.4.3+dolbyxp.1.8](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.7...miquido:react-native-video:6.4.3+dolbyxp.1.8)
 
 ### Bug Fixes
 
 * **iso** crash after providing silent video (without audio)
 
-# [6.4.3+dolbyxp.1.7](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.6...miquido:react-native-video:6.4.3+dolbyxp.1.7)
+## [6.4.3+dolbyxp.1.7](https://github.com/miquido/react-native-video/compare/6.4.3+dolbyxp.1.6...miquido:react-native-video:6.4.3+dolbyxp.1.7)
 
 ### Bug Fixes
 
 * **iso** Fixed synchronization and buffer issues
 
 
-# [6.4.3+dolbyxp.1.6](https://github.com/miquido/react-native-video/compare/6.4.2+dolbyxp.1.6...miquido:react-native-video:6.4.3+dolbyxp.1.6)
+## [6.4.3+dolbyxp.1.6](https://github.com/miquido/react-native-video/compare/6.4.2+dolbyxp.1.6...miquido:react-native-video:6.4.3+dolbyxp.1.6)
 
 Sync with 6.4.3.
 
@@ -134,13 +134,13 @@ Sync with 6.4.3.
 * **android:** add error handling for Kotlin version ([#4018](https://github.com/TheWidlarzGroup/react-native-video/issues/4018)) ([6189080](https://github.com/TheWidlarzGroup/react-native-video/commit/6189080c9aac89aa3d2a4e60049999d8880bc971))
 * **android:** set originalFitsSystemWindows on fullscreen open ([#4013](https://github.com/TheWidlarzGroup/react-native-video/issues/4013)) ([2f70c02](https://github.com/TheWidlarzGroup/react-native-video/commit/2f70c02cdcf6488338df197feb61eeb10ed3281f))
 
-# [6.4.2+dolbyxp.1.6](https://github.com/miquido/react-native-video/compare/6.4.2+dolbyxp.1.5...miquido:react-native-video:6.4.2+dolbyxp.1.6)
+## [6.4.2+dolbyxp.1.6](https://github.com/miquido/react-native-video/compare/6.4.2+dolbyxp.1.5...miquido:react-native-video:6.4.2+dolbyxp.1.6)
 
 ### Bug Fixes
 
 * **iso** Fix principalVideo/peripheralVideo synchronization.
 
-# [6.4.2+dolbyxp.1.5](https://github.com/miquido/react-native-video/compare/6.3.0+dolbyxp.1.5...miquido:react-native-video:6.4.2+dolbyxp.1.5)
+## [6.4.2+dolbyxp.1.5](https://github.com/miquido/react-native-video/compare/6.3.0+dolbyxp.1.5...miquido:react-native-video:6.4.2+dolbyxp.1.5)
 
 Sync with 6.4.2.
 
@@ -198,18 +198,18 @@ Sync with 6.4.2.
 * feat: add plugins management (#3909) (91d27a60)
 * Chore(docs): fix typo (#3938) (3cfb96ad)
 
-# [6.3.0+dolbyxp.1.5](https://github.com/miquido/react-native-video/compare/6.3.0+dolbyxp.1.4...miquido:react-native-video:6.3.0+dolbyxp.1.5)
+## [6.3.0+dolbyxp.1.5](https://github.com/miquido/react-native-video/compare/6.3.0+dolbyxp.1.4...miquido:react-native-video:6.3.0+dolbyxp.1.5)
 
 
 ### Bug Fixes
 
 * **android:** fix getCurrentPosition seconds rounded
 
-# [6.3.0+dolbyxp.1.4](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.4...miquido:react-native-video:6.3.0+dolbyxp.1.4)
+## [6.3.0+dolbyxp.1.4](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.4...miquido:react-native-video:6.3.0+dolbyxp.1.4)
 
 Sync with 6.3.0.
 
-# [6.3.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.2.0...v6.3.0) (2024-06-22)
+## [6.3.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.2.0...v6.3.0) (2024-06-22)
 
 
 ### Bug Fixes
@@ -229,14 +229,14 @@ Sync with 6.3.0.
 * **android:** add `onControlsVisiblityChange` ([#3925](https://github.com/TheWidlarzGroup/react-native-video/issues/3925)) ([c2ce372](https://github.com/TheWidlarzGroup/react-native-video/commit/c2ce372bcf21e21b97878e7efe77780168d09a79))
 * **ios:** add live key to now playing dict to decorate when livestream playing ([#3922](https://github.com/TheWidlarzGroup/react-native-video/issues/3922)) ([91751ab](https://github.com/TheWidlarzGroup/react-native-video/commit/91751abc870109e0a2667dfffbd2baa2e4cf997b))
 
-# [6.2.0+dolbyxp.1.4](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.3...miquido:react-native-video:6.2.0+dolbyxp.1.4)
+## [6.2.0+dolbyxp.1.4](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.3...miquido:react-native-video:6.2.0+dolbyxp.1.4)
 
 
 ### Bug Fixes
 
 * **android:** fix crash when cookiePolicy applied
 
-# [6.2.0+dolbyxp.1.3](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.3)
+## [6.2.0+dolbyxp.1.3](https://github.com/miquido/react-native-video/compare/6.2.0+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.3)
 
 
 ### Bug Fixes
@@ -248,11 +248,11 @@ Sync with 6.3.0.
 
 * **android:** Add codecs/channels to audio track info. Simplify supplementalProperties structure
 
-# [6.2.0+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.2)
+## [6.2.0+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.2...miquido:react-native-video:6.2.0+dolbyxp.1.2)
 
 Sync with 6.2.0.
 
-# [6.2.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.1.2...v6.2.0) (2024-06-07)
+## [6.2.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.1.2...v6.2.0) (2024-06-07)
 
 
 ### Bug Fixes
@@ -278,7 +278,7 @@ Sync with 6.2.0.
 * **android:** Change subtitleLayout from child to sibling of layout ([#3830](https://github.com/TheWidlarzGroup/react-native-video/issues/3830)) ([c2cc917](https://github.com/TheWidlarzGroup/react-native-video/commit/c2cc91736852ea8b128e63bee71979d64b805c91))
 * **android:** handle increment forward and rewind buttons ([#3818](https://github.com/TheWidlarzGroup/react-native-video/issues/3818)) ([5059e7a](https://github.com/TheWidlarzGroup/react-native-video/commit/5059e7a7f122447a1762249429d5fe289cbb0a4d))
 
-# [6.1.2+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.1...miquido:react-native-video:6.1.2+dolbyxp.1.2)
+## [6.1.2+dolbyxp.1.2](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.1...miquido:react-native-video:6.1.2+dolbyxp.1.2)
 
 
 ### Features
@@ -307,7 +307,7 @@ Sync with 6.2.0.
 * **ios:** Fix for tvOS native audio menu language selector
   ([a42240d](https://github.com/miquido/react-native-video/commit/a42240d5543cbc9f7c11a0692c05d625d345457a))
 
-# [6.1.2+dolbyxp.1.1](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.1)
+## [6.1.2+dolbyxp.1.1](https://github.com/miquido/react-native-video/compare/6.1.2+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.1)
 
 
 ### Bug Fixes
@@ -315,7 +315,7 @@ Sync with 6.2.0.
 * **android:** Fix typo for cookiePolicy property.
 * Fix typo in CookiePolicy enum.
 
-# [6.1.2+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/6.0.0+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.0)
+## [6.1.2+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/6.0.0+dolbyxp.1.0...miquido:react-native-video:6.1.2+dolbyxp.1.0)
 
 Sync with 6.1.2.
 
@@ -326,7 +326,7 @@ Sync with 6.1.2.
 
 * **android:** revert previous fix not compatible with old java version ([#3828](https://github.com/TheWidlarzGroup/react-native-video/issues/3828)) ([69bde44](https://github.com/TheWidlarzGroup/react-native-video/commit/69bde447b825507533627c7b7d931e5a5d19ef75))
 
-# [6.1.1](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.1.0...v6.1.1) (2024-05-22)
+## [6.1.1](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.1.0...v6.1.1) (2024-05-22)
 
 ### Bug Fixes
 * **iOS:** sometimes aspect ratio is invalid ([#3821](https://github.com/TheWidlarzGroup/react-native-video/issues/3821)) ([dac0985](https://github.com/TheWidlarzGroup/react-native-video/commit/dac09854303335d8e37b633c37bca399499d1999))
@@ -335,7 +335,7 @@ Sync with 6.1.2.
 * **android:** change default user agent value ([#3813](https://github.com/TheWidlarzGroup/react-native-video/issues/3813)) ([089dc7e](https://github.com/TheWidlarzGroup/react-native-video/commit/089dc7e03251983ed3e1581519ffe4b3020ff5f8))
 
 
-# [6.1.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0...v6.1.0) (2024-05-22)
+## [6.1.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0...v6.1.0) (2024-05-22)
 
 
 ### Bug Fixes
@@ -355,7 +355,7 @@ Sync with 6.1.2.
 * add setVolume function to component's ref ([#3794](https://github.com/TheWidlarzGroup/react-native-video/issues/3794)) ([3cd7ab6](https://github.com/TheWidlarzGroup/react-native-video/commit/3cd7ab60b27e8820607bd83a5681bc7ba7e6c52e))
 * **android:** add possibility to hide seekBar ([#3789](https://github.com/TheWidlarzGroup/react-native-video/issues/3789)) ([95e6140](https://github.com/TheWidlarzGroup/react-native-video/commit/95e6140eead56efab83871e29b57d30f4f11a77a))
 
-# [6.0.0+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/v6.0.0...miquido:react-native-video:6.0.0+dolbyxp.1.0)
+## [6.0.0+dolbyxp.1.0](https://github.com/miquido/react-native-video/compare/v6.0.0...miquido:react-native-video:6.0.0+dolbyxp.1.0)
 
 ### Bug Fixes
 * **android:** Don't force texture view usage when DRM enabled
@@ -383,7 +383,7 @@ Sync with 6.1.2.
 ### BREAKING CHANGES
 * **android:** Remove contentStartTime property   
 
-# [6.0.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0-rc.2...v6.0.0) (2024-05-14)
+## [6.0.0](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0-rc.2...v6.0.0) (2024-05-14)
 
 
 ### Bug Fixes
@@ -391,7 +391,7 @@ Sync with 6.1.2.
 * **android:** poster hidding ([#3768](https://github.com/TheWidlarzGroup/react-native-video/issues/3768)) ([98b4a75](https://github.com/TheWidlarzGroup/react-native-video/commit/98b4a75a90c6bc97cde267ea1c6a4a68d0bfdf45))
 * **android:** video tracks crash and clean ([#3767](https://github.com/TheWidlarzGroup/react-native-video/issues/3767)) ([219496f](https://github.com/TheWidlarzGroup/react-native-video/commit/219496ff3abf6d7362ae01fb66c0bf28dfb00510))
 
-# [6.0.0-rc.2](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0-rc.1...v6.0.0-rc.2) (2024-05-13)
+## [6.0.0-rc.2](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0-rc.1...v6.0.0-rc.2) (2024-05-13)
 
 
 ### Bug Fixes
@@ -411,7 +411,7 @@ Sync with 6.1.2.
 
 * Revert "fix(android): video flickering add playback start (#3746)" (#3748) ([d25629b](https://github.com/TheWidlarzGroup/react-native-video/commit/d25629bb62cb9a7772ec2704f678e0fdf4927d12)), closes [#3746](https://github.com/TheWidlarzGroup/react-native-video/issues/3746) [#3748](https://github.com/TheWidlarzGroup/react-native-video/issues/3748)
 
-# [6.0.0-rc.1](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0-rc.0...v6.0.0-rc.1) (2024-05-08)
+## [6.0.0-rc.1](https://github.com/TheWidlarzGroup/react-native-video/compare/v6.0.0-rc.0...v6.0.0-rc.1) (2024-05-08)
 
 
 ### Bug Fixes
@@ -437,7 +437,7 @@ Sync with 6.1.2.
 * ensure we do not provide callback to native if no callback provided from app ([#3735](https://github.com/TheWidlarzGroup/react-native-video/issues/3735)) ([c59d00a](https://github.com/TheWidlarzGroup/react-native-video/commit/c59d00a0f0a0b63b6bbe931f1a9b4fef03667cb2))
 * **ios:** add early returns ([#3741](https://github.com/TheWidlarzGroup/react-native-video/issues/3741)) ([1d235a1](https://github.com/TheWidlarzGroup/react-native-video/commit/1d235a1fea948b7b37ef20e75d953fcbd8c550c6))
 
-# [6.0.0-rc.0](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.8...v6.0.0-rc.0) (2024-04-22)
+## [6.0.0-rc.0](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.8...v6.0.0-rc.0) (2024-04-22)
 
 
 ### Bug Fixes
@@ -463,7 +463,7 @@ Sync with 6.1.2.
 
 * **android:** allow to disable selected functionalities  ([#3681](https://github.com/react-native-video/react-native-video/issues/3681)) ([64e3191](https://github.com/react-native-video/react-native-video/commit/64e3191f73c828067094031a55e6868696b40a34))
 
-# [6.0.0-beta.8](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.7...v6.0.0-beta.8) (2024-04-03)
+## [6.0.0-beta.8](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.7...v6.0.0-beta.8) (2024-04-03)
 
 
 ### Bug Fixes
@@ -471,7 +471,7 @@ Sync with 6.1.2.
 * **android:** update ui manager getter ([#3634](https://github.com/react-native-video/react-native-video/issues/3634)) ([e87c14a](https://github.com/react-native-video/react-native-video/commit/e87c14a4375d47a03447716b1920608855df5d8d))
 * fix codegen types ([#3636](https://github.com/react-native-video/react-native-video/issues/3636)) ([9b66e7f](https://github.com/react-native-video/react-native-video/commit/9b66e7fdce0393c4e2154a23b407de6c46dc9490))
 
-# [6.0.0-beta.7](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.6...v6.0.0-beta.7) (2024-03-30)
+## [6.0.0-beta.7](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.6...v6.0.0-beta.7) (2024-03-30)
 
 
 ### Bug Fixes
@@ -494,7 +494,7 @@ Sync with 6.1.2.
 
 * **android:** move backBufferDurationMs from root props to bufferConfig
 
-# [6.0.0-beta.6](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.5...v6.0.0-beta.6) (2024-03-18)
+## [6.0.0-beta.6](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.5...v6.0.0-beta.6) (2024-03-18)
 
 
 ### Bug Fixes
@@ -525,7 +525,7 @@ Sync with 6.1.2.
 * **ios:** Add ios support for accessing WebVTT Subtitle Content  ([#3541](https://github.com/react-native-video/react-native-video/issues/3541)) ([253ffb5](https://github.com/react-native-video/react-native-video/commit/253ffb595633a4b18221339278f73c8416225f56))
 * move require (local files) to `source.uri` ([#3535](https://github.com/react-native-video/react-native-video/issues/3535)) ([41ac781](https://github.com/react-native-video/react-native-video/commit/41ac7814121fc70a123fa4585dc9b1bd96e9629f))
 
-# [6.0.0-beta.5](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.4...v6.0.0-beta.5) (2024-02-02)
+## [6.0.0-beta.5](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.4...v6.0.0-beta.5) (2024-02-02)
 
 
 ### Bug Fixes
@@ -547,7 +547,7 @@ Sync with 6.1.2.
 
 * Revert "fix: remove pausePlayback when audio focus loss event (#3496)" (#3504) ([aec7db6](https://github.com/react-native-video/react-native-video/commit/aec7db63901c42dd7a591b030bfc69daa8860341)), closes [#3496](https://github.com/react-native-video/react-native-video/issues/3496) [#3504](https://github.com/react-native-video/react-native-video/issues/3504)
 
-# [6.0.0-beta.4](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.3...v6.0.0-beta.4) (2024-01-15)
+## [6.0.0-beta.4](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.3...v6.0.0-beta.4) (2024-01-15)
 
 
 ### Bug Fixes
@@ -562,7 +562,7 @@ Sync with 6.1.2.
 * **ios**: update the way to get keyWindow (#3448) (f35727f)
 * **ios**: update timed metadata handler (#3449) (481cc71)
 
-# [6.0.0-beta.3](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.2...v6.0.0-beta.3) (2023-12-24)
+## [6.0.0-beta.3](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.2...v6.0.0-beta.3) (2023-12-24)
 
 
 ### Bug Fixes
@@ -572,7 +572,7 @@ Sync with 6.1.2.
 * **ios:** revert ios url encoding as this breaks encoded urls ([#3440](https://github.com/react-native-video/react-native-video/issues/3440)) ([0723481](https://github.com/react-native-video/react-native-video/commit/0723481fee75890bc2fff967e3b5bc8946e481a3))
 * **ReactVideoProps:** add accessibility & testID in typing ([#3434](https://github.com/react-native-video/react-native-video/issues/3434)) ([d986b7b](https://github.com/react-native-video/react-native-video/commit/d986b7bf57f8fe49cbf5f507efde4aeb28ee34f8))
 
-# [6.0.0-beta.2](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.1...v6.0.0-beta.2) (2023-12-08)
+## [6.0.0-beta.2](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.1...v6.0.0-beta.2) (2023-12-08)
 
 
 ### Bug Fixes
@@ -582,7 +582,7 @@ Sync with 6.1.2.
 * **android:** ensure adTagUrl can be reset ([#3408](https://github.com/react-native-video/react-native-video/issues/3408)) ([f9bcaac](https://github.com/react-native-video/react-native-video/commit/f9bcaac5158ea2d835dd3177b62ad0446eb30d67))
 * revert drm type definition change ([#3409](https://github.com/react-native-video/react-native-video/issues/3409)) ([fbb5654](https://github.com/react-native-video/react-native-video/commit/fbb5654a8e075a2b33ae17bd322bb79b1f459d53))
 
-# [6.0.0-beta.1](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.0...v6.0.0-beta.1) (2023-12-02)
+## [6.0.0-beta.1](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.0...v6.0.0-beta.1) (2023-12-02)
 
 
 ### Bug Fixes
@@ -602,10 +602,10 @@ Sync with 6.1.2.
 * **android:** bump media3 version from v1.1.1 to v1.2.0 ([#3362](https://github.com/react-native-video/react-native-video/issues/3362)) ([17dbf6e](https://github.com/react-native-video/react-native-video/commit/17dbf6e8264c5c6bed10ff23d96c2b7296a49651))
 * implement startPosition ([#3355](https://github.com/react-native-video/react-native-video/issues/3355)) ([2648502](https://github.com/react-native-video/react-native-video/commit/2648502b364c2802f5a2a7302c31200905c0a807))
 
-# [6.0.0-beta.1](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.0...v6.0.0-beta.1) (WIP)
+## [6.0.0-beta.1](https://github.com/react-native-video/react-native-video/compare/v6.0.0-beta.0...v6.0.0-beta.1) (WIP)
 * **android:** fix leak caused by removing lifecycle listener too early ([#3380](https://github.com/react-native-video/react-native-video/pull/3380))
 
-# [6.0.0-beta.0](https://github.com/react-native-video/react-native-video/compare/v6.0.0-alpha.11...v6.0.0-beta.0) (2023-11-18)
+## [6.0.0-beta.0](https://github.com/react-native-video/react-native-video/compare/v6.0.0-alpha.11...v6.0.0-beta.0) (2023-11-18)
 
 
 ### Bug Fixes
@@ -621,14 +621,14 @@ Sync with 6.1.2.
 
 * **android:** replace deprecated ExoPlayer2 with AndroidX media3 ([#3337](https://github.com/react-native-video/react-native-video/issues/3337)) ([f2e80e9](https://github.com/react-native-video/react-native-video/commit/f2e80e9f2d1acc97080d48913802639dd2f38346))
 
-# [6.0.0-alpha.11](https://github.com/react-native-video/react-native-video/compare/v6.0.0-alpha.10...v6.0.0-alpha.11) (2023-11-15)
+## [6.0.0-alpha.11](https://github.com/react-native-video/react-native-video/compare/v6.0.0-alpha.10...v6.0.0-alpha.11) (2023-11-15)
 
 
 ### Bug Fixes
 
 * fix bad package release process ([#3347](https://github.com/react-native-video/react-native-video/issues/3347)) ([f961f95](https://github.com/react-native-video/react-native-video/commit/f961f952a483192ee3de1f7bae59419ec6ddc5b7))
 
-# [6.0.0-alpha.10](https://github.com/react-native-video/react-native-video/compare/v6.0.0-alpha.9...v6.0.0-alpha.10) (2023-11-13)
+## [6.0.0-alpha.10](https://github.com/react-native-video/react-native-video/compare/v6.0.0-alpha.9...v6.0.0-alpha.10) (2023-11-13)
 
 
 ### Bug Fixes
