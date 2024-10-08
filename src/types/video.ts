@@ -7,6 +7,7 @@ import type {
   ViewStyle,
   ImageRequireSource,
   ImageURISource,
+  ImageStyle,
 } from 'react-native';
 import type {ReactNode} from 'react';
 import type VideoResizeMode from './ResizeMode';
@@ -33,7 +34,9 @@ export type ReactVideoSourceProperties = {
   cropEnd?: number;
   metadata?: VideoMetadata;
   drm?: Drm;
+  cmcd?: Cmcd; // android
   textTracksAllowChunklessPreparation?: boolean;
+  textTracks?: TextTracks;
 };
 
 export type ReactVideoSource = Readonly<
@@ -77,6 +80,7 @@ export type Drm = Readonly<{
   certificateUrl?: string; // ios
   base64Certificate?: boolean; // ios default: false
   multiDrm?: boolean; // android
+  localSourceEncryptionKeyScheme?: string; // ios
   /* eslint-disable @typescript-eslint/no-unused-vars */
   getLicense?: (
     spcBase64: string,
@@ -86,6 +90,27 @@ export type Drm = Readonly<{
   ) => string | Promise<string>; // ios
   /* eslint-enable @typescript-eslint/no-unused-vars */
 }>;
+
+export enum CmcdMode {
+  MODE_REQUEST_HEADER = 0,
+  MODE_QUERY_PARAMETER = 1,
+}
+/**
+ * Custom key names MUST carry a hyphenated prefix to ensure that there will not be a
+ * namespace collision with future revisions to this specification. Clients SHOULD
+ * use a reverse-DNS syntax when defining their own prefix.
+ *
+ * @see https://cdn.cta.tech/cta/media/media/resources/standards/pdfs/cta-5004-final.pdf CTA-5004 Specification (Page 6, Section 3.1)
+ */
+export type CmcdData = Record<`${string}-${string}`, string | number>;
+export type CmcdConfiguration = Readonly<{
+  mode?: CmcdMode; // default: MODE_QUERY_PARAMETER
+  request?: CmcdData;
+  session?: CmcdData;
+  object?: CmcdData;
+  status?: CmcdData;
+}>;
+export type Cmcd = boolean | CmcdConfiguration;
 
 export enum BufferingStrategyType {
   DEFAULT = 'Default',
@@ -149,6 +174,7 @@ export type SubtitleStyle = {
   paddingLeft?: number;
   paddingRight?: number;
   opacity?: number;
+  subtitlesFollowVideo?: boolean;
 };
 
 export enum TextTrackType {
@@ -233,15 +259,32 @@ export type AudioOutput = 'speaker' | 'earpiece';
 
 export type ControlsStyles = {
   hideSeekBar?: boolean;
+  hideDuration?: boolean;
+  hidePosition?: boolean;
+  hidePlayPause?: boolean;
+  hideForward?: boolean;
+  hideRewind?: boolean;
+  hideNext?: boolean;
+  hidePrevious?: boolean;
+  hideFullscreen?: boolean;
+  hideNavigationBarOnFullScreenMode?: boolean;
+  hideNotificationBarOnFullScreenMode?: boolean;
   seekIncrementMS?: number;
 };
 
+export interface ReactVideoRenderLoaderProps {
+  source?: ReactVideoSource;
+  style?: StyleProp<ImageStyle>;
+  resizeMode?: EnumValues<VideoResizeMode>;
+}
+
 export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   source?: ReactVideoSource;
-  /** @deprecated */
+  /** @deprecated Use source.drm */
   drm?: Drm;
   style?: StyleProp<ViewStyle>;
   adTagUrl?: string;
+  adLanguage?: ISO639_1;
   audioOutput?: AudioOutput; // Mobile
   automaticallyWaitsToMinimizeStalling?: boolean; // iOS
   bufferConfig?: BufferConfig; // Android
@@ -274,7 +317,7 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   preventsDisplaySleepDuringVideoPlayback?: boolean;
   progressUpdateInterval?: number;
   rate?: number;
-  renderLoader?: ReactNode;
+  renderLoader?: ReactNode | ((arg0: ReactVideoRenderLoaderProps) => ReactNode);
   repeat?: boolean;
   reportBandwidth?: boolean; //Android
   resizeMode?: EnumValues<VideoResizeMode>;
@@ -285,14 +328,16 @@ export interface ReactVideoProps extends ReactVideoEvents, ViewProps {
   subtitleStyle?: SubtitleStyle; // android
   subtitleLinesRespected: boolean; // Android
   shutterColor?: string; // Android
+  /** @deprecated Use source.textTracks */
   textTracks?: TextTracks;
   testID?: string;
   viewType?: ViewType;
-  /** @deprecated */
+  /** @deprecated Use viewType */
   useTextureView?: boolean; // Android
-  /** @deprecated */
+  /** @deprecated Use viewType*/
   useSecureView?: boolean; // Android
   volume?: number;
+  /** @deprecated use **localSourceEncryptionKeyScheme** key in **drm** props instead */
   localSourceEncryptionKeyScheme?: string;
   cookiePolicy: EnumValues<CookiePolicy>;
   debug?: DebugConfig;
